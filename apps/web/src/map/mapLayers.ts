@@ -4,7 +4,7 @@ import type {
   GeoJSONSource,
 } from 'maplibre-gl'
 import type { FeatureCollection } from 'geojson'
-import { SRC, LYR, PLANE_IMAGE, SHIP_IMAGE, TRAIN_IMAGE, VEHICLE_IMAGE } from './ids'
+import { SRC, LYR, PLANE_IMAGE, SHIP_IMAGE, TRAIN_IMAGE, VEHICLE_IMAGE, WIND_IMAGE } from './ids'
 import type { LayerState } from '../types'
 import { CATEGORY_COLORS } from '../data/activitySimulator'
 import { buildGraticule } from '../lib/geo'
@@ -12,6 +12,7 @@ import { createPlaneImage } from './aircraft/planeIcon'
 import { createShipImage } from './ships/shipIcon'
 import { createTrainImage } from './trains/trainIcon'
 import { createVehicleImage } from './fleet/vehicleIcon'
+import { createWindArrowImage } from './weather/windArrowIcon'
 import { SHIP_COLORS } from '../config/shipTypes'
 import { TRAIN_COLORS } from '../config/trainTypes'
 import { STATUS_COLORS } from '../config/fleetTypes'
@@ -94,6 +95,65 @@ function addLayerSafe(map: MlMap, layer: LayerSpecification) {
   map.addLayer(layer)
 }
 
+// ---- Module 9: weather colour ramps ----
+const tempColorExpr: any = [
+  'interpolate',
+  ['linear'],
+  ['coalesce', ['get', 'temp'], 0],
+  -30, '#4c1d95',
+  -15, '#3b82f6',
+  0, '#22d3ee',
+  10, '#34d399',
+  20, '#fde047',
+  30, '#fb923c',
+  40, '#ef4444',
+  48, '#7f1d1d',
+]
+const cycloneColorExpr: any = [
+  'match',
+  ['get', 'category'],
+  'td', '#38bdf8',
+  'ts', '#22d3ee',
+  'cat1', '#fde047',
+  'cat2', '#fbbf24',
+  'cat3', '#fb923c',
+  'cat4', '#f43f5e',
+  'cat5', '#c026d3',
+  '#c084fc',
+]
+const newsCategoryColorExpr: any = [
+  'match',
+  ['get', 'category'],
+  'breaking', '#fbbf24',
+  'disasters', '#f97316',
+  'wars', '#f43f5e',
+  'economic', '#22d3ee',
+  'political', '#a78bfa',
+  '#fbbf24',
+]
+
+const quakeDepthColorExpr: any = [
+  'interpolate',
+  ['linear'],
+  ['coalesce', ['get', 'depth'], 0],
+  0, '#ef4444',
+  70, '#f59e0b',
+  300, '#22d3ee',
+  700, '#3b82f6',
+]
+
+// Colour domain-infrastructure nodes by their role in the domain (Module 8).
+const infraRoleColorExpr: any = [
+  'match',
+  ['get', 'role'],
+  'apex', '#a78bfa',
+  'www', '#818cf8',
+  'mail', '#f59e0b',
+  'ns', '#38bdf8',
+  'sub', '#c4b5fd',
+  '#a78bfa',
+]
+
 const categoryColorExpr: any = [
   'match',
   ['get', 'category'],
@@ -130,6 +190,17 @@ export function installOverlays(map: MlMap) {
   ensureGeoJSONSource(map, SRC.geofences, EMPTY)
   ensureGeoJSONSource(map, SRC.trafficFlow, EMPTY)
   ensureGeoJSONSource(map, SRC.trafficIncidents, EMPTY)
+  ensureGeoJSONSource(map, SRC.cyberThreats, EMPTY)
+  ensureGeoJSONSource(map, SRC.domainInfra, EMPTY)
+  ensureGeoJSONSource(map, SRC.domainInfraLinks, EMPTY)
+  ensureGeoJSONSource(map, SRC.weatherGrid, EMPTY)
+  ensureGeoJSONSource(map, SRC.cyclones, EMPTY)
+  ensureGeoJSONSource(map, SRC.wildfires, EMPTY)
+  ensureGeoJSONSource(map, SRC.earthquakes, EMPTY)
+  ensureGeoJSONSource(map, SRC.satellites, EMPTY)
+  ensureGeoJSONSource(map, SRC.satOrbit, EMPTY)
+  ensureGeoJSONSource(map, SRC.news, EMPTY)
+  ensureGeoJSONSource(map, SRC.social, EMPTY)
 
   // icon images (wiped by setStyle, so re-add on each style load)
   if (!map.hasImage(PLANE_IMAGE)) {
@@ -156,6 +227,13 @@ export function installOverlays(map: MlMap) {
   if (!map.hasImage(VEHICLE_IMAGE)) {
     try {
       map.addImage(VEHICLE_IMAGE, createVehicleImage(), { pixelRatio: 2 })
+    } catch {
+      /* ignore if already present */
+    }
+  }
+  if (!map.hasImage(WIND_IMAGE)) {
+    try {
+      map.addImage(WIND_IMAGE, createWindArrowImage(), { pixelRatio: 2 })
     } catch {
       /* ignore if already present */
     }
@@ -546,6 +624,331 @@ export function installOverlays(map: MlMap) {
       'icon-opacity': ['case', ['get', 'moving'], 1, 0.7] as any,
     },
   })
+
+  // ---- Module 7: cyber threat overlay (malicious infrastructure) ----
+  addLayerSafe(map, {
+    id: LYR.cyberThreatsGlow,
+    type: 'circle',
+    source: SRC.cyberThreats,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 8, 6, 18] as any,
+      'circle-color': '#f43f5e',
+      'circle-opacity': 0.14,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.cyberThreats,
+    type: 'circle',
+    source: SRC.cyberThreats,
+    paint: {
+      'circle-radius': ['case', ['get', 'selected'], 7, 4] as any,
+      'circle-color': '#f43f5e',
+      'circle-opacity': 0.95,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fca5a5',
+    },
+  })
+
+  // ---- Module 8: domain infrastructure footprint (star links + nodes) ----
+  addLayerSafe(map, {
+    id: LYR.domainInfraLinks,
+    type: 'line',
+    source: SRC.domainInfraLinks,
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': '#a78bfa',
+      'line-width': 1,
+      'line-opacity': 0.35,
+      'line-dasharray': [2, 2] as any,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.domainInfraGlow,
+    type: 'circle',
+    source: SRC.domainInfra,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 7, 6, 16] as any,
+      'circle-color': infraRoleColorExpr,
+      'circle-opacity': 0.16,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.domainInfra,
+    type: 'circle',
+    source: SRC.domainInfra,
+    paint: {
+      'circle-radius': ['case', ['==', ['get', 'role'], 'apex'], 7, 5] as any,
+      'circle-color': infraRoleColorExpr,
+      'circle-opacity': 0.95,
+      'circle-stroke-width': ['case', ['==', ['get', 'role'], 'apex'], 2, 1] as any,
+      'circle-stroke-color': '#ede9fe',
+    },
+  })
+
+  // ---- Module 9: weather field (temperature / lightning / wind) ----
+  addLayerSafe(map, {
+    id: LYR.weatherTemp,
+    type: 'circle',
+    source: SRC.weatherGrid,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 6, 3, 12, 6, 26] as any,
+      'circle-color': tempColorExpr,
+      'circle-opacity': 0.55,
+      'circle-blur': 0.6,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.weatherLightning,
+    type: 'circle',
+    source: SRC.weatherGrid,
+    filter: ['==', ['get', 'lightning'], true] as any,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 4, 6, 9] as any,
+      'circle-color': '#fbbf24',
+      'circle-opacity': 0.9,
+      'circle-stroke-width': 1.5,
+      'circle-stroke-color': '#fef08a',
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.weatherWind,
+    type: 'symbol',
+    source: SRC.weatherGrid,
+    layout: {
+      visibility: 'none',
+      'icon-image': WIND_IMAGE,
+      // wind_direction is the direction wind blows FROM; add 180° to point downwind
+      'icon-rotate': ['+', ['coalesce', ['get', 'windDir'], 0], 180] as any,
+      'icon-rotation-alignment': 'map',
+      'icon-allow-overlap': true,
+      'icon-ignore-placement': true,
+      'icon-size': ['interpolate', ['linear'], ['coalesce', ['get', 'windSpeed'], 0], 0, 0.5, 60, 1.2] as any,
+    },
+    paint: { 'icon-opacity': 0.9 },
+  })
+
+  // ---- Module 9: wildfires (NASA EONET) ----
+  addLayerSafe(map, {
+    id: LYR.wildfiresGlow,
+    type: 'circle',
+    source: SRC.wildfires,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 0, 8, 20000, 16, 100000, 26] as any,
+      'circle-color': '#f97316',
+      'circle-opacity': 0.18,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.wildfires,
+    type: 'circle',
+    source: SRC.wildfires,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 0, 4, 1000, 6, 20000, 10, 100000, 14] as any,
+      'circle-color': '#fb923c',
+      'circle-opacity': 0.9,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fed7aa',
+    },
+  })
+
+  // ---- Module 9: earthquakes (USGS) ----
+  addLayerSafe(map, {
+    id: LYR.earthquakesGlow,
+    type: 'circle',
+    source: SRC.earthquakes,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 2, 6, 6, 22, 8, 34] as any,
+      'circle-color': '#facc15',
+      'circle-opacity': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 3, 0, 5, 0.25] as any,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.earthquakes,
+    type: 'circle',
+    source: SRC.earthquakes,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 0, 2, 3, 5, 6, 12, 8, 20] as any,
+      'circle-color': quakeDepthColorExpr,
+      'circle-opacity': 0.85,
+      'circle-stroke-width': ['case', ['get', 'tsunami'], 2, 0.6] as any,
+      'circle-stroke-color': ['case', ['get', 'tsunami'], '#22d3ee', 'rgba(255,255,255,0.7)'] as any,
+    },
+  })
+
+  // ---- Module 9: tropical cyclones (NHC), topmost ----
+  addLayerSafe(map, {
+    id: LYR.cyclonesGlow,
+    type: 'circle',
+    source: SRC.cyclones,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 12, 4, 26] as any,
+      'circle-color': cycloneColorExpr,
+      'circle-opacity': 0.16,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.cyclones,
+    type: 'circle',
+    source: SRC.cyclones,
+    paint: {
+      'circle-radius': ['case', ['get', 'selected'], 11, 7] as any,
+      'circle-color': cycloneColorExpr,
+      'circle-opacity': 0.95,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff',
+    },
+  })
+
+  // ---- Module 10: satellites (orbit track under points, groups, selected halo) ----
+  addLayerSafe(map, {
+    id: LYR.satOrbit,
+    type: 'line',
+    source: SRC.satOrbit,
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: {
+      'line-color': '#22d3ee',
+      'line-width': 1.6,
+      'line-opacity': 0.7,
+      'line-dasharray': [2, 1.5] as any,
+    },
+  })
+  // selected halo (any group) — only shows on the feature with selected == true
+  addLayerSafe(map, {
+    id: LYR.satSelected,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'selected'], true] as any,
+    paint: {
+      'circle-radius': 12,
+      'circle-color': '#22d3ee',
+      'circle-opacity': 0.14,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#22d3ee',
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.satDebris,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'group'], 'debris'] as any,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.6, 5, 3] as any,
+      'circle-color': '#f87171',
+      'circle-opacity': 0.8,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.satStarlink,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'group'], 'starlink'] as any,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.8, 5, 3.2] as any,
+      'circle-color': '#60a5fa',
+      'circle-opacity': 0.85,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.satLaunches,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'group'], 'launches'] as any,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 5, 3.6] as any,
+      'circle-color': '#a3e635',
+      'circle-opacity': 0.9,
+      'circle-stroke-width': 0.5,
+      'circle-stroke-color': 'rgba(7,11,18,0.6)',
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.satActive,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'group'], 'active'] as any,
+    paint: {
+      'circle-radius': ['case', ['get', 'selected'], 6, ['interpolate', ['linear'], ['zoom'], 0, 2.2, 5, 4]] as any,
+      'circle-color': '#e2e8f0',
+      'circle-opacity': 0.92,
+      'circle-stroke-width': 0.6,
+      'circle-stroke-color': 'rgba(7,11,18,0.7)',
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.satIss,
+    type: 'circle',
+    source: SRC.satellites,
+    filter: ['==', ['get', 'group'], 'iss'] as any,
+    paint: {
+      'circle-radius': ['case', ['get', 'selected'], 9, 6] as any,
+      'circle-color': '#22d3ee',
+      'circle-opacity': 1,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff',
+    },
+  })
+
+  // ---- Module 11: news hotspots (geoparsed headlines) ----
+  addLayerSafe(map, {
+    id: LYR.newsGlow,
+    type: 'circle',
+    source: SRC.news,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'count'], 1], 1, 10, 8, 26] as any,
+      'circle-color': newsCategoryColorExpr,
+      'circle-opacity': 0.16,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.newsPoints,
+    type: 'circle',
+    source: SRC.news,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'count'], 1], 1, 5, 4, 9, 8, 14] as any,
+      'circle-color': newsCategoryColorExpr,
+      'circle-opacity': 0.9,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': 'rgba(255,255,255,0.8)',
+    },
+  })
+
+  // ---- Module 12: social buzz hotspots (geoparsed posts) ----
+  addLayerSafe(map, {
+    id: LYR.socialGlow,
+    type: 'circle',
+    source: SRC.social,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'count'], 1], 1, 10, 8, 26] as any,
+      'circle-color': '#ec4899',
+      'circle-opacity': 0.16,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.socialPoints,
+    type: 'circle',
+    source: SRC.social,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'count'], 1], 1, 5, 4, 9, 8, 14] as any,
+      'circle-color': '#ec4899',
+      'circle-opacity': 0.9,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': 'rgba(255,255,255,0.8)',
+    },
+  })
 }
 
 function setData(map: MlMap, sourceId: string, data: FeatureCollection) {
@@ -578,6 +981,23 @@ export const setTrafficFlowData = (map: MlMap, d: FeatureCollection) =>
   setData(map, SRC.trafficFlow, d)
 export const setTrafficIncidentData = (map: MlMap, d: FeatureCollection) =>
   setData(map, SRC.trafficIncidents, d)
+export const setCyberThreatData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.cyberThreats, d)
+export const setDomainInfraData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.domainInfra, d)
+export const setDomainInfraLinkData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.domainInfraLinks, d)
+export const setWeatherGridData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.weatherGrid, d)
+export const setCycloneData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.cyclones, d)
+export const setWildfireData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.wildfires, d)
+export const setEarthquakeData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.earthquakes, d)
+export const setSatelliteData = (map: MlMap, d: FeatureCollection) =>
+  setData(map, SRC.satellites, d)
+export const setSatOrbitData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.satOrbit, d)
+export const setNewsData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.news, d)
+export const setSocialData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.social, d)
 
 const vis = (b: boolean): 'visible' | 'none' => (b ? 'visible' : 'none')
 
@@ -652,6 +1072,79 @@ export function applyLayerStates(map: MlMap, layers: LayerState[]) {
         setLayoutVis(map, LYR.trafficFlow, l.visible)
         setPaint(map, LYR.trafficHeatmap, 'heatmap-opacity', l.opacity * 0.7)
         setPaint(map, LYR.trafficFlow, 'circle-opacity', l.opacity * 0.85)
+        break
+      case 'cyber-threats':
+        setLayoutVis(map, LYR.cyberThreatsGlow, l.visible)
+        setLayoutVis(map, LYR.cyberThreats, l.visible)
+        setPaint(map, LYR.cyberThreats, 'circle-opacity', l.opacity * 0.95)
+        break
+      case 'domain-infra':
+        for (const id of [LYR.domainInfraLinks, LYR.domainInfraGlow, LYR.domainInfra]) {
+          setLayoutVis(map, id, l.visible)
+        }
+        setPaint(map, LYR.domainInfra, 'circle-opacity', l.opacity * 0.95)
+        setPaint(map, LYR.domainInfraLinks, 'line-opacity', l.opacity * 0.35)
+        break
+      case 'weather-temp':
+        setLayoutVis(map, LYR.weatherTemp, l.visible)
+        setPaint(map, LYR.weatherTemp, 'circle-opacity', l.opacity * 0.55)
+        break
+      case 'weather-wind':
+        setLayoutVis(map, LYR.weatherWind, l.visible)
+        setPaint(map, LYR.weatherWind, 'icon-opacity', l.opacity)
+        break
+      case 'weather-lightning':
+        setLayoutVis(map, LYR.weatherLightning, l.visible)
+        setPaint(map, LYR.weatherLightning, 'circle-opacity', l.opacity * 0.9)
+        break
+      case 'cyclones':
+        setLayoutVis(map, LYR.cyclonesGlow, l.visible)
+        setLayoutVis(map, LYR.cyclones, l.visible)
+        setPaint(map, LYR.cyclones, 'circle-opacity', l.opacity * 0.95)
+        break
+      case 'wildfires':
+        setLayoutVis(map, LYR.wildfiresGlow, l.visible)
+        setLayoutVis(map, LYR.wildfires, l.visible)
+        setPaint(map, LYR.wildfires, 'circle-opacity', l.opacity * 0.9)
+        break
+      case 'earthquakes':
+        setLayoutVis(map, LYR.earthquakesGlow, l.visible)
+        setLayoutVis(map, LYR.earthquakes, l.visible)
+        setPaint(map, LYR.earthquakes, 'circle-opacity', l.opacity * 0.85)
+        break
+      case 'sat-iss':
+        setLayoutVis(map, LYR.satIss, l.visible)
+        setPaint(map, LYR.satIss, 'circle-opacity', l.opacity)
+        break
+      case 'sat-active':
+        setLayoutVis(map, LYR.satActive, l.visible)
+        setPaint(map, LYR.satActive, 'circle-opacity', l.opacity * 0.92)
+        break
+      case 'sat-starlink':
+        setLayoutVis(map, LYR.satStarlink, l.visible)
+        setPaint(map, LYR.satStarlink, 'circle-opacity', l.opacity * 0.85)
+        break
+      case 'sat-debris':
+        setLayoutVis(map, LYR.satDebris, l.visible)
+        setPaint(map, LYR.satDebris, 'circle-opacity', l.opacity * 0.8)
+        break
+      case 'sat-launches':
+        setLayoutVis(map, LYR.satLaunches, l.visible)
+        setPaint(map, LYR.satLaunches, 'circle-opacity', l.opacity * 0.9)
+        break
+      case 'sat-orbits':
+        setLayoutVis(map, LYR.satOrbit, l.visible)
+        setPaint(map, LYR.satOrbit, 'line-opacity', l.opacity * 0.7)
+        break
+      case 'news-hotspots':
+        setLayoutVis(map, LYR.newsGlow, l.visible)
+        setLayoutVis(map, LYR.newsPoints, l.visible)
+        setPaint(map, LYR.newsPoints, 'circle-opacity', l.opacity * 0.9)
+        break
+      case 'social-buzz':
+        setLayoutVis(map, LYR.socialGlow, l.visible)
+        setLayoutVis(map, LYR.socialPoints, l.visible)
+        setPaint(map, LYR.socialPoints, 'circle-opacity', l.opacity * 0.9)
         break
       case 'geofences': {
         for (const id of [LYR.geofenceFill, LYR.geofenceLine]) {

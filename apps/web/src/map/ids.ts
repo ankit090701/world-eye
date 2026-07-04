@@ -18,7 +18,18 @@ export const SRC = {
   geofences: 'we-geofences',
   trafficIncidents: 'we-traffic-incidents',
   trafficFlow: 'we-traffic-flow',
+  cyberThreats: 'we-cyber-threats',
+  domainInfra: 'we-domain-infra',
+  domainInfraLinks: 'we-domain-infra-links',
   weather: 'we-weather',
+  weatherGrid: 'we-weather-grid',
+  cyclones: 'we-cyclones',
+  wildfires: 'we-wildfires',
+  earthquakes: 'we-earthquakes',
+  satellites: 'we-satellites',
+  satOrbit: 'we-sat-orbit',
+  news: 'we-news',
+  social: 'we-social',
 } as const
 
 export const LYR = {
@@ -54,9 +65,36 @@ export const LYR = {
   trafficHeatmap: 'we-traffic-heatmap',
   trafficFlow: 'we-traffic-flow-pts',
   trafficIncidents: 'we-traffic-incidents-pts',
+  cyberThreatsGlow: 'we-cyber-threats-glow',
+  cyberThreats: 'we-cyber-threats-pts',
+  domainInfraLinks: 'we-domain-infra-links-line',
+  domainInfraGlow: 'we-domain-infra-glow',
+  domainInfra: 'we-domain-infra-pts',
+  domainInfraLabel: 'we-domain-infra-label',
+  weatherTemp: 'we-weather-temp',
+  weatherWind: 'we-weather-wind',
+  weatherLightning: 'we-weather-lightning',
+  cyclonesGlow: 'we-cyclones-glow',
+  cyclones: 'we-cyclones-pts',
+  wildfiresGlow: 'we-wildfires-glow',
+  wildfires: 'we-wildfires-pts',
+  earthquakesGlow: 'we-earthquakes-glow',
+  earthquakes: 'we-earthquakes-pts',
+  satOrbit: 'we-sat-orbit-line',
+  satActive: 'we-sat-active',
+  satStarlink: 'we-sat-starlink',
+  satDebris: 'we-sat-debris',
+  satLaunches: 'we-sat-launches',
+  satIss: 'we-sat-iss',
+  satSelected: 'we-sat-selected',
+  newsGlow: 'we-news-glow',
+  newsPoints: 'we-news-pts',
+  socialGlow: 'we-social-glow',
+  socialPoints: 'we-social-pts',
 } as const
 
 export const PLANE_IMAGE = 'we-plane'
 export const SHIP_IMAGE = 'we-ship'
 export const TRAIN_IMAGE = 'we-train'
 export const VEHICLE_IMAGE = 'we-vehicle'
+export const WIND_IMAGE = 'we-wind-arrow'

@@ -14,8 +14,13 @@ signed off before the next one begins.
 | **3** | **Ship Tracking** | ✅ Built |
 | **4** | **Train Tracking** | ✅ Built |
 | **5** | **Fleet Tracking** | ✅ Built |
-| **6** | **Traffic Intelligence** | ✅ **Built — ready for review** |
-| 7 | Cyber Intelligence | ⏳ pending |
+| **6** | **Traffic Intelligence** | ✅ Built |
+| **7** | **Cyber Intelligence** | ✅ Built |
+| **8** | **Domain Intelligence** | ✅ Built |
+| **9** | **Weather Intelligence** | ✅ Built |
+| **10** | **Satellite Intelligence** | ✅ Built |
+| **11** | **News Intelligence** | ✅ Built |
+| **12** | **Social Intelligence** | ✅ **Built — ready for review** |
 | … | (through Module 18) | ⏳ pending |
 
 ---
@@ -297,6 +302,257 @@ traffic feed (incidents + congested corridors). Header shows **Live (Finland)** 
 - **Congestion / speed / volume** — Digitraffic **TMS** road sensors.
 
 See [`docs/MODULE-6.md`](docs/MODULE-6.md) for the test checklist & details.
+
+---
+
+## Module 7 — Cyber Intelligence
+
+An OSINT lookup tool (IP / domain / ASN → full report) **plus** a live threat-map
+overlay of malicious infrastructure. Dedicated **Cyber** panel (shield icon).
+All BRD Module 7 capabilities are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **IP Lookup** | Geolocation, ISP, org, mobile/proxy/hosting flags (ip-api) |
+| **WHOIS** | Network allocation via **RDAP** (rdap.org) — handle, CIDR, range, entities |
+| **ASN** | AS number + name + country (from geo + RDAP autnum) |
+| **DNS** | A / AAAA / MX / NS / TXT + reverse DNS (Google DoH) |
+| **SSL** | Certificates from **crt.sh** (issuer, CN, validity) |
+| **Threat Feeds / Blacklists / Malware** | **abuse.ch Feodo** (botnet C2), **Tor** exit list, proxy/hosting flags |
+| **Country / ISP / Hosting / Cloud Provider** | From geolocation + ASN, with cloud-provider detection |
+| **Open Ports (authorized targets)** | **Intentionally gated** — no active scanning of arbitrary targets |
+
+Enter an IP, domain or ASN → a full report with a threat verdict; resolved hosts
+are located on the map. The **Cyber Threats** overlay plots geolocated botnet C2
+servers (live from abuse.ch) as red markers.
+
+### Responsible-use note
+
+**No active port scanning** is performed. Scanning arbitrary user-supplied targets
+would be unauthorized; the "Open Ports" capability is gated behind a documented
+authorized-scan integration (Shodan/Censys) that is not enabled. All lookups hit
+**fixed, public OSINT services** (no connection is made to the target host itself).
+
+### Free & open data sources (no keys)
+
+- **Geo/ISP/ASN** — [ip-api.com](https://ip-api.com/) · **WHOIS** — [RDAP](https://rdap.org/)
+- **DNS** — Google DoH · **Certs** — [crt.sh](https://crt.sh/)
+- **Threat intel** — [abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/), Tor exit list
+
+See [`docs/MODULE-7.md`](docs/MODULE-7.md) for the test checklist & details.
+
+---
+
+## Module 8 — Domain Intelligence
+
+A deep **domain OSINT** console (registration, DNS, email security, certificates,
+subdomains, history) **plus** a map overlay of the domain's geolocated **hosting
+footprint**. Dedicated **Domain** panel (globe icon). All BRD Module 8 features
+are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **WHOIS** | Domain registration via **RDAP** (rdap.org) — registrar, dates, statuses, DNSSEC |
+| **DNS Records** | A / AAAA / NS / CNAME / SOA / CAA via **Google DoH** |
+| **MX** | Mail exchangers + auto-detected mail provider (Google, M365, Proton…) |
+| **TXT** | All TXT records surfaced |
+| **SPF** | Parsed from TXT with policy (hardfail / softfail / neutral) |
+| **DMARC** | `_dmarc` TXT → policy (none / quarantine / reject), pct, rua |
+| **Registrar** | From RDAP registrar entity (+ URL) |
+| **Hosting** | Apex IP → country / ISP / org / ASN / **cloud provider** (ip-api) |
+| **Historical DNS** | Certificate-transparency timeline — when each (sub)domain first appeared |
+| **Certificates** | Issuer / CN / validity from **certspotter** (crt.sh fallback) |
+| **Subdomains** | Passive enumeration from CT logs (certspotter / crt.sh) |
+
+Enter a domain → a full report; the **Domain Infrastructure** overlay plots the
+apex, `www`, mail, name-server and subdomain hosts as geolocated nodes linked in a
+star topology (colour-coded by role), and the map flies to fit the footprint.
+Also adds **DKIM** selector probing on top of the BRD list.
+
+### Design & responsible use
+
+Two parts: an on-demand **report** (panel) + a live **infrastructure map**. Every
+lookup is **passive OSINT** — it reads public registries (RDAP), public DNS
+(Google DoH) and **certificate-transparency logs**; WorldEye never connects to the
+target host or actively scans it. The `q` is validated as a domain, normalised,
+and passed only as an encoded parameter to **fixed** services (no SSRF). The route
+caps query length, is per-IP rate-limited, and caches results 10 min.
+
+> Very large CDN domains (e.g. `cloudflare.com`) have millions of CT entries and
+> may exceed the CT provider's timeout — WHOIS / DNS / email / hosting / footprint
+> still render; only the cert/subdomain sections come back empty.
+
+### Free & open data sources (no keys)
+
+- **WHOIS** — [RDAP](https://rdap.org/) · **DNS** — Google DoH
+- **Certificates / subdomains / history** — [certspotter](https://sslmate.com/ct_search_api/) (keyless), [crt.sh](https://crt.sh/) fallback
+- **Hosting geo/ASN** — [ip-api.com](https://ip-api.com/)
+
+See [`docs/MODULE-8.md`](docs/MODULE-8.md) for the test checklist & details.
+
+---
+
+## Module 9 — Weather Intelligence
+
+Global weather and natural-hazard picture on the map, with a dedicated **Weather**
+panel (sun/cloud icon). All BRD Module 9 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Radar** | **RainViewer** precipitation radar raster (last 2h) |
+| **Rain / Snow** | Same radar (precipitation type), toggleable |
+| **Temperature** | Global current-temperature field, colour-ramped (Open-Meteo) |
+| **Wind** | Wind arrows — point downwind, sized by speed (Open-Meteo) |
+| **Clouds** | Cloud cover in the point read-out + grid popups |
+| **Lightning** | Convective / thunderstorm-risk cells from CAPE (Open-Meteo) |
+| **Storms / Cyclones** | Active tropical cyclones — category-coloured (**NOAA NHC**) |
+| **Wildfires** | Active wildfires worldwide (**NASA EONET**) |
+| **Earthquakes** | Quakes in the last 24 h, sized by magnitude, coloured by depth (**USGS**) |
+
+The panel gives **current conditions** anywhere (map centre or a city chip → temp,
+feels-like, wind, gusts, humidity, cloud, precipitation, CAPE), one-tap **layer
+toggles**, and **live event lists** (cyclones, strongest earthquakes, wildfires)
+that fly you to each. Click any storm / fire / quake / temperature node for details.
+
+### Live data + graceful fallback
+
+Temperature/wind/lightning come from one **batched** Open-Meteo call (a whole grid
+in a single request — free, keyless). Cyclones use NOAA NHC; when no storms are
+active (common off-season) a small **simulated** set keeps the layer demonstrable
+(labelled *sim* in the panel and popups). Wildfires (EONET) and earthquakes (USGS)
+are always live. Each feed caches server-side and polls only while its layer is on.
+
+### Free & open data sources (no keys)
+
+- **Conditions / temp / wind / cloud / CAPE** — [Open-Meteo](https://open-meteo.com/)
+- **Radar** — [RainViewer](https://www.rainviewer.com/api.html) · **Cyclones** — [NOAA NHC](https://www.nhc.noaa.gov/)
+- **Wildfires** — [NASA EONET](https://eonet.gsfc.nasa.gov/) · **Earthquakes** — [USGS](https://earthquake.usgs.gov/)
+
+See [`docs/MODULE-9.md`](docs/MODULE-9.md) for the test checklist & details.
+
+---
+
+## Module 10 — Satellite Intelligence
+
+Live orbital tracking on the map — satellites, the ISS, Starlink, debris and recent
+launches, propagated in real time, with a dedicated **Satellites** panel. All BRD
+Module 10 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Satellites** | Notable/brightest active satellites, live-propagated (CelesTrak) |
+| **ISS** | Crewed stations (ISS, Tiangong) highlighted; live position + orbit |
+| **Starlink** | Starlink constellation (evenly sampled for smooth rendering) |
+| **Space Debris** | Tracked orbital debris (Cosmos-2251 breakup, sampled) |
+| **Launches** | Objects launched in the **last 30 days** |
+| **Orbits** | Ground track of the selected satellite (one full period, live) |
+
+Every dot moves in real time. Click any object (or a list row) to select it — the
+panel shows **altitude, speed, orbital period, inclination and live lat/lon**, and
+its **ground track** is drawn on the map. Toggle each group; search by name or NORAD
+id; the ISS and notable satellites load automatically.
+
+### How it works — client-side propagation
+
+The heavy lifting is orbital mechanics, done **in your browser**: the API proxies and
+caches **two-line element sets (TLEs)** from CelesTrak, and the frontend propagates
+them every second with **satellite.js** (SGP4) to compute real positions. This scales
+to ~1,000 tracked objects at 1 Hz with no server load and no keys. Each group is
+fetched only when its layer is enabled.
+
+> CelesTrak throttles re-downloads (its data updates every 2 h and it returns 403 if
+> you refetch sooner). WorldEye caches each group and serves the last-known-good set,
+> so tracking keeps working; the ISS falls back to a bundled element set if CelesTrak
+> is unreachable.
+
+### Free & open data sources (no keys)
+
+- **Orbital elements (TLEs)** — [CelesTrak](https://celestrak.org/) (stations, visual, starlink, debris, last-30-days)
+- **Propagation** — [satellite.js](https://github.com/shashwatak/satellite-js) (SGP4, runs in-browser)
+
+See [`docs/MODULE-10.md`](docs/MODULE-10.md) for the test checklist & details.
+
+---
+
+## Module 11 — News Intelligence
+
+Global news, categorised **and mapped**, with a dedicated **News** panel (newspaper
+icon). All BRD Module 11 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Breaking News** | Google News top stories, live |
+| **Natural Disasters** | Curated query (earthquake / flood / wildfire / hurricane…) |
+| **Wars** | Conflict / military / ceasefire query |
+| **Economic Events** | Economy / inflation / markets / trade query |
+| **Political Events** | Elections / government / diplomacy / sanctions query |
+| **Trending Topics** | Most-mentioned proper nouns across current headlines |
+
+Pick a category tab → a live headline feed (each opens the source article). The
+**News Hotspots** overlay plots where news is happening — headlines are **geoparsed**
+against a built-in gazetteer and placed on the map, colour-coded by category and
+sized by story count; click a hotspot for the place + top headline.
+
+### How it works
+
+The API pulls **Google News RSS** (free, keyless, reliable) per category, parses it,
+and **geoparses each headline** against a built-in gazetteer of ~140 countries and
+major cities to assign coordinates — giving news a real map presence without any
+paid geocoding. Trending topics are derived from the frequency of proper nouns across
+current headlines. Every feed is cached server-side; a small sample set is served if
+the upstream is ever unreachable.
+
+> Location is inferred from headline text, so it's approximate (a headline may mention
+> no mapped place, or an ambiguous one). It's an at-a-glance "where news is happening"
+> view, not authoritative geocoding.
+
+### Free & open data sources (no keys)
+
+- **News** — [Google News RSS](https://news.google.com/) (top stories + category search)
+- **Geolocation** — built-in gazetteer (headline geoparsing)
+
+See [`docs/MODULE-11.md`](docs/MODULE-11.md) for the test checklist & details.
+
+---
+
+## Module 12 — Social Intelligence
+
+Trends and public posts from across the social web, in a dedicated **Social** panel
+(share icon). All BRD Module 12 sources are covered:
+
+| BRD source | How it works |
+|-------------|--------------|
+| **Reddit Trends** | r/popular hot posts via Reddit's public Atom feed |
+| **Twitter/X Trends** | **Google Trends** trending searches (keyless stand-in — X's API is paid) |
+| **YouTube Trends** | Trending videos via **Piped** (keyless YouTube proxy) |
+| **Telegram Channels (public)** | Public channel post previews via `t.me/s/…` |
+| **RSS** | **Hacker News** front page (Algolia) as a tech/RSS feed |
+
+Pick a source tab → a live feed (each item opens the original). The **Social Buzz**
+overlay geoparses posts against the shared gazetteer and plots where online
+conversation is geographically focused (click a hotspot for the top post).
+
+### How it works
+
+Each platform is read from a **free, keyless** endpoint — Reddit's Atom RSS (its
+`.json` now requires auth), Google Trends RSS, Hacker News' Algolia API, a public
+Piped instance for YouTube, and Telegram's public web previews. Posts are normalized
+to a common shape and **geoparsed** with the same gazetteer as Module 11, so social
+buzz gets a map presence. Every feed is cached server-side; a labelled sample is
+served if a source is unreachable.
+
+> **Twitter/X** no longer offers free API access, so **Google Trends** stands in for
+> search/X-style trend signals — clearly labelled in the panel. Telegram and YouTube
+> (Piped) depend on public endpoints that can rate-limit; those tabs fall back to a
+> sample when unavailable.
+
+### Free & open data sources (no keys)
+
+- **Reddit** — public Atom feed · **Trends** — [Google Trends RSS](https://trends.google.com/)
+- **YouTube** — [Piped](https://github.com/TeamPiped/Piped) · **Hacker News** — [Algolia HN API](https://hn.algolia.com/api)
+- **Telegram** — public `t.me/s/` channel previews
+
+See [`docs/MODULE-12.md`](docs/MODULE-12.md) for the test checklist & details.
 
 ---
 
