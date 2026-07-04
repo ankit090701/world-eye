@@ -1,0 +1,62 @@
+// Central registry of source & layer ids used for WorldEye overlays.
+export const SRC = {
+  activity: 'we-activity',
+  graticule: 'we-graticule',
+  draw: 'we-draw',
+  drawDraft: 'we-draw-draft',
+  measure: 'we-measure',
+  aircraft: 'we-aircraft',
+  aircraftTrail: 'we-aircraft-trail',
+  ships: 'we-ships',
+  shipsTrail: 'we-ships-trail',
+  trains: 'we-trains',
+  trainsTrail: 'we-trains-trail',
+  trainsRoute: 'we-trains-route',
+  trainsRouteStops: 'we-trains-route-stops',
+  fleet: 'we-fleet',
+  fleetTrail: 'we-fleet-trail',
+  geofences: 'we-geofences',
+  trafficIncidents: 'we-traffic-incidents',
+  trafficFlow: 'we-traffic-flow',
+  weather: 'we-weather',
+} as const
+
+export const LYR = {
+  heatmap: 'we-activity-heatmap',
+  points: 'we-activity-points',
+  graticule: 'we-graticule-lines',
+  drawFill: 'we-draw-fill',
+  drawLine: 'we-draw-line',
+  drawPoint: 'we-draw-point',
+  draftFill: 'we-draw-draft-fill',
+  draftLine: 'we-draw-draft-line',
+  draftPoint: 'we-draw-draft-point',
+  measureLine: 'we-measure-line',
+  measurePoint: 'we-measure-point',
+  weatherRaster: 'we-weather-raster',
+  aircraftTrail: 'we-aircraft-trail-line',
+  aircraftHalo: 'we-aircraft-halo',
+  aircraftIcon: 'we-aircraft-icon',
+  aircraftLabel: 'we-aircraft-label',
+  shipsTrail: 'we-ships-trail-line',
+  shipsHalo: 'we-ships-halo',
+  shipsIcon: 'we-ships-icon',
+  trainsRouteLine: 'we-trains-route-line',
+  trainsRouteStop: 'we-trains-route-stop',
+  trainsTrail: 'we-trains-trail-line',
+  trainsHalo: 'we-trains-halo',
+  trainsIcon: 'we-trains-icon',
+  geofenceFill: 'we-geofence-fill',
+  geofenceLine: 'we-geofence-line',
+  fleetTrail: 'we-fleet-trail-line',
+  fleetHalo: 'we-fleet-halo',
+  fleetIcon: 'we-fleet-icon',
+  trafficHeatmap: 'we-traffic-heatmap',
+  trafficFlow: 'we-traffic-flow-pts',
+  trafficIncidents: 'we-traffic-incidents-pts',
+} as const
+
+export const PLANE_IMAGE = 'we-plane'
+export const SHIP_IMAGE = 'we-ship'
+export const TRAIN_IMAGE = 'we-train'
+export const VEHICLE_IMAGE = 'we-vehicle'

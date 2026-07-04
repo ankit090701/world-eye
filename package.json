@@ -1,0 +1,25 @@
+{
+  "name": "worldeye",
+  "private": true,
+  "version": "1.0.0",
+  "description": "WorldEye — next-generation global intelligence platform (monorepo)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,magenta \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "npm run dev -w @worldeye/web",
+    "dev:api": "npm run dev -w @worldeye/api",
+    "build": "npm run build -w @worldeye/web",
+    "preview": "npm run preview -w @worldeye/web",
+    "start:api": "npm run start -w @worldeye/api",
+    "typecheck": "npm run typecheck -w @worldeye/web && npm run typecheck -w @worldeye/api"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}
