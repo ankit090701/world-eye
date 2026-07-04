@@ -22,6 +22,18 @@ import { ShipEngine, ShipSync, ShipInteractions } from './ships/ShipLayer'
 import { TrainEngine, TrainSync, TrainInteractions } from './trains/TrainLayer'
 import { FleetEngine, FleetSync, FleetInteractions } from './fleet/FleetLayer'
 import { TrafficEngine, TrafficSync, TrafficInteractions } from './traffic/TrafficLayer'
+import { CyberThreatEngine, CyberThreatSync, CyberThreatInteractions } from './cyber/CyberLayer'
+import { DomainInfraSync, DomainInfraInteractions } from './domain/DomainLayer'
+import {
+  WeatherGridEngine,
+  WeatherEventsEngine,
+  WeatherGridSync,
+  WeatherEventsSync,
+  WeatherInteractions,
+} from './weather/WeatherLayer'
+import { SatelliteEngine, SatelliteSync, SatelliteInteractions } from './satellites/SatelliteLayer'
+import { NewsEngine, NewsSync, NewsInteractions } from './news/NewsLayer'
+import { SocialEngine, SocialSync, SocialInteractions } from './social/SocialLayer'
 import { WeatherOverlaySync } from './aircraft/WeatherOverlaySync'
 
 export default function MapView() {
@@ -131,6 +143,31 @@ export default function MapView() {
       <TrafficEngine />
       <TrafficSync />
       <TrafficInteractions />
+      {/* Module 7: cyber threat overlay */}
+      <CyberThreatEngine />
+      <CyberThreatSync />
+      <CyberThreatInteractions />
+      {/* Module 8: domain infrastructure footprint */}
+      <DomainInfraSync />
+      <DomainInfraInteractions />
+      {/* Module 9: weather intelligence */}
+      <WeatherGridEngine />
+      <WeatherEventsEngine />
+      <WeatherGridSync />
+      <WeatherEventsSync />
+      <WeatherInteractions />
+      {/* Module 10: satellite intelligence */}
+      <SatelliteEngine />
+      <SatelliteSync />
+      <SatelliteInteractions />
+      {/* Module 11: news intelligence */}
+      <NewsEngine />
+      <NewsSync />
+      <NewsInteractions />
+      {/* Module 12: social intelligence */}
+      <SocialEngine />
+      <SocialSync />
+      <SocialInteractions />
       {/* interactive map tools (render HUD when active) */}
       <MeasureTool />
       <DrawTool />

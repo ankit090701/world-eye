@@ -27,6 +27,12 @@ export type PanelId =
   | 'trains'
   | 'fleet'
   | 'traffic'
+  | 'cyber'
+  | 'domain'
+  | 'weather'
+  | 'satellites'
+  | 'news'
+  | 'social'
   | null
 
 // ---- Module 2: Aircraft Tracking ----
@@ -278,6 +284,395 @@ export interface TrafficResponse {
   now: number
   incidents: TrafficIncident[]
   flow: FlowPoint[]
+}
+
+// ---- Module 7: Cyber Intelligence ----
+
+export type QueryKind = 'ip' | 'domain' | 'asn' | 'unknown'
+
+export interface GeoInfo {
+  country: string | null
+  countryCode: string | null
+  city: string | null
+  lat: number | null
+  lon: number | null
+  isp: string | null
+  org: string | null
+  as: string | null
+  asname: string | null
+  mobile: boolean
+  proxy: boolean
+  hosting: boolean
+}
+
+export interface RdapInfo {
+  handle: string | null
+  name: string | null
+  type: string | null
+  country: string | null
+  startAddress: string | null
+  endAddress: string | null
+  cidr: string | null
+  registrar: string | null
+  entities: { role: string; name: string }[]
+}
+
+export interface DnsRecords {
+  A: string[]
+  AAAA: string[]
+  MX: string[]
+  NS: string[]
+  TXT: string[]
+}
+
+export interface CertInfo {
+  issuer: string | null
+  commonName: string | null
+  notBefore: string | null
+  notAfter: string | null
+}
+
+export interface ThreatIntel {
+  listed: boolean
+  feodo: { listed: boolean; malware: string | null }
+  tor: boolean
+  proxy: boolean
+  hosting: boolean
+}
+
+export interface CyberReport {
+  query: string
+  kind: QueryKind
+  resolvedIp: string | null
+  geo: GeoInfo | null
+  cloud: string | null
+  rdap: RdapInfo | null
+  asn: { asn: string | null; name: string | null; country: string | null } | null
+  dns: DnsRecords | null
+  ptr: string | null
+  certs: CertInfo[]
+  threat: ThreatIntel
+  ports: { supported: false; note: string }
+  errors: string[]
+}
+
+export interface ThreatMapPoint {
+  ip: string
+  malware: string | null
+  country: string | null
+  as: string | null
+  lat: number
+  lon: number
+  firstSeen: string | null
+}
+
+export interface ThreatMapResponse {
+  now: number
+  count: number
+  source: 'live' | 'sim'
+  points: ThreatMapPoint[]
+}
+
+// ---- Module 8: Domain Intelligence ----
+
+export interface DomainWhois {
+  handle: string | null
+  registrar: string | null
+  registrarUrl: string | null
+  createdDate: string | null
+  updatedDate: string | null
+  expiryDate: string | null
+  statuses: string[]
+  nameservers: string[]
+  dnssec: boolean | null
+  registrant: string | null
+}
+
+export interface DomainDns {
+  A: string[]
+  AAAA: string[]
+  MX: string[]
+  NS: string[]
+  TXT: string[]
+  CNAME: string[]
+  SOA: string[]
+  CAA: string[]
+}
+
+export type SpfPolicy = 'pass' | 'neutral' | 'softfail' | 'hardfail' | 'unknown'
+export type DmarcPolicy = 'none' | 'quarantine' | 'reject' | 'unknown'
+
+export interface EmailSecurity {
+  spf: { present: boolean; record: string | null; policy: SpfPolicy }
+  dmarc: { present: boolean; record: string | null; policy: DmarcPolicy; pct: number | null; rua: string | null }
+  dkim: { selector: string; present: boolean }[]
+  mxProviders: string[]
+}
+
+export interface DomainHosting {
+  ip: string | null
+  country: string | null
+  countryCode: string | null
+  city: string | null
+  isp: string | null
+  org: string | null
+  asn: string | null
+  cloud: string | null
+}
+
+export interface DomainCert {
+  issuer: string | null
+  commonName: string | null
+  notBefore: string | null
+  notAfter: string | null
+}
+
+export interface CtHistoryEntry {
+  name: string
+  firstSeen: string | null
+  lastSeen: string | null
+  issuer: string | null
+}
+
+export type InfraRole = 'apex' | 'www' | 'mail' | 'ns' | 'sub'
+
+export interface DomainInfraPoint {
+  host: string
+  ip: string
+  role: InfraRole
+  country: string | null
+  city: string | null
+  org: string | null
+  as: string | null
+  lat: number
+  lon: number
+}
+
+export interface DomainReport {
+  domain: string
+  resolvedIp: string | null
+  whois: DomainWhois | null
+  dns: DomainDns
+  email: EmailSecurity
+  hosting: DomainHosting | null
+  certs: DomainCert[]
+  subdomains: string[]
+  history: CtHistoryEntry[]
+  firstSeen: string | null
+  ctSource: 'certspotter' | 'crt.sh' | null
+  infra: DomainInfraPoint[]
+  errors: string[]
+}
+
+// ---- Module 9: Weather Intelligence ----
+
+export interface CurrentConditions {
+  lat: number
+  lon: number
+  time: string | null
+  temperature: number | null
+  apparentTemperature: number | null
+  humidity: number | null
+  precipitation: number | null
+  weatherCode: number | null
+  weatherText: string
+  cloudCover: number | null
+  windSpeed: number | null
+  windDir: number | null
+  windGusts: number | null
+  cape: number | null
+  isDay: boolean
+}
+
+export interface GridPoint {
+  lat: number
+  lon: number
+  temp: number | null
+  windSpeed: number | null
+  windDir: number | null
+  cloud: number | null
+  cape: number | null
+  code: number | null
+  lightning: boolean
+}
+
+export interface WeatherGridResponse {
+  source: 'live' | 'sim'
+  now: number
+  count: number
+  points: GridPoint[]
+}
+
+export type CycloneCategory = 'td' | 'ts' | 'cat1' | 'cat2' | 'cat3' | 'cat4' | 'cat5'
+
+export interface Cyclone {
+  id: string
+  name: string
+  basin: string | null
+  classification: string
+  category: CycloneCategory
+  lat: number
+  lon: number
+  windKt: number | null
+  pressureMb: number | null
+  movementDir: number | null
+  movementSpeedKt: number | null
+  lastUpdate: string | null
+  source: 'live' | 'sim'
+}
+
+export interface Wildfire {
+  id: string
+  title: string
+  lat: number
+  lon: number
+  date: string | null
+  magnitude: number | null
+  magnitudeUnit: string | null
+}
+
+export interface Earthquake {
+  id: string
+  mag: number | null
+  place: string | null
+  lat: number
+  lon: number
+  depthKm: number | null
+  time: number | null
+  tsunami: boolean
+  url: string | null
+}
+
+export interface WeatherEventsResponse {
+  now: number
+  cyclones: Cyclone[]
+  wildfires: Wildfire[]
+  earthquakes: Earthquake[]
+  cycloneSource: 'live' | 'sim'
+}
+
+// ---- Module 10: Satellite Intelligence ----
+
+export type SatGroup = 'iss' | 'active' | 'starlink' | 'debris' | 'launches'
+
+export interface TleRecord {
+  name: string
+  noradId: number
+  line1: string
+  line2: string
+}
+
+export interface TleResponse {
+  group: SatGroup
+  source: 'live' | 'sim'
+  count: number
+  sats: TleRecord[]
+}
+
+/** A propagated satellite position (recomputed client-side every second). */
+export interface SatPosition {
+  noradId: number
+  name: string
+  group: SatGroup
+  lat: number
+  lon: number
+  altKm: number
+  speedKmS: number
+  periodMin: number | null
+  inclinationDeg: number | null
+  selected: boolean
+}
+
+// ---- Module 11: News Intelligence ----
+
+export type NewsCategory = 'breaking' | 'disasters' | 'wars' | 'economic' | 'political'
+
+export interface NewsArticle {
+  id: string
+  title: string
+  source: string | null
+  url: string
+  publishedAt: number | null
+  category: NewsCategory
+  place: string | null
+  lat: number | null
+  lon: number | null
+}
+
+export interface NewsFeedResponse {
+  category: NewsCategory
+  source: 'live' | 'sim'
+  count: number
+  articles: NewsArticle[]
+}
+
+export interface NewsMapPoint {
+  place: string
+  lat: number
+  lon: number
+  count: number
+  category: NewsCategory
+  title: string
+  url: string
+}
+
+export interface NewsMapResponse {
+  source: 'live' | 'sim'
+  now: number
+  count: number
+  points: NewsMapPoint[]
+}
+
+export interface TrendingTopic {
+  term: string
+  count: number
+}
+
+export interface TrendingResponse {
+  now: number
+  topics: TrendingTopic[]
+}
+
+// ---- Module 12: Social Intelligence ----
+
+export type SocialSource = 'reddit' | 'trends' | 'youtube' | 'hn' | 'telegram'
+
+export interface SocialPost {
+  id: string
+  source: SocialSource
+  title: string
+  author: string | null
+  url: string
+  score: number | null
+  meta: string | null
+  publishedAt: number | null
+  place: string | null
+  lat: number | null
+  lon: number | null
+}
+
+export interface SocialFeedResponse {
+  source: SocialSource
+  origin: 'live' | 'sim'
+  count: number
+  posts: SocialPost[]
+}
+
+export interface SocialMapPoint {
+  place: string
+  lat: number
+  lon: number
+  count: number
+  source: SocialSource
+  title: string
+  url: string
+}
+
+export interface SocialMapResponse {
+  origin: 'live' | 'sim'
+  now: number
+  count: number
+  points: SocialMapPoint[]
 }
 
 /** A toggleable data/overlay layer shown in the Layer Controls panel. */

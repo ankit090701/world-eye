@@ -8,6 +8,12 @@ import ShipPanel from './panels/ShipPanel'
 import TrainPanel from './panels/TrainPanel'
 import FleetPanel from './panels/FleetPanel'
 import TrafficPanel from './panels/TrafficPanel'
+import CyberPanel from './panels/CyberPanel'
+import DomainPanel from './panels/DomainPanel'
+import WeatherPanel from './panels/WeatherPanel'
+import SatellitePanel from './panels/SatellitePanel'
+import NewsPanel from './panels/NewsPanel'
+import SocialPanel from './panels/SocialPanel'
 
 export default function PanelHost() {
   const panel = useAppSelector((s) => s.ui.activePanel)
@@ -20,6 +26,12 @@ export default function PanelHost() {
       {panel === 'trains' && <TrainPanel />}
       {panel === 'fleet' && <FleetPanel />}
       {panel === 'traffic' && <TrafficPanel />}
+      {panel === 'cyber' && <CyberPanel />}
+      {panel === 'domain' && <DomainPanel />}
+      {panel === 'weather' && <WeatherPanel />}
+      {panel === 'satellites' && <SatellitePanel />}
+      {panel === 'news' && <NewsPanel />}
+      {panel === 'social' && <SocialPanel />}
       {panel === 'search' && <SearchPanel />}
       {panel === 'bookmarks' && <BookmarksPanel />}
       {panel === 'info' && <InfoPanel />}

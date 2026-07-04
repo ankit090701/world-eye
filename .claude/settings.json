@@ -4,7 +4,12 @@
       "WebSearch",
       "PowerShell(foreach \\($p in 5173,5174,8787\\) { $c = Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c.OwningProcess | Select-Object -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -ErrorAction Stop } catch {} } } }; \"cleared\")",
       "WebFetch(domain:tie.digitraffic.fi)",
-      "PowerShell($c = Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c.OwningProcess | Select-Object -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -ErrorAction Stop } catch {} } }; \"stopped\")"
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue; if \\($c\\) { $c.OwningProcess | Select-Object -Unique | ForEach-Object { try { Stop-Process -Id $_ -Force -ErrorAction Stop } catch {} } }; \"stopped\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; \"port 8787 cleared\")",
+      "Bash(curl -s -m 25 -w \"\\\\nHTTP %{http_code} in %{time_total}s, %{size_download} bytes\\\\n\" -o /tmp/crt-gh.json \"https://crt.sh/?q=%25.github.com&output=json\")",
+      "Bash(curl -s -m 25 -w \"\\\\nHTTP %{http_code} in %{time_total}s, %{size_download} bytes\\\\n\" -o /tmp/crt-kagi.json \"https://crt.sh/?q=%25.kagi.com&output=json\")",
+      "Bash(curl -s -m 20 -w \"\\\\nHTTP %{http_code} in %{time_total}s, %{size_download} bytes\\\\n\" -o /tmp/cs.json \"https://api.certspotter.com/v1/issuances?domain=kagi.com&include_subdomains=true&expand=dns_names&expand=issuer&expand=not_before&expand=not_after\")",
+      "Bash(curl -s -m 20 -w \"\\\\nHTTP %{http_code} in %{time_total}s, %{size_download} bytes\\\\n\" -o /tmp/cs2.json \"https://api.certspotter.com/v1/issuances?domain=github.com&include_subdomains=true&expand=dns_names&expand=issuer&expand=not_before&expand=not_after\")"
     ]
   }
 }
