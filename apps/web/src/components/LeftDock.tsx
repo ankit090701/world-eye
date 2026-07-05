@@ -1,4 +1,4 @@
-import { Layers, Search, Bookmark, Info, Plane, Ship, TrainFront, Truck, TriangleAlert, ShieldAlert, Globe, CloudSun, Satellite, Newspaper, Share2 } from 'lucide-react'
+import { Layers, Search, Bookmark, Info, Plane, Ship, TrainFront, Truck, TriangleAlert, ShieldAlert, Globe, CloudSun, Satellite, Newspaper, Share2, ScanSearch, BellRing, Sparkles, BarChart3, FileText, Shield } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setActivePanel } from '../store/uiSlice'
@@ -18,6 +18,12 @@ const ITEMS: { id: Exclude<PanelId, null>; label: string; icon: LucideIcon }[] =
   { id: 'satellites', label: 'Satellites', icon: Satellite },
   { id: 'news', label: 'News', icon: Newspaper },
   { id: 'social', label: 'Social', icon: Share2 },
+  { id: 'osint', label: 'OSINT', icon: ScanSearch },
+  { id: 'alerts', label: 'Alerts', icon: BellRing },
+  { id: 'ai', label: 'AI', icon: Sparkles },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'reports', label: 'Reports', icon: FileText },
+  { id: 'admin', label: 'Admin', icon: Shield },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark },
   { id: 'info', label: 'Overview', icon: Info },

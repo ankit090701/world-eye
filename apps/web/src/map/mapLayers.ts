@@ -121,6 +121,15 @@ const cycloneColorExpr: any = [
   'cat5', '#c026d3',
   '#c084fc',
 ]
+const alertSeverityColorExpr: any = [
+  'match',
+  ['get', 'severity'],
+  'critical', '#f43f5e',
+  'warning', '#f59e0b',
+  'info', '#38bdf8',
+  '#f43f5e',
+]
+
 const newsCategoryColorExpr: any = [
   'match',
   ['get', 'category'],
@@ -201,6 +210,8 @@ export function installOverlays(map: MlMap) {
   ensureGeoJSONSource(map, SRC.satOrbit, EMPTY)
   ensureGeoJSONSource(map, SRC.news, EMPTY)
   ensureGeoJSONSource(map, SRC.social, EMPTY)
+  ensureGeoJSONSource(map, SRC.alertZones, EMPTY)
+  ensureGeoJSONSource(map, SRC.alertEvents, EMPTY)
 
   // icon images (wiped by setStyle, so re-add on each style load)
   if (!map.hasImage(PLANE_IMAGE)) {
@@ -949,6 +960,48 @@ export function installOverlays(map: MlMap) {
       'circle-stroke-color': 'rgba(255,255,255,0.8)',
     },
   })
+
+  // ---- Module 14: alert zones (geo-alert areas) + fired-alert markers ----
+  addLayerSafe(map, {
+    id: LYR.alertZoneFill,
+    type: 'fill',
+    source: SRC.alertZones,
+    paint: { 'fill-color': '#f59e0b', 'fill-opacity': 0.08 },
+  })
+  addLayerSafe(map, {
+    id: LYR.alertZoneLine,
+    type: 'line',
+    source: SRC.alertZones,
+    paint: {
+      'line-color': '#f59e0b',
+      'line-width': 1.4,
+      'line-opacity': 0.6,
+      'line-dasharray': [2, 1.5] as any,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.alertEventsGlow,
+    type: 'circle',
+    source: SRC.alertEvents,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 9, 6, 22] as any,
+      'circle-color': alertSeverityColorExpr,
+      'circle-opacity': 0.18,
+      'circle-blur': 1,
+    },
+  })
+  addLayerSafe(map, {
+    id: LYR.alertEvents,
+    type: 'circle',
+    source: SRC.alertEvents,
+    paint: {
+      'circle-radius': 6,
+      'circle-color': alertSeverityColorExpr,
+      'circle-opacity': 0.95,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff',
+    },
+  })
 }
 
 function setData(map: MlMap, sourceId: string, data: FeatureCollection) {
@@ -998,6 +1051,8 @@ export const setSatelliteData = (map: MlMap, d: FeatureCollection) =>
 export const setSatOrbitData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.satOrbit, d)
 export const setNewsData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.news, d)
 export const setSocialData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.social, d)
+export const setAlertZoneData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.alertZones, d)
+export const setAlertEventData = (map: MlMap, d: FeatureCollection) => setData(map, SRC.alertEvents, d)
 
 const vis = (b: boolean): 'visible' | 'none' => (b ? 'visible' : 'none')
 
@@ -1145,6 +1200,16 @@ export function applyLayerStates(map: MlMap, layers: LayerState[]) {
         setLayoutVis(map, LYR.socialGlow, l.visible)
         setLayoutVis(map, LYR.socialPoints, l.visible)
         setPaint(map, LYR.socialPoints, 'circle-opacity', l.opacity * 0.9)
+        break
+      case 'alert-zones':
+        setLayoutVis(map, LYR.alertZoneFill, l.visible)
+        setLayoutVis(map, LYR.alertZoneLine, l.visible)
+        setPaint(map, LYR.alertZoneLine, 'line-opacity', l.opacity)
+        break
+      case 'alert-events':
+        setLayoutVis(map, LYR.alertEventsGlow, l.visible)
+        setLayoutVis(map, LYR.alertEvents, l.visible)
+        setPaint(map, LYR.alertEvents, 'circle-opacity', l.opacity * 0.95)
         break
       case 'geofences': {
         for (const id of [LYR.geofenceFill, LYR.geofenceLine]) {

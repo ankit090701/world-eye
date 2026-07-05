@@ -3,9 +3,11 @@
 > Next-generation global intelligence platform — visualize, monitor and analyze
 > worldwide movement and digital intelligence on a unified interactive world map.
 
-This repository is being built **module by module** from the WorldEye BRD
-([`worldeye-brd.md`](worldeye-brd.md)). Each module is developed, tested and
-signed off before the next one begins.
+This repository was built **module by module** from the WorldEye BRD
+([`worldeye-brd.md`](worldeye-brd.md)). Each module was developed, tested and signed
+off before the next began. **All 18 core modules are complete** — every capability
+runs on **free, keyless** data sources (or is clearly scoped/labelled where a real
+provider is required).
 
 | # | Module | Status |
 |---|--------|--------|
@@ -20,8 +22,13 @@ signed off before the next one begins.
 | **9** | **Weather Intelligence** | ✅ Built |
 | **10** | **Satellite Intelligence** | ✅ Built |
 | **11** | **News Intelligence** | ✅ Built |
-| **12** | **Social Intelligence** | ✅ **Built — ready for review** |
-| … | (through Module 18) | ⏳ pending |
+| **12** | **Social Intelligence** | ✅ Built |
+| **13** | **OSINT Search** | ✅ Built |
+| **14** | **Alert Engine** | ✅ Built |
+| **15** | **AI Intelligence** | ✅ Built |
+| **16** | **Analytics** | ✅ Built |
+| **17** | **Reports** | ✅ Built |
+| **18** | **Admin** | ✅ **Built — ready for review** |
 
 ---
 
@@ -553,6 +560,244 @@ served if a source is unreachable.
 - **Telegram** — public `t.me/s/` channel previews
 
 See [`docs/MODULE-12.md`](docs/MODULE-12.md) for the test checklist & details.
+
+---
+
+## Module 13 — OSINT Search
+
+Investigate emails, usernames, phone numbers and companies from **public,
+consent-based sources only**, in a dedicated **OSINT** panel (scan icon). All BRD
+Module 13 capabilities are implemented within their stated scope:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Email Lookup (authorized/public)** | Format, deliverability (MX), disposable/free flags, public Gravatar profile, mail-host geo |
+| **Username Search** | Public profiles — GitHub (rich), GitLab, Hacker News, DEV presence |
+| **Phone Metadata (public info only)** | Country, line type, formats, calling code — **from the number itself, no owner lookup** |
+| **Company / Organization Search** | Name → domain + logo (Clearbit), Wikipedia overview, HQ/hosting location |
+| **Leaks Monitoring (public breach notifications only)** | Breach exposure for an email via XposedOrNot |
+
+Pick a search type, enter a query → a structured report. Where a result has a
+location (mail host, phone country, company HQ) it's dropped on the map and flown to.
+
+### Scope & responsible use
+
+This module is deliberately limited to the BRD's scope — **public and consent-based
+data only**:
+
+- **Phone** returns *metadata derived from the number* (country, line type, format) —
+  it does **not** look up the subscriber or owner.
+- **Email/username** surface **public** profiles and **public breach notifications**
+  (the same signals a defender uses to check their own exposure) — no private inboxes,
+  no protected content, no scraping behind logins.
+- Every lookup hits **fixed public services** with the query passed as an encoded
+  parameter (no SSRF); the route caps query length, is per-IP rate-limited, and caches.
+
+### Free & open data sources (no keys)
+
+- **Email/breach** — Gravatar · [XposedOrNot](https://xposedornot.com/) · Google DoH (MX)
+- **Username** — [GitHub API](https://docs.github.com/rest) · GitLab · Hacker News · DEV
+- **Phone** — [libphonenumber-js](https://github.com/catamphetamine/libphonenumber-js) (offline metadata)
+- **Company** — [Clearbit autocomplete](https://clearbit.com/) · Wikipedia REST
+
+See [`docs/MODULE-13.md`](docs/MODULE-13.md) for the test checklist & details.
+
+---
+
+## Module 14 — Alert Engine
+
+Turns the live data from every prior module into **actionable alerts**. Create rules,
+they evaluate live data in real time, fire alerts (in-app + on the map) and deliver to
+notification channels. Dedicated **Alerts** panel (bell icon). All BRD Module 14
+features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Custom Alerts** | Build rules with a trigger, threshold, severity and channels |
+| **Geo Alerts** | Object enters a circular zone (aircraft / fleet) — zone drawn on the map |
+| **Speed Alerts** | Aircraft (kt) or fleet vehicle (km/h) exceeds a threshold |
+| **Route Alerts** | Geo-zones along a corridor (geo rule variant) |
+| **Weather Alerts** | Earthquake ≥ magnitude, or cyclone ≥ category |
+| **Threat Alerts** | Aircraft emergency squawk, or active malicious infrastructure |
+| **Email · SMS · Slack · Discord · Webhook** | Slack/Discord/Webhook deliver in real time; Email/SMS are provider stubs |
+
+Rules and channels persist to `localStorage`. Fired alerts show as a **toast**, land in
+the **Alerts feed** (click to fly to them), and drop **severity-coloured markers** on the
+map. Two default rules (aircraft emergency, M5+ earthquake) ship enabled, so the engine
+demonstrates immediately against the live feeds.
+
+### How it works
+
+A client-side **evaluation engine** subscribes to the existing data stores (aircraft,
+fleet, weather events, cyber threats) and re-evaluates every enabled rule whenever new
+data arrives. A per-object **cooldown** (5 min) prevents alert spam, and each rule is
+capped per evaluation so a broad rule can't flood the feed.
+
+**Notification delivery.** Browsers can't POST to Slack/Discord webhooks (CORS), so the
+WorldEye API relays them via `POST /api/alerts/deliver`. That endpoint is **SSRF-guarded**
+— https only, redirects disabled, and private / loopback / link-local / cloud-metadata
+hosts are blocked — and rate-limited. Email/SMS are stored but stubbed (they need a
+SendGrid/Twilio-style provider).
+
+### Free & open — no keys
+
+- Evaluates the **live data you already have** (Modules 2–12); no new upstreams.
+- Real delivery to **your own** Slack/Discord/generic webhook URLs.
+
+See [`docs/MODULE-14.md`](docs/MODULE-14.md) for the test checklist & details.
+
+---
+
+## Module 15 — AI Intelligence
+
+A **situational-analysis layer + assistant** that sits on top of every prior module,
+reasoning over the live data the platform already streams. Dedicated **AI** panel
+(sparkle icon). All BRD Module 15 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Natural Language Search** | Ask about any domain — intent routing answers from live data |
+| **AI Summary** | One-paragraph situation summary generated from all feeds |
+| **Risk Prediction** | 0–100 risk index with weighted contributing factors |
+| **Object Detection** | Anomalous-object detection over the feeds (emergencies, major quakes, cyclones…) |
+| **Pattern Recognition** | Notable-activity / anomaly list across domains |
+| **Forecasting** | Near-term outlook derived from active severe events |
+| **Report Generator** | Full situation report (markdown), viewable + downloadable |
+| **Chat Assistant** | Conversational Q&A over the operational picture, with “show on map” actions |
+
+The panel shows a **live risk gauge**, key **metric tiles**, quick actions and a **chat**
+that answers questions like *“situation summary”, “current risk”, “any anomalies”,
+“strongest earthquake”, “active storms”* — and offers **map jumps** to what it finds.
+
+### How it works — keyless by design
+
+There's no LLM key required: this is a **computed-intelligence engine** that runs
+entirely **client-side**, reading the browser's live data stores (aircraft, ships,
+trains, fleet, traffic, weather, cyber threats, satellites, news, social) and producing
+answers via intent routing, templated natural language, and heuristic risk/forecast
+models. It updates in real time as data arrives.
+
+> **LLM upgrade path.** The assistant is structured so a real model (Claude via
+> `ANTHROPIC_API_KEY`) can be layered on for free-form language and reasoning, using the
+> same gathered context as the prompt — the keyless engine is the always-available
+> fallback. “Object Detection” is interpreted as anomalous-object detection over the
+> live feeds (no image pipeline is in scope).
+
+### Free & open — no keys
+
+- Runs over the **live data you already have** (Modules 2–14); no new upstreams, no keys.
+
+See [`docs/MODULE-15.md`](docs/MODULE-15.md) for the test checklist & details.
+
+---
+
+## Module 16 — Analytics
+
+A live **analytics dashboard** over all the tracked data, in a dedicated **Analytics**
+panel (bar-chart icon). All BRD Module 16 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **Charts** | Aircraft-altitude, earthquake-magnitude, vessels-by-category, threats-by-country |
+| **Heatmaps** | Distribution/intensity breakdowns (the geographic heatmaps live on the map layers) |
+| **Timelines** | Seismic activity over the last 24 h (2-hour buckets, from USGS timestamps) |
+| **Movement Analysis** | Aircraft speed distribution + average, and a heading distribution |
+| **Cluster Analysis** | Spatial grid-binning of quakes / aircraft / threats → top clusters (click to fly) |
+| **Trend Analysis** | A session time-series sampled every 20 s — total / aircraft / ships / threats / quakes |
+| **Export** | Download the full analytics snapshot as **CSV** or **JSON** |
+
+All charts are **lightweight inline SVG** (no charting dependency), themed to the app,
+and update live as data arrives.
+
+### How it works — keyless, client-side
+
+Like the AI module, Analytics computes entirely in the browser from the live data
+stores — no new API and no keys. Distributions and movement stats are derived on each
+render; the **trend** chart is fed by a tiny always-on sampler that records totals every
+20 s so history is there whenever you open the panel; **cluster analysis** grid-bins
+points and centres each cluster; **export** serialises the current snapshot to CSV/JSON
+via a client-side download.
+
+### Free & open — no keys
+
+- Runs over the **live data you already have** (Modules 2–14); no new upstreams.
+
+See [`docs/MODULE-16.md`](docs/MODULE-16.md) for the test checklist & details.
+
+---
+
+## Module 17 — Reports
+
+Turn the live picture into shareable documents, in a dedicated **Reports** panel
+(document icon). All BRD Module 17 formats are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **PDF** | Real `.pdf` via **jsPDF** (paginated, titled, tables) — dynamically imported |
+| **Excel** | Real `.xlsx` via **write-excel-file** (clean, write-only) — dynamically imported |
+| **CSV** | Flattened sections + tables, RFC-escaped |
+| **Scheduled Reports** | In-app scheduler generates on an interval and delivers via webhook |
+
+Pick a report type (**Situation** / **Analytics** / **Full**), **Generate** a live
+preview, then export as **PDF · Excel · CSV · Markdown · JSON**. The **Scheduled** tab
+lets you set up recurring reports (15 min / hourly / 6 h / daily) delivered to a
+Slack/Discord/webhook URL.
+
+### How it works
+
+Reports are assembled by a structured **report builder** that reuses Module 15's
+intelligence engine (summary, risk, anomalies, outlook) and Module 16's analytics
+(distributions, clusters) — one report model, many renderers. **PDF (jsPDF)** and
+**Excel (write-excel-file)** are **dynamically imported**, so those ~400 KB libraries
+load only when you export and never bloat the main bundle. The **scheduler** runs while
+the app is open (checked each minute), generating due reports, dropping them into a
+*recent* list, and delivering a summary through the **same SSRF-guarded webhook relay as
+the Alert Engine**. Scheduled configs persist to `localStorage`.
+
+> **Production scheduling.** The in-app scheduler runs while a tab is open; a real
+> deployment runs the identical report builder on a server/worker cron — the browser
+> version keeps it fully demonstrable with no backend job queue.
+
+### Free & open — no keys
+
+- Real PDF/Excel generated **in the browser** (jsPDF, write-excel-file); no server, no keys.
+- Scheduled delivery reuses your own Slack/Discord/webhook URL.
+
+See [`docs/MODULE-17.md`](docs/MODULE-17.md) for the test checklist & details.
+
+---
+
+## Module 18 — Admin
+
+The administration console — users, roles, keys, audit and usage — in a dedicated
+**Admin** panel (shield icon). All BRD Module 18 features are implemented:
+
+| BRD feature | How it works |
+|-------------|--------------|
+| **User Management** | Add / remove users, assign roles, activate/deactivate |
+| **Permissions** | Role → permission matrix (Administrator / Analyst / Operator / Viewer / API User) |
+| **Audit Logs** | **Live** trail captured from real actions (panels opened, lookups, rules, reports…) |
+| **API Keys** | Generate (shown once) / revoke / delete — secure random tokens |
+| **Usage Analytics** | **Live** API-call counts by category (real fetch interceptor) |
+| **Billing** | Plan + quota overview (demo), fed by real session usage |
+| **Organizations** | Org list with plan & members |
+
+### What's real vs demo
+
+- **Audit logs and usage analytics are genuinely live.** A Redux middleware records
+  meaningful actions into the audit trail as you use WorldEye, and a one-time `fetch`
+  interceptor counts every WorldEye API call by category for the usage view.
+- **Users, roles, API keys, organizations and billing** are demo data persisted to
+  `localStorage` (API keys are generated with `crypto.getRandomValues` and only the
+  prefix/last-4 are stored). This keyless build has no auth backend — a production
+  deployment backs all of these with the API + database per the BRD, and validates the
+  keys server-side. This is stated plainly in the panel.
+
+### Free & open — no keys
+
+- Client-side console; audit + usage are live, the rest is local demo data.
+
+See [`docs/MODULE-18.md`](docs/MODULE-18.md) for the test checklist & details.
 
 ---
 

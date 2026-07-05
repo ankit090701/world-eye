@@ -14,6 +14,12 @@ import WeatherPanel from './panels/WeatherPanel'
 import SatellitePanel from './panels/SatellitePanel'
 import NewsPanel from './panels/NewsPanel'
 import SocialPanel from './panels/SocialPanel'
+import OsintPanel from './panels/OsintPanel'
+import AlertsPanel from './panels/AlertsPanel'
+import AiPanel from './panels/AiPanel'
+import AnalyticsPanel from './panels/AnalyticsPanel'
+import ReportsPanel from './panels/ReportsPanel'
+import AdminPanel from './panels/AdminPanel'
 
 export default function PanelHost() {
   const panel = useAppSelector((s) => s.ui.activePanel)
@@ -32,6 +38,12 @@ export default function PanelHost() {
       {panel === 'satellites' && <SatellitePanel />}
       {panel === 'news' && <NewsPanel />}
       {panel === 'social' && <SocialPanel />}
+      {panel === 'osint' && <OsintPanel />}
+      {panel === 'alerts' && <AlertsPanel />}
+      {panel === 'ai' && <AiPanel />}
+      {panel === 'analytics' && <AnalyticsPanel />}
+      {panel === 'reports' && <ReportsPanel />}
+      {panel === 'admin' && <AdminPanel />}
       {panel === 'search' && <SearchPanel />}
       {panel === 'bookmarks' && <BookmarksPanel />}
       {panel === 'info' && <InfoPanel />}

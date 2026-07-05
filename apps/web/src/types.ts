@@ -33,6 +33,12 @@ export type PanelId =
   | 'satellites'
   | 'news'
   | 'social'
+  | 'osint'
+  | 'alerts'
+  | 'ai'
+  | 'analytics'
+  | 'reports'
+  | 'admin'
   | null
 
 // ---- Module 2: Aircraft Tracking ----
@@ -673,6 +679,229 @@ export interface SocialMapResponse {
   now: number
   count: number
   points: SocialMapPoint[]
+}
+
+// ---- Module 13: OSINT Search (public / consent-based only) ----
+
+export type OsintKind = 'email' | 'username' | 'phone' | 'company'
+
+export interface OsintLocation {
+  lat: number
+  lon: number
+  label: string
+}
+
+export interface EmailReport {
+  address: string
+  validFormat: boolean
+  domain: string | null
+  deliverable: boolean
+  disposable: boolean
+  freeProvider: boolean
+  mx: string[]
+  gravatar: {
+    found: boolean
+    profileUrl: string | null
+    username: string | null
+    displayName: string | null
+    avatarUrl: string | null
+  }
+  breaches: { exposed: boolean; count: number; names: string[] }
+  host: { ip: string | null; org: string | null; country: string | null } | null
+}
+
+export interface PlatformHit {
+  platform: string
+  url: string
+  found: boolean
+}
+
+export interface UsernameReport {
+  username: string
+  github: {
+    login: string
+    name: string | null
+    bio: string | null
+    company: string | null
+    location: string | null
+    avatarUrl: string | null
+    followers: number
+    repos: number
+    url: string
+    createdAt: string | null
+  } | null
+  platforms: PlatformHit[]
+}
+
+export interface PhoneReport {
+  input: string
+  valid: boolean
+  country: string | null
+  countryName: string | null
+  callingCode: string | null
+  type: string | null
+  national: string | null
+  international: string | null
+}
+
+export interface CompanySuggestion {
+  name: string
+  domain: string | null
+  logo: string | null
+}
+
+export interface CompanyReport {
+  query: string
+  top: CompanySuggestion | null
+  suggestions: CompanySuggestion[]
+  wikipedia: { title: string; extract: string; thumbnail: string | null; url: string | null } | null
+}
+
+export interface OsintResponse {
+  kind: OsintKind
+  query: string
+  location: OsintLocation | null
+  email?: EmailReport
+  username?: UsernameReport
+  phone?: PhoneReport
+  company?: CompanyReport
+  errors: string[]
+}
+
+// ---- Module 14: Alert Engine ----
+
+export type AlertRuleType = 'emergency' | 'speed' | 'geo' | 'earthquake' | 'cyclone' | 'threat'
+export type AlertSource = 'aircraft' | 'fleet'
+// AlertSeverity ('info' | 'warning' | 'critical') is already defined for Module 5.
+export type ChannelId = 'inapp' | 'slack' | 'discord' | 'webhook' | 'email' | 'sms'
+
+export interface AlertRule {
+  id: string
+  name: string
+  type: AlertRuleType
+  enabled: boolean
+  severity: AlertSeverity
+  source: AlertSource // used by speed/geo (aircraft vs fleet)
+  params: {
+    threshold?: number // speed (kt for aircraft, km/h for fleet)
+    lat?: number
+    lon?: number
+    radiusKm?: number
+    minMag?: number // earthquake
+    minCategory?: number // cyclone rank 0..6
+  }
+  channels: ChannelId[]
+  createdAt: number
+}
+
+export interface AlertEvent {
+  id: string
+  ruleId: string
+  ruleName: string
+  type: AlertRuleType
+  severity: AlertSeverity
+  title: string
+  detail: string
+  lat: number | null
+  lon: number | null
+  time: number
+}
+
+export interface ChannelConfig {
+  slack: { enabled: boolean; url: string }
+  discord: { enabled: boolean; url: string }
+  webhook: { enabled: boolean; url: string }
+  email: { enabled: boolean; address: string }
+  sms: { enabled: boolean; number: string }
+}
+
+// ---- Module 15: AI Intelligence ----
+
+export interface AiAction {
+  label: string
+  lat: number
+  lon: number
+  zoom?: number
+}
+
+export interface AiMessage {
+  id: string
+  role: 'user' | 'assistant'
+  text: string
+  actions?: AiAction[]
+  time: number
+}
+
+export type RiskLevel = 'low' | 'moderate' | 'elevated' | 'high' | 'severe'
+
+export interface RiskAssessment {
+  score: number // 0..100
+  level: RiskLevel
+  factors: { label: string; points: number }[]
+}
+
+// ---- Module 17: Reports ----
+
+export type ReportKind = 'situation' | 'analytics' | 'full'
+
+export interface ScheduledReport {
+  id: string
+  name: string
+  kind: ReportKind
+  intervalMin: number
+  delivery: 'notify' | 'webhook'
+  webhookUrl: string
+  enabled: boolean
+  lastRun: number
+}
+
+export interface GeneratedReport {
+  id: string
+  title: string
+  kind: ReportKind
+  at: number
+  markdown: string
+}
+
+// ---- Module 18: Admin ----
+
+export type Role = 'Administrator' | 'Analyst' | 'Operator' | 'Viewer' | 'API User'
+
+export interface AdminUser {
+  id: string
+  name: string
+  email: string
+  role: Role
+  active: boolean
+  lastActive: number
+}
+
+export interface ApiKey {
+  id: string
+  name: string
+  prefix: string // shown, e.g. we_ab12cd34
+  last4: string
+  scopes: string[]
+  createdAt: number
+  lastUsed: number | null
+  revoked: boolean
+}
+
+export interface AuditEntry {
+  id: string
+  time: number
+  actor: string
+  action: string
+  target: string | null
+  severity: 'info' | 'warning'
+}
+
+export interface Organization {
+  id: string
+  name: string
+  plan: string
+  members: number
+  createdAt: number
 }
 
 /** A toggleable data/overlay layer shown in the Layer Controls panel. */
