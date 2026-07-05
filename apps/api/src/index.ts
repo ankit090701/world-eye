@@ -36,10 +36,14 @@ import type {
 import { fetchSource, socialMap } from './social/sources.js'
 import { simPosts, simSocialMap } from './social/simulator.js'
 import type { SocialFeedResponse, SocialMapResponse, SocialSource } from './social/types.js'
+import { buildOsintReport, isOsintKind } from './osint/report.js'
+import type { OsintResponse } from './osint/types.js'
+import { deliverWebhook, type ChannelKind } from './alerts/deliver.js'
 
 const PORT = Number(process.env.PORT ?? 8787)
 const app = express()
 app.use(cors())
+app.use(express.json({ limit: '32kb' }))
 
 // Cache aircraft responses briefly to respect the free upstream's rate limits
 // even when several map clients poll the same area.
@@ -63,6 +67,7 @@ const NEWS_CATEGORIES = new Set<NewsCategory>(['breaking', 'disasters', 'wars', 
 const socialFeedCache = new TTLCache<SocialFeedResponse>(8 * 60 * 1000)
 const socialMapCache = new TTLCache<SocialMapResponse>(10 * 60 * 1000)
 const SOCIAL_SOURCES = new Set<SocialSource>(['reddit', 'trends', 'youtube', 'hn', 'telegram'])
+const osintCache = new TTLCache<OsintResponse>(10 * 60 * 1000)
 
 // Tiny in-memory per-IP rate limiter for the cyber lookup route: each uncached
 // lookup fans out to several free upstreams (ip-api free = 45/min), so a single
@@ -108,7 +113,7 @@ function simThreatPoints(): ThreatMapPoint[] {
 }
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, service: 'worldeye-api', modules: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], time: Date.now() })
+  res.json({ ok: true, service: 'worldeye-api', modules: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], time: Date.now() })
 })
 
 app.get('/api/aircraft', async (req, res) => {
@@ -416,6 +421,44 @@ app.get('/api/social/map', async (_req, res) => {
   }
   socialMapCache.set('all', payload)
   res.json(payload)
+})
+
+// Module 13: OSINT Search — public / consent-based OSINT only (no private lookups).
+app.get('/api/osint/lookup', async (req, res) => {
+  const kind = String(req.query.kind ?? '')
+  const q = String(req.query.q ?? '').trim()
+  const country = req.query.country ? String(req.query.country) : undefined
+  if (!isOsintKind(kind)) return res.status(400).json({ error: 'kind must be email|username|phone|company' })
+  if (!q) return res.status(400).json({ error: 'missing query' })
+  if (q.length > 200) return res.status(400).json({ error: 'query too long' })
+  const cacheKey = `${kind}:${q.toLowerCase()}:${country ?? ''}`
+  const cached = osintCache.get(cacheKey)
+  if (cached) return res.json(cached) // cached hits don't touch upstreams → not rate-limited
+  const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
+  // Each uncached lookup fans out to several public OSINT services.
+  if (rateLimited(`osint:${ip}`, 15, 60000)) return res.status(429).json({ error: 'rate limited — slow down' })
+  try {
+    const report = await buildOsintReport(kind, q, country)
+    osintCache.set(cacheKey, report)
+    res.json(report)
+  } catch {
+    res.status(500).json({ error: 'osint lookup failed' })
+  }
+})
+
+// Module 14: Alert Engine — relay a fired alert to a user-configured webhook
+// (Slack / Discord / generic). SSRF-guarded (https only, no private hosts).
+const CHANNEL_KINDS = new Set<ChannelKind>(['slack', 'discord', 'webhook'])
+app.post('/api/alerts/deliver', async (req, res) => {
+  const kind = String(req.body?.kind ?? '') as ChannelKind
+  const url = String(req.body?.url ?? '')
+  const text = String(req.body?.text ?? '').slice(0, 4000)
+  if (!CHANNEL_KINDS.has(kind)) return res.status(400).json({ error: 'kind must be slack|discord|webhook' })
+  if (!url || !text) return res.status(400).json({ error: 'missing url or text' })
+  const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
+  if (rateLimited(`alerts:${ip}`, 30, 60000)) return res.status(429).json({ error: 'rate limited — slow down' })
+  const result = await deliverWebhook(kind, url, text)
+  res.status(result.ok ? 200 : 400).json(result)
 })
 
 app.get('/api/traffic', async (req, res) => {

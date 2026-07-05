@@ -34,6 +34,9 @@ import {
 import { SatelliteEngine, SatelliteSync, SatelliteInteractions } from './satellites/SatelliteLayer'
 import { NewsEngine, NewsSync, NewsInteractions } from './news/NewsLayer'
 import { SocialEngine, SocialSync, SocialInteractions } from './social/SocialLayer'
+import { AlertEngine, AlertZoneSync, AlertEventSync, AlertInteractions } from './alerts/AlertLayer'
+import { AnalyticsSampler } from './analytics/AnalyticsSampler'
+import { ReportScheduler } from './reports/ReportScheduler'
 import { WeatherOverlaySync } from './aircraft/WeatherOverlaySync'
 
 export default function MapView() {
@@ -168,6 +171,15 @@ export default function MapView() {
       <SocialEngine />
       <SocialSync />
       <SocialInteractions />
+      {/* Module 14: alert engine */}
+      <AlertEngine />
+      <AlertZoneSync />
+      <AlertEventSync />
+      <AlertInteractions />
+      {/* Module 16: analytics trend sampler */}
+      <AnalyticsSampler />
+      {/* Module 17: scheduled reports */}
+      <ReportScheduler />
       {/* interactive map tools (render HUD when active) */}
       <MeasureTool />
       <DrawTool />

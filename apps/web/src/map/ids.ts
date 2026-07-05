@@ -30,6 +30,8 @@ export const SRC = {
   satOrbit: 'we-sat-orbit',
   news: 'we-news',
   social: 'we-social',
+  alertZones: 'we-alert-zones',
+  alertEvents: 'we-alert-events',
 } as const
 
 export const LYR = {
@@ -91,6 +93,10 @@ export const LYR = {
   newsPoints: 'we-news-pts',
   socialGlow: 'we-social-glow',
   socialPoints: 'we-social-pts',
+  alertZoneFill: 'we-alert-zone-fill',
+  alertZoneLine: 'we-alert-zone-line',
+  alertEventsGlow: 'we-alert-events-glow',
+  alertEvents: 'we-alert-events-pts',
 } as const
 
 export const PLANE_IMAGE = 'we-plane'
