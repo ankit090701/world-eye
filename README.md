@@ -103,19 +103,20 @@ Each image can also be built on its own from the root `Dockerfile`:
 ## Module 1 — World Map Dashboard
 
 The operational-picture foundation that every later tracking module renders onto.
-All BRD Module 1 features are implemented:
+All BRD Module 1 features are implemented except **Dark Mode**, which was retired
+in favour of a single light theme:
 
 | BRD feature | How it works |
 |-------------|--------------|
 | **Interactive 3D Map** | MapLibre GL JS **globe projection** (real 3D globe), pan/zoom/tilt/rotate |
-| **Dark Mode** | Signature dark console + dark basemap; sun/moon toggle swaps dark ⇄ light basemap |
+| **Dark Mode** | Retired — the UI is light-only by design (light basemaps + satellite imagery) |
 | **Heatmaps** | Native MapLibre heatmap layer over the activity feed, opacity-controlled |
 | **Timeline** | 24-hour scrubber with playhead, adjustable reveal window (30 m – 24 h) |
-| **Layer Controls** | Toggle + opacity for every overlay; 5 basemaps; globe/flat projection |
+| **Layer Controls** | Toggle + opacity for every overlay; 4 basemaps; globe/flat projection |
 | **Real-time Updates** | Live feed injects fresh signals every ~1.5 s; pulsing **LIVE** indicator |
 | **Historical Playback** | Play/pause, speed 60×–600×, loops through the 24 h window |
 | **Measurement Tool** | Click a path → geodesic distance + polygon area, live readout |
-| **Coordinate Search** | Type `lat, lng` to fly there; DMS readout; "use map centre" helper |
+| **Coordinate Search** | Top-bar search (or press `/`): type `lat, lng` to fly there; DMS readout; "use map centre" helper |
 | **Bookmarks** | Save/rename/delete camera views; persisted to `localStorage` |
 | **Drawing Tools** | Point, line, polygon, rectangle, circle — with live measurements |
 | **Export Images** | One-click PNG of the map with WorldEye branding + timestamp |

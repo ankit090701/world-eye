@@ -81,7 +81,7 @@ export function CyberThreatInteractions() {
               <strong>${esc(p.malware ?? 'Malicious host')}</strong>
             </div>
             <div style="font-family:ui-monospace,monospace">${esc(p.ip)}</div>
-            <div style="color:#94a3b8">${esc(p.country)}${p.as ? ' · ' + esc(p.as) : ''}</div>
+            <div style="color:#475569">${esc(p.country)}${p.as ? ' · ' + esc(p.as) : ''}</div>
             <div style="color:#64748b;font-size:10px;margin-top:3px">Botnet C2 · abuse.ch Feodo Tracker</div>
           </div>`,
         )

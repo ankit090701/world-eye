@@ -2,7 +2,7 @@ import type { StyleSpecification } from 'maplibre-gl'
 import type { BasemapId } from '../types'
 
 // All basemaps below are FREE and require NO API key.
-//  - CARTO GL styles (dark-matter / positron / voyager): free, keyless vector basemaps.
+//  - CARTO GL styles (positron / voyager): free, keyless vector basemaps.
 //  - OpenFreeMap "liberty": free (MIT), keyless vector tiles from OpenStreetMap data.
 //  - Esri World Imagery: free keyless raster imagery (attribution required).
 
@@ -12,8 +12,6 @@ export interface BasemapDef {
   kind: 'vector' | 'raster'
   /** A style URL, or an inline style spec for raster sources. */
   style: string | StyleSpecification
-  /** true => dark chrome pairs well with it */
-  dark: boolean
 }
 
 const esriImagery: StyleSpecification = {
@@ -38,44 +36,33 @@ const esriImagery: StyleSpecification = {
 }
 
 export const BASEMAPS: Record<BasemapId, BasemapDef> = {
-  dark: {
-    id: 'dark',
-    label: 'Dark Matter',
-    kind: 'vector',
-    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    dark: true,
-  },
   light: {
     id: 'light',
     label: 'Positron',
     kind: 'vector',
     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    dark: false,
   },
   voyager: {
     id: 'voyager',
     label: 'Voyager',
     kind: 'vector',
     style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-    dark: false,
   },
   liberty: {
     id: 'liberty',
     label: 'Liberty (OSM)',
     kind: 'vector',
     style: 'https://tiles.openfreemap.org/styles/liberty',
-    dark: false,
   },
   satellite: {
     id: 'satellite',
     label: 'Satellite',
     kind: 'raster',
     style: esriImagery,
-    dark: true,
   },
 }
 
-export const BASEMAP_ORDER: BasemapId[] = ['dark', 'satellite', 'voyager', 'light', 'liberty']
+export const BASEMAP_ORDER: BasemapId[] = ['light', 'voyager', 'liberty', 'satellite']
 
 export function getBasemapStyle(id: BasemapId): string | StyleSpecification {
   return BASEMAPS[id].style

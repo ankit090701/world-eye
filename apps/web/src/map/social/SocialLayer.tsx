@@ -72,8 +72,8 @@ export function SocialInteractions() {
         .setLngLat([lng, lat])
         .setHTML(
           `<div style="font-size:11px">
-            <div style="margin-bottom:2px"><strong>${esc(p.place)}</strong> <span style="color:#94a3b8">· ${esc(p.count)} post${p.count === 1 ? '' : 's'} · ${esc(p.source)}</span></div>
-            <a href="${esc(safeHref)}" target="_blank" rel="noopener noreferrer" style="color:#f9a8d4;text-decoration:none">${esc(p.title)} ↗</a>
+            <div style="margin-bottom:2px"><strong>${esc(p.place)}</strong> <span style="color:#475569">· ${esc(p.count)} post${p.count === 1 ? '' : 's'} · ${esc(p.source)}</span></div>
+            <a href="${esc(safeHref)}" target="_blank" rel="noopener noreferrer" style="color:#db2777;text-decoration:none">${esc(p.title)} ↗</a>
           </div>`,
         )
         .addTo(map)

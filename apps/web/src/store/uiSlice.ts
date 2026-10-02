@@ -1,8 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { PanelId, Theme, ToolId } from '../types'
+import type { PanelId, ToolId } from '../types'
 
 interface UIState {
-  theme: Theme
   activePanel: PanelId
   activeTool: ToolId
   /** transient toast/status message */
@@ -10,7 +9,6 @@ interface UIState {
 }
 
 const initialState: UIState = {
-  theme: 'dark',
   activePanel: 'layers',
   activeTool: 'none',
   toast: null,
@@ -20,12 +18,6 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    setTheme(state, action: PayloadAction<Theme>) {
-      state.theme = action.payload
-    },
-    toggleTheme(state) {
-      state.theme = state.theme === 'dark' ? 'light' : 'dark'
-    },
     setActivePanel(state, action: PayloadAction<PanelId>) {
       // clicking the active panel toggles it closed
       state.activePanel = state.activePanel === action.payload ? null : action.payload
@@ -43,6 +35,5 @@ const uiSlice = createSlice({
   },
 })
 
-export const { setTheme, toggleTheme, setActivePanel, openPanel, setActiveTool, setToast } =
-  uiSlice.actions
+export const { setActivePanel, openPanel, setActiveTool, setToast } = uiSlice.actions
 export default uiSlice.reducer

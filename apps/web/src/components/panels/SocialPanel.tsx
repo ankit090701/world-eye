@@ -65,7 +65,7 @@ export default function SocialPanel() {
   return (
     <PanelShell
       title="Social Intelligence"
-      subtitle="Module 12 · trends & public posts"
+      subtitle="Trends & public posts"
       icon={<Share2 size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

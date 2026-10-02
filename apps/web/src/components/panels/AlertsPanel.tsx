@@ -79,7 +79,7 @@ export default function AlertsPanel() {
   return (
     <PanelShell
       title="Alert Engine"
-      subtitle="Module 14 · rules, alerts & notifications"
+      subtitle="Rules, alerts & notifications"
       icon={<BellRing size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

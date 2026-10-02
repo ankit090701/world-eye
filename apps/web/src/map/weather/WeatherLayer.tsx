@@ -203,16 +203,16 @@ export function WeatherInteractions() {
       bindPopup(map, LYR.cyclones, popup, (p) => {
         const cat = CAT_LABEL[String(p.category)] ?? p.classification
         return `<div style="font-size:11px">
-          <div style="margin-bottom:2px"><strong>${esc(p.name)}</strong>${p.source === 'sim' ? ' <span style="color:#f59e0b">(sim)</span>' : ''}</div>
-          <div style="color:#c084fc">${esc(cat)}</div>
+          <div style="margin-bottom:2px"><strong>${esc(p.name)}</strong>${p.source === 'sim' ? ' <span style="color:#b45309">(sim)</span>' : ''}</div>
+          <div style="color:#9333ea">${esc(cat)}</div>
           <div>${p.windKt != null ? esc(p.windKt) + ' kt winds' : ''}${p.pressureMb != null ? ' · ' + esc(p.pressureMb) + ' mb' : ''}</div>
-          ${p.basin ? `<div style="color:#94a3b8">${esc(p.basin)}</div>` : ''}
+          ${p.basin ? `<div style="color:#475569">${esc(p.basin)}</div>` : ''}
         </div>`
       }),
       bindPopup(map, LYR.wildfires, popup, (p) => {
         return `<div style="font-size:11px">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-            <span style="width:8px;height:8px;border-radius:50%;background:#fb923c;display:inline-block"></span>
+            <span style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block"></span>
             <strong>${esc(p.title)}</strong>
           </div>
           ${p.mag != null ? `<div>${esc(p.mag)} ${esc(p.unit ?? 'acres')}</div>` : ''}
@@ -222,9 +222,9 @@ export function WeatherInteractions() {
       bindPopup(map, LYR.earthquakes, popup, (p) => {
         const t = p.time ? new Date(Number(p.time)).toUTCString() : ''
         return `<div style="font-size:11px">
-          <div style="margin-bottom:2px"><strong>M ${esc(p.mag ?? '?')}</strong> ${p.tsunami ? '<span style="color:#22d3ee">· tsunami</span>' : ''}</div>
+          <div style="margin-bottom:2px"><strong>M ${esc(p.mag ?? '?')}</strong> ${p.tsunami ? '<span style="color:#0e7490">· tsunami</span>' : ''}</div>
           <div>${esc(p.place ?? '')}</div>
-          <div style="color:#94a3b8">${p.depth != null ? 'depth ' + esc(p.depth) + ' km' : ''}</div>
+          <div style="color:#475569">${p.depth != null ? 'depth ' + esc(p.depth) + ' km' : ''}</div>
           <div style="color:#64748b;font-size:10px">${esc(t)} · USGS</div>
         </div>`
       }),
@@ -233,7 +233,7 @@ export function WeatherInteractions() {
           <div style="margin-bottom:2px"><strong>${p.temp != null ? esc(p.temp) + '°C' : 'Temp —'}</strong></div>
           <div>Wind ${p.windSpeed != null ? esc(Math.round(p.windSpeed)) + ' km/h ' + compass(p.windDir) : '—'}</div>
           <div>Cloud ${p.cloud != null ? esc(p.cloud) + '%' : '—'}</div>
-          ${p.lightning ? '<div style="color:#fbbf24">⚡ convective (lightning risk)</div>' : ''}
+          ${p.lightning ? '<div style="color:#b45309">⚡ convective (lightning risk)</div>' : ''}
         </div>`
       }),
     ]

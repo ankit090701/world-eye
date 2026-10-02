@@ -18,6 +18,9 @@ import { TRAIN_COLORS } from '../config/trainTypes'
 import { STATUS_COLORS } from '../config/fleetTypes'
 import { CONGESTION_COLORS, INCIDENT_COLORS } from '../config/trafficTypes'
 
+// Selection halos, trails and the draw/measure tools share the UI accent.
+const SELECT = '#4f46e5'
+
 const congestionColorExpr: any = [
   'match',
   ['get', 'congestion'],
@@ -74,10 +77,10 @@ const altColorExpr: any = [
   'interpolate',
   ['linear'],
   ['coalesce', ['get', 'alt'], 0],
-  0, '#22d3ee',
-  8000, '#38bdf8',
-  18000, '#34d399',
-  28000, '#a78bfa',
+  0, '#06b6d4',
+  8000, '#0ea5e9',
+  18000, '#10b981',
+  28000, '#8b5cf6',
   38000, '#f59e0b',
   45000, '#f43f5e',
 ]
@@ -100,43 +103,43 @@ const tempColorExpr: any = [
   ['coalesce', ['get', 'temp'], 0],
   -30, '#4c1d95',
   -15, '#3b82f6',
-  0, '#22d3ee',
-  10, '#34d399',
-  20, '#fde047',
-  30, '#fb923c',
+  0, '#06b6d4',
+  10, '#10b981',
+  20, '#eab308',
+  30, '#f97316',
   40, '#ef4444',
   48, '#7f1d1d',
 ]
 const cycloneColorExpr: any = [
   'match',
   ['get', 'category'],
-  'td', '#38bdf8',
-  'ts', '#22d3ee',
-  'cat1', '#fde047',
-  'cat2', '#fbbf24',
-  'cat3', '#fb923c',
+  'td', '#0ea5e9',
+  'ts', '#06b6d4',
+  'cat1', '#eab308',
+  'cat2', '#f59e0b',
+  'cat3', '#f97316',
   'cat4', '#f43f5e',
   'cat5', '#c026d3',
-  '#c084fc',
+  '#a855f7',
 ]
 const alertSeverityColorExpr: any = [
   'match',
   ['get', 'severity'],
   'critical', '#f43f5e',
   'warning', '#f59e0b',
-  'info', '#38bdf8',
+  'info', '#0ea5e9',
   '#f43f5e',
 ]
 
 const newsCategoryColorExpr: any = [
   'match',
   ['get', 'category'],
-  'breaking', '#fbbf24',
+  'breaking', '#f59e0b',
   'disasters', '#f97316',
   'wars', '#f43f5e',
-  'economic', '#22d3ee',
-  'political', '#a78bfa',
-  '#fbbf24',
+  'economic', '#06b6d4',
+  'political', '#8b5cf6',
+  '#f59e0b',
 ]
 
 const quakeDepthColorExpr: any = [
@@ -145,19 +148,19 @@ const quakeDepthColorExpr: any = [
   ['coalesce', ['get', 'depth'], 0],
   0, '#ef4444',
   70, '#f59e0b',
-  300, '#22d3ee',
+  300, '#06b6d4',
   700, '#3b82f6',
 ]
 
 const infraRoleColorExpr: any = [
   'match',
   ['get', 'role'],
-  'apex', '#a78bfa',
-  'www', '#818cf8',
+  'apex', '#8b5cf6',
+  'www', '#6366f1',
   'mail', '#f59e0b',
-  'ns', '#38bdf8',
-  'sub', '#c4b5fd',
-  '#a78bfa',
+  'ns', '#0ea5e9',
+  'sub', '#a78bfa',
+  '#8b5cf6',
 ]
 
 const categoryColorExpr: any = [
@@ -168,7 +171,7 @@ const categoryColorExpr: any = [
   'event', CATEGORY_COLORS.event,
   'sensor', CATEGORY_COLORS.sensor,
   'alert', CATEGORY_COLORS.alert,
-  '#22d3ee',
+  '#06b6d4',
 ]
 
 /**
@@ -244,7 +247,7 @@ export function installOverlays(map: MlMap) {
     type: 'fill',
     source: SRC.geofences,
     paint: {
-      'fill-color': ['coalesce', ['get', 'color'], '#818cf8'] as any,
+      'fill-color': ['coalesce', ['get', 'color'], '#6366f1'] as any,
       'fill-opacity': ['match', ['get', 'gtype'], 'restricted', 0.16, 'zone', 0.05, 0.1] as any,
     },
   })
@@ -253,7 +256,7 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.geofences,
     paint: {
-      'line-color': ['coalesce', ['get', 'color'], '#818cf8'] as any,
+      'line-color': ['coalesce', ['get', 'color'], '#6366f1'] as any,
       'line-width': 1.5,
       'line-opacity': 0.7,
       'line-dasharray': [2, 1.5] as any,
@@ -289,7 +292,7 @@ export function installOverlays(map: MlMap) {
       'circle-color': congestionColorExpr,
       'circle-opacity': 0.85,
       'circle-stroke-width': 0.5,
-      'circle-stroke-color': 'rgba(7,11,18,0.6)',
+      'circle-stroke-color': 'rgba(255,255,255,0.9)',
     },
   })
   addLayerSafe(map, {
@@ -305,7 +308,7 @@ export function installOverlays(map: MlMap) {
       'circle-color': incidentColorExpr,
       'circle-opacity': 0.95,
       'circle-stroke-width': ['case', ['get', 'selected'], 2.5, 1.5] as any,
-      'circle-stroke-color': ['case', ['get', 'selected'], '#22d3ee', 'rgba(255,255,255,0.85)'] as any,
+      'circle-stroke-color': ['case', ['get', 'selected'], SELECT, '#ffffff'] as any,
     },
   })
 
@@ -351,7 +354,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.draw,
     filter: ['==', ['geometry-type'], 'Polygon'] as any,
     paint: {
-      'fill-color': ['coalesce', ['get', 'color'], '#818cf8'] as any,
+      'fill-color': ['coalesce', ['get', 'color'], '#6366f1'] as any,
       'fill-opacity': 0.16,
     },
   })
@@ -360,7 +363,7 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.draw,
     paint: {
-      'line-color': ['coalesce', ['get', 'color'], '#818cf8'] as any,
+      'line-color': ['coalesce', ['get', 'color'], '#6366f1'] as any,
       'line-width': 2.2,
     },
   })
@@ -371,9 +374,9 @@ export function installOverlays(map: MlMap) {
     filter: ['==', ['geometry-type'], 'Point'] as any,
     paint: {
       'circle-radius': 5,
-      'circle-color': ['coalesce', ['get', 'color'], '#818cf8'] as any,
+      'circle-color': ['coalesce', ['get', 'color'], '#6366f1'] as any,
       'circle-stroke-width': 2,
-      'circle-stroke-color': '#0e1524',
+      'circle-stroke-color': '#ffffff',
     },
   })
 
@@ -382,14 +385,14 @@ export function installOverlays(map: MlMap) {
     type: 'fill',
     source: SRC.drawDraft,
     filter: ['==', ['geometry-type'], 'Polygon'] as any,
-    paint: { 'fill-color': '#22d3ee', 'fill-opacity': 0.12 },
+    paint: { 'fill-color': SELECT, 'fill-opacity': 0.12 },
   })
   addLayerSafe(map, {
     id: LYR.draftLine,
     type: 'line',
     source: SRC.drawDraft,
     paint: {
-      'line-color': '#22d3ee',
+      'line-color': SELECT,
       'line-width': 1.8,
       'line-dasharray': [2, 1.5] as any,
     },
@@ -401,9 +404,9 @@ export function installOverlays(map: MlMap) {
     filter: ['==', ['geometry-type'], 'Point'] as any,
     paint: {
       'circle-radius': 4,
-      'circle-color': '#22d3ee',
+      'circle-color': SELECT,
       'circle-stroke-width': 2,
-      'circle-stroke-color': '#0e1524',
+      'circle-stroke-color': '#ffffff',
     },
   })
 
@@ -412,7 +415,7 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.measure,
     paint: {
-      'line-color': '#22d3ee',
+      'line-color': SELECT,
       'line-width': 2,
       'line-dasharray': [1.5, 1] as any,
     },
@@ -424,9 +427,9 @@ export function installOverlays(map: MlMap) {
     filter: ['==', ['geometry-type'], 'Point'] as any,
     paint: {
       'circle-radius': 4,
-      'circle-color': '#0e1524',
+      'circle-color': '#ffffff',
       'circle-stroke-width': 2,
-      'circle-stroke-color': '#22d3ee',
+      'circle-stroke-color': SELECT,
     },
   })
 
@@ -436,7 +439,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.trainsRoute,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#34d399',
+      'line-color': '#10b981',
       'line-width': 3,
       'line-opacity': 0.55,
       'line-dasharray': [1.5, 1] as any,
@@ -448,9 +451,9 @@ export function installOverlays(map: MlMap) {
     source: SRC.trainsRouteStops,
     paint: {
       'circle-radius': 3.5,
-      'circle-color': ['case', ['get', 'passed'], '#475569', '#34d399'] as any,
+      'circle-color': ['case', ['get', 'passed'], '#94a3b8', '#10b981'] as any,
       'circle-stroke-width': 1.5,
-      'circle-stroke-color': '#0e1524',
+      'circle-stroke-color': '#ffffff',
     },
   })
   addLayerSafe(map, {
@@ -458,18 +461,18 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.trainsTrail,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#38bdf8', 'line-width': 2, 'line-opacity': 0.7 },
+    paint: { 'line-color': SELECT, 'line-width': 2, 'line-opacity': 0.7 },
   })
   addLayerSafe(map, {
     id: LYR.trainsHalo,
     type: 'circle',
     source: SRC.trains,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 13, ['get', 'delayed'], 8, 5] as any,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 9, ['get', 'delayed'], 5, 2.5], 6, ['case', ['get', 'selected'], 13, ['get', 'delayed'], 8, 5]] as any,
       'circle-color': ['case', ['get', 'delayed'], '#ef4444', trainColorExpr] as any,
       'circle-opacity': ['case', ['get', 'selected'], 0.85, 0.55] as any,
       'circle-stroke-width': ['case', ['get', 'selected'], 2, 0] as any,
-      'circle-stroke-color': '#22d3ee',
+      'circle-stroke-color': SELECT,
     },
   })
   addLayerSafe(map, {
@@ -482,7 +485,7 @@ export function installOverlays(map: MlMap) {
       'icon-rotation-alignment': 'map',
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
-      'icon-size': ['case', ['get', 'selected'], 0.7, 0.48] as any,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 0.5, 0.24], 6, ['case', ['get', 'selected'], 0.7, 0.48]] as any,
     },
     paint: {
       'icon-opacity': ['case', ['get', 'stopped'], 0.6, 1] as any,
@@ -494,18 +497,18 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.shipsTrail,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#38bdf8', 'line-width': 2, 'line-opacity': 0.75 },
+    paint: { 'line-color': SELECT, 'line-width': 2, 'line-opacity': 0.75 },
   })
   addLayerSafe(map, {
     id: LYR.shipsHalo,
     type: 'circle',
     source: SRC.ships,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 13, 5] as any,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 9, 2.5], 6, ['case', ['get', 'selected'], 13, 5]] as any,
       'circle-color': shipColorExpr,
       'circle-opacity': ['case', ['get', 'selected'], 0.85, 0.55] as any,
       'circle-stroke-width': ['case', ['get', 'selected'], 2, 0] as any,
-      'circle-stroke-color': '#22d3ee',
+      'circle-stroke-color': SELECT,
     },
   })
   addLayerSafe(map, {
@@ -518,7 +521,7 @@ export function installOverlays(map: MlMap) {
       'icon-rotation-alignment': 'map',
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
-      'icon-size': ['case', ['get', 'selected'], 0.7, 0.46] as any,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 2.4, ['case', ['get', 'selected'], 0.45, 0], 3.4, ['case', ['get', 'selected'], 0.55, 0.26], 7, ['case', ['get', 'selected'], 0.7, 0.46]] as any,
     },
     paint: {
       'icon-opacity': ['case', ['get', 'moored'], 0.6, 1] as any,
@@ -531,7 +534,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.aircraftTrail,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#22d3ee',
+      'line-color': SELECT,
       'line-width': 2,
       'line-opacity': 0.8,
     },
@@ -541,11 +544,11 @@ export function installOverlays(map: MlMap) {
     type: 'circle',
     source: SRC.aircraft,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 15, ['get', 'emergency'], 10, 6] as any,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 10, ['get', 'emergency'], 7, 3], 6, ['case', ['get', 'selected'], 15, ['get', 'emergency'], 10, 6]] as any,
       'circle-color': ['case', ['get', 'emergency'], '#f43f5e', altColorExpr] as any,
       'circle-opacity': ['case', ['get', 'emergency'], 0.9, 0.5] as any,
       'circle-stroke-width': ['case', ['get', 'selected'], 2, ['get', 'emergency'], 2, 0] as any,
-      'circle-stroke-color': ['case', ['get', 'selected'], '#22d3ee', '#f43f5e'] as any,
+      'circle-stroke-color': ['case', ['get', 'selected'], SELECT, '#f43f5e'] as any,
     },
   })
   addLayerSafe(map, {
@@ -558,7 +561,7 @@ export function installOverlays(map: MlMap) {
       'icon-rotation-alignment': 'map',
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
-      'icon-size': ['case', ['get', 'selected'], 0.75, 0.52] as any,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 2.4, ['case', ['get', 'selected'], 0.5, 0], 3.4, ['case', ['get', 'selected'], 0.6, 0.3], 7, ['case', ['get', 'selected'], 0.75, 0.52]] as any,
     },
     paint: {
       'icon-opacity': ['case', ['get', 'onGround'], 0.55, 1] as any,
@@ -570,18 +573,18 @@ export function installOverlays(map: MlMap) {
     type: 'line',
     source: SRC.fleetTrail,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#22c55e', 'line-width': 2, 'line-opacity': 0.7 },
+    paint: { 'line-color': SELECT, 'line-width': 2, 'line-opacity': 0.7 },
   })
   addLayerSafe(map, {
     id: LYR.fleetHalo,
     type: 'circle',
     source: SRC.fleet,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 14, 7] as any,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 10, 3.5], 6, ['case', ['get', 'selected'], 14, 7]] as any,
       'circle-color': fleetColorExpr,
       'circle-opacity': ['case', ['get', 'selected'], 0.85, 0.5] as any,
       'circle-stroke-width': ['case', ['get', 'selected'], 2, 0] as any,
-      'circle-stroke-color': '#22d3ee',
+      'circle-stroke-color': SELECT,
     },
   })
   addLayerSafe(map, {
@@ -594,7 +597,7 @@ export function installOverlays(map: MlMap) {
       'icon-rotation-alignment': 'map',
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
-      'icon-size': ['case', ['get', 'selected'], 0.7, 0.5] as any,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 1, ['case', ['get', 'selected'], 0.5, 0.26], 6, ['case', ['get', 'selected'], 0.7, 0.5]] as any,
     },
     paint: {
       'icon-opacity': ['case', ['get', 'moving'], 1, 0.7] as any,
@@ -621,7 +624,7 @@ export function installOverlays(map: MlMap) {
       'circle-color': '#f43f5e',
       'circle-opacity': 0.95,
       'circle-stroke-width': 1,
-      'circle-stroke-color': '#fca5a5',
+      'circle-stroke-color': '#ffffff',
     },
   })
 
@@ -631,7 +634,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.domainInfraLinks,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#a78bfa',
+      'line-color': '#8b5cf6',
       'line-width': 1,
       'line-opacity': 0.35,
       'line-dasharray': [2, 2] as any,
@@ -657,7 +660,7 @@ export function installOverlays(map: MlMap) {
       'circle-color': infraRoleColorExpr,
       'circle-opacity': 0.95,
       'circle-stroke-width': ['case', ['==', ['get', 'role'], 'apex'], 2, 1] as any,
-      'circle-stroke-color': '#ede9fe',
+      'circle-stroke-color': '#ffffff',
     },
   })
 
@@ -681,10 +684,10 @@ export function installOverlays(map: MlMap) {
     layout: { visibility: 'none' },
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 4, 6, 9] as any,
-      'circle-color': '#fbbf24',
+      'circle-color': '#f59e0b',
       'circle-opacity': 0.9,
       'circle-stroke-width': 1.5,
-      'circle-stroke-color': '#fef08a',
+      'circle-stroke-color': '#ffffff',
     },
   })
   addLayerSafe(map, {
@@ -721,10 +724,10 @@ export function installOverlays(map: MlMap) {
     source: SRC.wildfires,
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 0, 4, 1000, 6, 20000, 10, 100000, 14] as any,
-      'circle-color': '#fb923c',
+      'circle-color': '#f97316',
       'circle-opacity': 0.9,
       'circle-stroke-width': 1,
-      'circle-stroke-color': '#fed7aa',
+      'circle-stroke-color': '#ffffff',
     },
   })
 
@@ -734,7 +737,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.earthquakes,
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 2, 6, 6, 22, 8, 34] as any,
-      'circle-color': '#facc15',
+      'circle-color': '#eab308',
       'circle-opacity': ['interpolate', ['linear'], ['coalesce', ['get', 'mag'], 0], 3, 0, 5, 0.25] as any,
       'circle-blur': 1,
     },
@@ -748,7 +751,7 @@ export function installOverlays(map: MlMap) {
       'circle-color': quakeDepthColorExpr,
       'circle-opacity': 0.85,
       'circle-stroke-width': ['case', ['get', 'tsunami'], 2, 0.6] as any,
-      'circle-stroke-color': ['case', ['get', 'tsunami'], '#22d3ee', 'rgba(255,255,255,0.7)'] as any,
+      'circle-stroke-color': ['case', ['get', 'tsunami'], '#06b6d4', 'rgba(255,255,255,0.7)'] as any,
     },
   })
 
@@ -782,7 +785,7 @@ export function installOverlays(map: MlMap) {
     source: SRC.satOrbit,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#22d3ee',
+      'line-color': SELECT,
       'line-width': 1.6,
       'line-opacity': 0.7,
       'line-dasharray': [2, 1.5] as any,
@@ -796,10 +799,10 @@ export function installOverlays(map: MlMap) {
     filter: ['==', ['get', 'selected'], true] as any,
     paint: {
       'circle-radius': 12,
-      'circle-color': '#22d3ee',
+      'circle-color': SELECT,
       'circle-opacity': 0.14,
       'circle-stroke-width': 2,
-      'circle-stroke-color': '#22d3ee',
+      'circle-stroke-color': SELECT,
     },
   })
   addLayerSafe(map, {
@@ -810,7 +813,7 @@ export function installOverlays(map: MlMap) {
     layout: { visibility: 'none' },
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.6, 5, 3] as any,
-      'circle-color': '#f87171',
+      'circle-color': '#ef4444',
       'circle-opacity': 0.8,
     },
   })
@@ -822,7 +825,7 @@ export function installOverlays(map: MlMap) {
     layout: { visibility: 'none' },
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.8, 5, 3.2] as any,
-      'circle-color': '#60a5fa',
+      'circle-color': '#3b82f6',
       'circle-opacity': 0.85,
     },
   })
@@ -834,10 +837,10 @@ export function installOverlays(map: MlMap) {
     layout: { visibility: 'none' },
     paint: {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 5, 3.6] as any,
-      'circle-color': '#a3e635',
+      'circle-color': '#84cc16',
       'circle-opacity': 0.9,
       'circle-stroke-width': 0.5,
-      'circle-stroke-color': 'rgba(7,11,18,0.6)',
+      'circle-stroke-color': 'rgba(255,255,255,0.9)',
     },
   })
   addLayerSafe(map, {
@@ -846,11 +849,11 @@ export function installOverlays(map: MlMap) {
     source: SRC.satellites,
     filter: ['==', ['get', 'group'], 'active'] as any,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 6, ['interpolate', ['linear'], ['zoom'], 0, 2.2, 5, 4]] as any,
-      'circle-color': '#e2e8f0',
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, ['case', ['get', 'selected'], 6, 2.2], 5, ['case', ['get', 'selected'], 6, 4]] as any,
+      'circle-color': '#334155',
       'circle-opacity': 0.92,
       'circle-stroke-width': 0.6,
-      'circle-stroke-color': 'rgba(7,11,18,0.7)',
+      'circle-stroke-color': 'rgba(255,255,255,0.9)',
     },
   })
   addLayerSafe(map, {
@@ -860,7 +863,7 @@ export function installOverlays(map: MlMap) {
     filter: ['==', ['get', 'group'], 'iss'] as any,
     paint: {
       'circle-radius': ['case', ['get', 'selected'], 9, 6] as any,
-      'circle-color': '#22d3ee',
+      'circle-color': '#06b6d4',
       'circle-opacity': 1,
       'circle-stroke-width': 2,
       'circle-stroke-color': '#ffffff',

@@ -15,14 +15,14 @@ export function Switch({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cx(
-        'relative h-5 w-9 shrink-0 rounded-full transition-colors',
-        checked ? 'bg-we-accent/80' : 'bg-we-border-2',
+        'relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200',
+        checked ? 'bg-we-accent' : 'bg-slate-200 hover:bg-slate-300',
       )}
     >
       <span
         className={cx(
-          'absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform',
-          checked ? 'translate-x-4' : 'translate-x-0.5',
+          'absolute left-0 top-0.5 h-4 w-4 rounded-full bg-white shadow-[0_1px_3px_rgba(15,23,42,0.25)] transition-transform duration-200',
+          checked ? 'translate-x-[18px]' : 'translate-x-0.5',
         )}
       />
     </button>
@@ -43,16 +43,20 @@ export function PanelShell({
   children: ReactNode
 }) {
   return (
-    <div className="we-glass flex h-full w-[320px] flex-col rounded-xl shadow-panel">
-      <div className="flex items-center gap-2 border-b border-we-border px-4 py-3">
-        <span className="text-we-accent">{icon}</span>
-        <div className="flex-1">
-          <div className="text-sm font-semibold text-we-text">{title}</div>
-          {subtitle && <div className="text-[11px] text-we-muted">{subtitle}</div>}
+    <div className="flex h-full w-[340px] flex-col overflow-hidden rounded-2xl border border-we-border bg-white/95 shadow-panel backdrop-blur-xl">
+      <div className="flex items-center gap-3 border-b border-we-border px-4 py-3">
+        {icon && (
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-we-accent/10 text-we-accent">
+            {icon}
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[14px] font-semibold tracking-tight text-we-text">{title}</div>
+          {subtitle && <div className="truncate text-[11.5px] text-we-muted">{subtitle}</div>}
         </div>
         <button
           onClick={onClose}
-          className="rounded-md p-1 text-we-muted hover:bg-we-panel-2 hover:text-we-text"
+          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-we-panel-2 hover:text-we-text"
           title="Close panel"
         >
           <X size={16} />
@@ -65,7 +69,7 @@ export function PanelShell({
 
 export function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-2 mt-1 text-[10px] font-semibold uppercase tracking-wider text-we-muted">
+    <div className="mb-2 mt-5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-we-muted first:mt-0">
       {children}
     </div>
   )

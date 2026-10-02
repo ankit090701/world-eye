@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   Ruler,
   PencilRuler,
@@ -16,7 +16,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setActiveTool, setToast } from '../store/uiSlice'
-import { toggleProjection } from '../store/mapSlice'
+import { DEFAULT_VIEW, toggleProjection } from '../store/mapSlice'
 import { useMapContext } from '../map/MapContext'
 import { exportMapImage } from '../lib/exportImage'
 import type { ToolId } from '../types'
@@ -30,26 +30,34 @@ const DRAW_ITEMS: { id: ToolId; label: string; icon: LucideIcon }[] = [
   { id: 'draw-circle', label: 'Circle', icon: Circle },
 ]
 
+type Tip = { label: string; y: number } | null
+
 function ToolButton({
   active,
   onClick,
   title,
+  onTip,
   children,
 }: {
   active?: boolean
   onClick: () => void
   title: string
-  children: React.ReactNode
+  onTip: (t: Tip) => void
+  children: ReactNode
 }) {
   return (
     <button
       onClick={onClick}
-      title={title}
+      aria-label={title}
+      aria-pressed={active}
+      onMouseEnter={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        onTip({ label: title, y: r.top + r.height / 2 })
+      }}
+      onMouseLeave={() => onTip(null)}
       className={cx(
-        'flex h-10 w-10 items-center justify-center rounded-lg border transition-colors',
-        active
-          ? 'border-we-accent/70 bg-we-accent/15 text-we-accent shadow-glow'
-          : 'we-glass border-we-border text-we-muted hover:text-we-text',
+        'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+        active ? 'bg-we-accent/10 text-we-accent' : 'text-slate-500 hover:bg-we-panel-2 hover:text-we-text',
       )}
     >
       {children}
@@ -57,17 +65,20 @@ function ToolButton({
   )
 }
 
+const CARD = 'flex flex-col gap-0.5 rounded-xl border border-we-border bg-white/90 p-1 shadow-card backdrop-blur-xl'
+
 export default function RightToolbar() {
   const dispatch = useAppDispatch()
   const { map } = useMapContext()
   const tool = useAppSelector((s) => s.ui.activeTool)
   const projection = useAppSelector((s) => s.map.projection)
   const [drawOpen, setDrawOpen] = useState(false)
+  const [tip, setTip] = useState<Tip>(null)
   const drawing = tool.startsWith('draw-')
 
   const resetNorth = () => map?.easeTo({ bearing: 0, pitch: 0, duration: 600 })
   const zoomWorld = () =>
-    map?.flyTo({ center: [10, 25], zoom: 1.6, pitch: 0, bearing: 0, speed: 1.2 })
+    map?.flyTo({ center: [DEFAULT_VIEW.lng, DEFAULT_VIEW.lat], zoom: DEFAULT_VIEW.zoom, pitch: 0, bearing: 0, speed: 1.2 })
   const exportPng = () => {
     if (!map) return
     exportMapImage(map)
@@ -75,68 +86,82 @@ export default function RightToolbar() {
   }
 
   return (
-    <div className="pointer-events-auto absolute right-3 top-16 z-30 flex flex-col gap-1.5">
-      <ToolButton
-        active={tool === 'measure'}
-        onClick={() => dispatch(setActiveTool('measure'))}
-        title="Measure distance / area"
-      >
-        <Ruler size={18} />
-      </ToolButton>
-
-      <div className="relative">
-        <ToolButton
-          active={drawing}
-          onClick={() => setDrawOpen((o) => !o)}
-          title="Drawing tools"
-        >
-          <PencilRuler size={18} />
-        </ToolButton>
-        {drawOpen && (
-          <div className="absolute right-12 top-0 flex flex-col gap-1 rounded-lg border border-we-border bg-we-panel p-1 shadow-panel">
-            {DRAW_ITEMS.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => {
-                  dispatch(setActiveTool(id))
-                  setDrawOpen(false)
-                }}
-                className={cx(
-                  'flex items-center gap-2 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs',
-                  tool === id
-                    ? 'bg-we-accent/15 text-we-accent'
-                    : 'text-we-muted hover:bg-we-panel-2 hover:text-we-text',
-                )}
-              >
-                <Icon size={14} />
-                {label}
-              </button>
-            ))}
+    <>
+      <div className="pointer-events-auto absolute right-3 top-[68px] z-30 flex flex-col gap-2">
+        <div className={CARD}>
+          <ToolButton
+            active={tool === 'measure'}
+            onClick={() => dispatch(setActiveTool('measure'))}
+            title="Measure distance / area"
+            onTip={setTip}
+          >
+            <Ruler size={17} strokeWidth={1.8} />
+          </ToolButton>
+          <div className="relative">
+            <ToolButton
+              active={drawing || drawOpen}
+              onClick={() => setDrawOpen((o) => !o)}
+              title="Drawing tools"
+              onTip={setTip}
+            >
+              <PencilRuler size={17} strokeWidth={1.8} />
+            </ToolButton>
+            {drawOpen && (
+              <div className="absolute right-11 top-0 flex w-36 flex-col gap-0.5 rounded-xl border border-we-border bg-white p-1 shadow-panel">
+                {DRAW_ITEMS.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => {
+                      dispatch(setActiveTool(id))
+                      setDrawOpen(false)
+                    }}
+                    className={cx(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium transition-colors',
+                      tool === id
+                        ? 'bg-we-accent/10 text-we-accent'
+                        : 'text-slate-600 hover:bg-we-panel-2 hover:text-we-text',
+                    )}
+                  >
+                    <Icon size={15} strokeWidth={1.8} />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        <div className={CARD}>
+          <ToolButton
+            active={projection === 'globe'}
+            onClick={() => dispatch(toggleProjection())}
+            title={projection === 'globe' ? 'Switch to flat map' : 'Switch to 3D globe'}
+            onTip={setTip}
+          >
+            {projection === 'globe' ? <Globe2 size={17} strokeWidth={1.8} /> : <MapIcon size={17} strokeWidth={1.8} />}
+          </ToolButton>
+          <ToolButton onClick={resetNorth} title="Reset bearing & pitch" onTip={setTip}>
+            <Compass size={17} strokeWidth={1.8} />
+          </ToolButton>
+          <ToolButton onClick={zoomWorld} title="Back to world view" onTip={setTip}>
+            <Shrink size={17} strokeWidth={1.8} />
+          </ToolButton>
+        </div>
+
+        <div className={CARD}>
+          <ToolButton onClick={exportPng} title="Export map image (PNG)" onTip={setTip}>
+            <Camera size={17} strokeWidth={1.8} />
+          </ToolButton>
+        </div>
       </div>
-
-      <div className="my-0.5 h-px w-full bg-we-border" />
-
-      <ToolButton
-        active={projection === 'globe'}
-        onClick={() => dispatch(toggleProjection())}
-        title={projection === 'globe' ? 'Switch to flat map' : 'Switch to 3D globe'}
-      >
-        {projection === 'globe' ? <Globe2 size={18} /> : <MapIcon size={18} />}
-      </ToolButton>
-      <ToolButton onClick={resetNorth} title="Reset bearing & pitch (north up)">
-        <Compass size={18} />
-      </ToolButton>
-      <ToolButton onClick={zoomWorld} title="Zoom to whole world">
-        <Shrink size={18} />
-      </ToolButton>
-
-      <div className="my-0.5 h-px w-full bg-we-border" />
-
-      <ToolButton onClick={exportPng} title="Export map image (PNG)">
-        <Camera size={18} />
-      </ToolButton>
-    </div>
+      {tip && !drawOpen && (
+        <div
+          className="pointer-events-none fixed right-[62px] z-50 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-[12px] font-medium text-white shadow-lg"
+          style={{ top: tip.y }}
+        >
+          {tip.label}
+        </div>
+      )}
+    </>
   )
 }

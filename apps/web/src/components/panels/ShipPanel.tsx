@@ -75,7 +75,7 @@ export default function ShipPanel() {
   return (
     <PanelShell
       title="Ship Tracking"
-      subtitle="Module 3 · live AIS"
+      subtitle="Live AIS"
       icon={<ShipIcon size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

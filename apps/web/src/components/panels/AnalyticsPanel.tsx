@@ -102,7 +102,7 @@ export default function AnalyticsPanel() {
   return (
     <PanelShell
       title="Analytics"
-      subtitle="Module 16 · live data analysis"
+      subtitle="Live data analysis"
       icon={<BarChart3 size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

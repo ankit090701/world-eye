@@ -11,8 +11,8 @@ export function createWindArrowImage(): ImageData {
   ctx.clearRect(0, 0, SIZE, SIZE)
   ctx.translate(SIZE / 2, SIZE / 2)
 
-  ctx.strokeStyle = '#e0f2fe'
-  ctx.fillStyle = '#e0f2fe'
+  ctx.strokeStyle = '#1d4ed8'
+  ctx.fillStyle = '#1d4ed8'
   ctx.lineWidth = 2
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'

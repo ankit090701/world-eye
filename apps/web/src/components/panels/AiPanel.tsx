@@ -79,7 +79,7 @@ export default function AiPanel() {
   return (
     <PanelShell
       title="AI Intelligence"
-      subtitle="Module 15 · situational analysis & assistant"
+      subtitle="Situational analysis & assistant"
       icon={<Sparkles size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

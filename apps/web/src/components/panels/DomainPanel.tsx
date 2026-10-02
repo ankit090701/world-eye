@@ -73,7 +73,7 @@ export default function DomainPanel() {
   return (
     <PanelShell
       title="Domain Intelligence"
-      subtitle="Module 8 · WHOIS · DNS · email · certs · subdomains"
+      subtitle="WHOIS · DNS · email · certs · subdomains"
       icon={<Globe size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

@@ -25,7 +25,7 @@ export default function PanelHost() {
   const panel = useAppSelector((s) => s.ui.activePanel)
   if (!panel) return null
   return (
-    <div className="pointer-events-auto absolute bottom-24 left-16 top-16 z-20 animate-fade-in">
+    <div className="pointer-events-auto absolute bottom-[108px] left-[72px] top-[68px] z-20 animate-fade-in">
       {panel === 'layers' && <LayersPanel />}
       {panel === 'aircraft' && <AircraftPanel />}
       {panel === 'ships' && <ShipPanel />}

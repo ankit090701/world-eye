@@ -10,11 +10,14 @@ interface MapState {
   cursor: { lng: number; lat: number } | null
 }
 
+/** Opening camera (and the "zoom to world" target): Europe-centred, so live feeds have data. */
+export const DEFAULT_VIEW: CameraView = { lng: 12, lat: 42, zoom: 2.1, pitch: 0, bearing: 0 }
+
 const initialState: MapState = {
-  basemap: 'dark',
+  basemap: 'light',
   projection: 'globe',
   styleEpoch: 0,
-  view: { lng: 10, lat: 25, zoom: 1.6, pitch: 0, bearing: 0 },
+  view: DEFAULT_VIEW,
   cursor: null,
 }
 

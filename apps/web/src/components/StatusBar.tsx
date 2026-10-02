@@ -1,8 +1,19 @@
+import type { ReactNode } from 'react'
 import { MousePointer2, Crosshair, PencilRuler, Plane, Ship, TrainFront, Truck, TriangleAlert } from 'lucide-react'
 import { useAppSelector } from '../store/hooks'
 import { useDrawFeatures } from '../data/drawStore'
 import { useVisibleSignals } from '../hooks/useVisibleSignals'
 import { formatDMS, formatLngLat } from '../lib/geo'
+import { cx } from '../lib/cx'
+
+function Count({ icon, value, tone, title, className }: { icon: ReactNode; value: number; tone: string; title: string; className?: string }) {
+  return (
+    <span className={cx('flex items-center gap-1.5', className)} title={title}>
+      <span className={tone}>{icon}</span>
+      <span className="font-medium tabular-nums text-slate-700">{value.toLocaleString()}</span>
+    </span>
+  )
+}
 
 export default function StatusBar() {
   const cursor = useAppSelector((s) => s.map.cursor)
@@ -19,64 +30,48 @@ export default function StatusBar() {
   const incidentCount = useAppSelector((s) => s.traffic.incidentCount)
   const draws = useDrawFeatures()
   const visible = useVisibleSignals()
+  const feedTone = (source: string | null) => (source === 'live' ? 'text-we-good' : 'text-we-warn')
 
   return (
-    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex h-[30px] items-center gap-4 border-t border-we-border bg-we-bg/90 px-3 text-[11px] text-we-muted backdrop-blur">
+    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex h-[30px] items-center gap-4 border-t border-we-border bg-white/90 px-4 text-[11px] text-we-muted backdrop-blur-xl">
       <div className="pointer-events-auto flex items-center gap-1.5">
-        <MousePointer2 size={12} className="text-we-accent" />
-        <span className="font-mono text-we-text">
+        <MousePointer2 size={12} className="text-slate-400" />
+        <span className="font-mono tabular-nums text-slate-700">
           {cursor ? formatLngLat(cursor.lng, cursor.lat) : '—, —'}
         </span>
         {cursor && (
-          <span className="hidden font-mono text-we-muted md:inline">
-            {formatDMS(cursor.lng, cursor.lat)}
-          </span>
+          <span className="hidden font-mono text-we-muted md:inline">{formatDMS(cursor.lng, cursor.lat)}</span>
         )}
       </div>
 
       <span className="h-3 w-px bg-we-border" />
 
       <div className="hidden items-center gap-1.5 sm:flex">
-        <Crosshair size={12} />
-        <span className="font-mono">{formatLngLat(view.lng, view.lat, 2)}</span>
-        <span className="ml-2">z{view.zoom.toFixed(1)}</span>
-        <span className="ml-2 hidden lg:inline">brg {Math.round(view.bearing)}°</span>
-        <span className="ml-2 hidden lg:inline">pitch {Math.round(view.pitch)}°</span>
+        <Crosshair size={12} className="text-slate-400" />
+        <span className="font-mono tabular-nums">{formatLngLat(view.lng, view.lat, 2)}</span>
+        <span className="ml-2 tabular-nums">z{view.zoom.toFixed(1)}</span>
+        <span className="ml-2 hidden tabular-nums lg:inline">brg {Math.round(view.bearing)}°</span>
+        <span className="ml-2 hidden tabular-nums lg:inline">pitch {Math.round(view.pitch)}°</span>
       </div>
 
       <div className="flex-1" />
 
-      <div className="pointer-events-auto flex items-center gap-1.5">
-        <PencilRuler size={12} />
-        <span>{draws.features.length} drawings</span>
-      </div>
-      <span className="hidden items-center gap-1.5 sm:flex">
-        <span className="text-we-text">{visible.length.toLocaleString()}</span> signals
-      </span>
       <span className="flex items-center gap-1.5">
-        <Plane size={12} className={acSource === 'live' ? 'text-we-good' : 'text-we-accent'} />
-        <span className="text-we-text">{acCount.toLocaleString()}</span>
+        <PencilRuler size={12} className="text-slate-400" />
+        {draws.features.length} drawings
       </span>
-      <span className="flex items-center gap-1.5">
-        <Ship size={12} className={shipSource === 'live' ? 'text-we-good' : 'text-we-accent'} />
-        <span className="text-we-text">{shipCount.toLocaleString()}</span>
+      <span className="hidden items-center gap-1 sm:flex">
+        <span className="font-medium tabular-nums text-slate-700">{visible.length.toLocaleString()}</span> signals
       </span>
-      <span className="flex items-center gap-1.5">
-        <TrainFront size={12} className={trainSource === 'live' ? 'text-we-good' : 'text-we-accent'} />
-        <span className="text-we-text">{trainCount.toLocaleString()}</span>
-      </span>
-      <span className="hidden items-center gap-1.5 lg:flex">
-        <Truck size={12} className="text-we-good" />
-        <span className="text-we-text">{fleetCount.toLocaleString()}</span>
-      </span>
-      <span className="hidden items-center gap-1.5 xl:flex">
-        <TriangleAlert size={12} className="text-we-warn" />
-        <span className="text-we-text">{incidentCount.toLocaleString()}</span>
-      </span>
-      <span className="uppercase tracking-wide">{projection === 'globe' ? '3D globe' : '2D'}</span>
-      <span
-        className={mode === 'live' ? 'font-medium text-we-good' : 'font-medium text-we-warn'}
-      >
+      <span className="h-3 w-px bg-we-border" />
+      <Count icon={<Plane size={12} />} value={acCount} tone={feedTone(acSource)} title="Aircraft" />
+      <Count icon={<Ship size={12} />} value={shipCount} tone={feedTone(shipSource)} title="Vessels" />
+      <Count icon={<TrainFront size={12} />} value={trainCount} tone={feedTone(trainSource)} title="Trains" />
+      <Count icon={<Truck size={12} />} value={fleetCount} tone="text-we-good" title="Fleet vehicles" className="hidden lg:flex" />
+      <Count icon={<TriangleAlert size={12} />} value={incidentCount} tone="text-we-warn" title="Traffic incidents" className="hidden xl:flex" />
+      <span className="h-3 w-px bg-we-border" />
+      <span className="font-medium uppercase tracking-wide">{projection === 'globe' ? '3D globe' : '2D map'}</span>
+      <span className={cx('font-semibold', mode === 'live' ? 'text-we-good' : 'text-we-warn')}>
         {mode === 'live' ? 'LIVE' : 'REPLAY'}
       </span>
     </footer>

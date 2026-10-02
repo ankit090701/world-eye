@@ -26,8 +26,8 @@ export function createTrainImage(): ImageData {
   for (let i = HALF.length - 1; i >= 0; i--) ctx.lineTo(-HALF[i][0], HALF[i][1])
   ctx.closePath()
 
-  ctx.fillStyle = '#ffffff'
-  ctx.strokeStyle = 'rgba(7,11,18,0.92)'
+  ctx.fillStyle = '#1e293b'
+  ctx.strokeStyle = '#ffffff'
   ctx.lineWidth = 2.2
   ctx.lineJoin = 'round'
   ctx.fill()
@@ -37,7 +37,7 @@ export function createTrainImage(): ImageData {
   ctx.beginPath()
   ctx.moveTo(-4, -6)
   ctx.lineTo(4, -6)
-  ctx.strokeStyle = 'rgba(7,11,18,0.55)'
+  ctx.strokeStyle = 'rgba(255,255,255,0.75)'
   ctx.lineWidth = 1.5
   ctx.stroke()
 

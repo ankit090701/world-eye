@@ -144,7 +144,7 @@ export function ActivityInteractions() {
       const p = f.properties || {}
       const [lng, lat] = f.geometry.coordinates as [number, number]
       const cat = String(p.category ?? 'signal')
-      const color = (CATEGORY_COLORS as Record<string, string>)[cat] ?? '#22d3ee'
+      const color = (CATEGORY_COLORS as Record<string, string>)[cat] ?? '#06b6d4'
       const when = new Date(Number(p.ts)).toLocaleString()
       popup
         .setLngLat([lng, lat])
@@ -154,10 +154,10 @@ export function ActivityInteractions() {
               <span style="width:9px;height:9px;border-radius:50%;background:${color};display:inline-block"></span>
               <strong style="text-transform:uppercase;font-size:11px;letter-spacing:.04em">${cat}</strong>
             </div>
-            <div style="color:#94a3b8;font-size:11px">${p.place ?? ''}</div>
+            <div style="color:#475569;font-size:11px">${p.place ?? ''}</div>
             <div style="font-family:ui-monospace,monospace;font-size:11px;margin-top:4px">${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
             <div style="color:#64748b;font-size:10px;margin-top:4px">${when}</div>
-            <div style="color:#475569;font-size:10px;margin-top:6px">Demo signal · placeholder feed</div>
+            <div style="color:#94a3b8;font-size:10px;margin-top:6px">Demo signal · placeholder feed</div>
           </div>`,
         )
         .addTo(map)

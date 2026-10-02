@@ -1,33 +1,34 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         we: {
-          bg: '#070b12',
-          'bg-2': '#0b1120',
-          panel: '#0e1524',
-          'panel-2': '#131c30',
-          border: '#1e293b',
-          'border-2': '#273449',
-          accent: '#22d3ee',
-          'accent-2': '#38bdf8',
-          warn: '#f59e0b',
-          danger: '#ef4444',
-          good: '#22c55e',
-          info: '#818cf8',
+          bg: '#f4f6fa',
+          'bg-2': '#eef1f6',
+          panel: '#ffffff',
+          'panel-2': '#f3f5f9',
+          border: '#e3e7ee',
+          'border-2': '#d2d8e2',
+          accent: '#4f46e5',
+          'accent-2': '#6366f1',
+          warn: '#d97706',
+          danger: '#dc2626',
+          good: '#16a34a',
+          info: '#6366f1',
           muted: '#64748b',
-          text: '#e2e8f0',
+          text: '#0f172a',
         },
       },
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       boxShadow: {
-        panel: '0 10px 30px -12px rgba(0,0,0,0.6)',
-        glow: '0 0 0 1px rgba(34,211,238,0.4), 0 0 20px -4px rgba(34,211,238,0.35)',
+        panel: '0 1px 2px rgba(15,23,42,0.04), 0 12px 32px -12px rgba(15,23,42,0.18)',
+        card: '0 1px 2px rgba(15,23,42,0.05), 0 4px 12px -6px rgba(15,23,42,0.10)',
+        glow: '0 0 0 1px rgba(79,70,229,0.25), 0 6px 16px -6px rgba(79,70,229,0.35)',
       },
       keyframes: {
         'pulse-ring': {

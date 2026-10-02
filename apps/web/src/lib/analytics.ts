@@ -1,6 +1,12 @@
 import type { Aircraft, Earthquake, Ship, ThreatMapPoint } from '../types'
 import type { Datum } from '../components/charts/Charts'
 import { CHART_PALETTE } from '../components/charts/Charts'
+import { SHIP_COLORS } from '../config/shipTypes'
+
+// Ordered bands get one-hue ramps (light -> dark); single series get one colour.
+const BLUE_RAMP = ['#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281']
+const ORANGE_RAMP = ['#fb923c', '#f97316', '#ea580c', '#c2410c', '#9a3412']
+const SERIES = CHART_PALETTE[0]
 
 export function altitudeBands(aircraft: Aircraft[]): Datum[] {
   const bands = [
@@ -13,17 +19,17 @@ export function altitudeBands(aircraft: Aircraft[]): Datum[] {
   return bands.map((b, i) => ({
     label: b.label,
     value: aircraft.filter((a) => a.altitude != null && a.altitude >= b.lo && a.altitude < b.hi).length,
-    color: CHART_PALETTE[i % CHART_PALETTE.length],
+    color: BLUE_RAMP[i],
   }))
 }
 
 export function magnitudeBands(quakes: Earthquake[]): Datum[] {
   const bands = [
-    { label: '<2', lo: -Infinity, hi: 2, color: '#38bdf8' },
-    { label: '2-3', lo: 2, hi: 3, color: '#34d399' },
-    { label: '3-4', lo: 3, hi: 4, color: '#f59e0b' },
-    { label: '4-5', lo: 4, hi: 5, color: '#fb923c' },
-    { label: '5+', lo: 5, hi: Infinity, color: '#f43f5e' },
+    { label: '<2', lo: -Infinity, hi: 2, color: ORANGE_RAMP[0] },
+    { label: '2-3', lo: 2, hi: 3, color: ORANGE_RAMP[1] },
+    { label: '3-4', lo: 3, hi: 4, color: ORANGE_RAMP[2] },
+    { label: '4-5', lo: 4, hi: 5, color: ORANGE_RAMP[3] },
+    { label: '5+', lo: 5, hi: Infinity, color: ORANGE_RAMP[4] },
   ]
   return bands.map((b) => ({
     label: b.label,
@@ -38,7 +44,7 @@ export function shipsByCategory(ships: Ship[]): Datum[] {
   return Array.from(counts.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 7)
-    .map(([label, value], i) => ({ label, value, color: CHART_PALETTE[i % CHART_PALETTE.length] }))
+    .map(([label, value]) => ({ label, value, color: (SHIP_COLORS as Record<string, string>)[label] ?? '#64748b' }))
 }
 
 export function threatsByCountry(threats: ThreatMapPoint[]): Datum[] {
@@ -50,7 +56,7 @@ export function threatsByCountry(threats: ThreatMapPoint[]): Datum[] {
   return Array.from(counts.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6)
-    .map(([label, value], i) => ({ label, value, color: CHART_PALETTE[i % CHART_PALETTE.length] }))
+    .map(([label, value]) => ({ label, value, color: CHART_PALETTE[7] }))
 }
 
 export function quakeTimeline(quakes: Earthquake[], now: number): Datum[] {
@@ -64,7 +70,7 @@ export function quakeTimeline(quakes: Earthquake[], now: number): Datum[] {
     const idx = Math.min(buckets - 1, Math.floor(((span - age) / span) * buckets))
     arr[idx]++
   }
-  return arr.map((value, i) => ({ label: i % 3 === 0 ? `${(buckets - i) * 2}h` : '', value, color: '#38bdf8' }))
+  return arr.map((value, i) => ({ label: i % 3 === 0 ? `${(buckets - i) * 2}h` : '', value, color: CHART_PALETTE[1] }))
 }
 
 export function speedHistogram(aircraft: Aircraft[]): { data: Datum[]; avg: number } {
@@ -80,7 +86,7 @@ export function speedHistogram(aircraft: Aircraft[]): { data: Datum[]; avg: numb
   const data = bands.map((b, i) => ({
     label: b.label,
     value: speeds.filter((s) => s >= b.lo && s < b.hi).length,
-    color: CHART_PALETTE[i % CHART_PALETTE.length],
+    color: SERIES,
   }))
   return { data, avg }
 }
@@ -93,7 +99,7 @@ export function headingDistribution(aircraft: Aircraft[]): Datum[] {
     const idx = Math.round(((a.track % 360) + 360) % 360 / 45) % 8
     arr[idx]++
   }
-  return COMPASS.map((label, i) => ({ label, value: arr[i], color: '#22d3ee' }))
+  return COMPASS.map((label, i) => ({ label, value: arr[i], color: SERIES }))
 }
 
 export interface Cluster {

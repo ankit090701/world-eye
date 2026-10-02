@@ -143,7 +143,7 @@ export function AlertInteractions() {
         .setHTML(
           `<div style="font-size:11px">
             <div style="margin-bottom:2px"><strong>${esc(p.title)}</strong></div>
-            <div style="color:#94a3b8">${esc(p.detail)}</div>
+            <div style="color:#475569">${esc(p.detail)}</div>
             <div style="color:#64748b;font-size:10px;margin-top:2px">${esc(t)}</div>
           </div>`,
         )

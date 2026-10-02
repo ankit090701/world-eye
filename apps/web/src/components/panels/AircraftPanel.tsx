@@ -87,7 +87,7 @@ export default function AircraftPanel() {
   return (
     <PanelShell
       title="Aircraft Tracking"
-      subtitle="Module 2 · live flights"
+      subtitle="Live flights"
       icon={<Plane size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

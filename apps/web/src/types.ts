@@ -1,6 +1,4 @@
-export type Theme = 'dark' | 'light'
-
-export type BasemapId = 'dark' | 'light' | 'voyager' | 'liberty' | 'satellite'
+export type BasemapId = 'light' | 'voyager' | 'liberty' | 'satellite'
 
 export type ProjectionType = 'globe' | 'mercator'
 

@@ -40,7 +40,7 @@ export default function ReportsPanel() {
   return (
     <PanelShell
       title="Reports"
-      subtitle="Module 17 · PDF · Excel · CSV · scheduled"
+      subtitle="PDF · Excel · CSV · scheduled"
       icon={<FileText size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
@@ -87,15 +87,28 @@ function GenerateTab({ recent }: { recent: GeneratedReport[] }) {
   return (
     <div>
       <div className="flex gap-1.5">
-        <select value={kind} onChange={(e) => setKind(e.target.value as ReportKind)} className="flex-1 rounded border border-we-border bg-we-panel px-2 py-1.5 text-xs text-we-text focus:outline-none">
+        <select value={kind} onChange={(e) => setKind(e.target.value as ReportKind)} className="flex-1 rounded-lg border border-we-border bg-we-panel px-2 py-1.5 text-xs text-we-text focus:outline-none">
           {KINDS.map((k) => <option key={k.id} value={k.id}>{k.label} report</option>)}
         </select>
-        <button onClick={generate} className="flex items-center gap-1.5 rounded-lg border border-we-accent/60 bg-we-accent/10 px-3 py-1.5 text-xs text-we-text hover:shadow-glow">
-          <FileText size={13} className="text-we-accent" /> Generate
+        <button onClick={generate} className="flex items-center gap-1.5 rounded-lg bg-we-accent px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-we-accent-2">
+          <FileText size={13} /> Generate
         </button>
       </div>
 
       {err && <div className="mt-2 text-[11px] text-we-warn">{err}</div>}
+
+      {!report && (
+        <div className="mt-4 flex flex-col items-center rounded-xl border border-dashed border-we-border-2 px-6 py-10 text-center">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-we-accent/10 text-we-accent">
+            <FileText size={18} />
+          </span>
+          <div className="mt-3 text-[13px] font-semibold text-we-text">No report yet</div>
+          <p className="mt-1 text-[11.5px] leading-relaxed text-we-muted">
+            Pick a report type and press Generate to preview it, then export as PDF, Excel, CSV,
+            Markdown or JSON.
+          </p>
+        </div>
+      )}
 
       {report && (
         <>

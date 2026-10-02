@@ -78,7 +78,7 @@ export default function NewsPanel() {
   return (
     <PanelShell
       title="News Intelligence"
-      subtitle="Module 11 · global news, mapped"
+      subtitle="Global news, mapped"
       icon={<Newspaper size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

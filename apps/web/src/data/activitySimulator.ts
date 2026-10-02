@@ -140,10 +140,10 @@ export function generateLiveBatch(now: number, n = 3): ActivitySignal[] {
 }
 
 export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
-  signal: '#38bdf8',
-  transit: '#22d3ee',
-  event: '#a78bfa',
-  sensor: '#34d399',
+  signal: '#0ea5e9',
+  transit: '#06b6d4',
+  event: '#8b5cf6',
+  sensor: '#10b981',
   alert: '#f43f5e',
 }
 

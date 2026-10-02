@@ -25,8 +25,8 @@ export function createShipImage(): ImageData {
   for (let i = HALF.length - 1; i >= 0; i--) ctx.lineTo(-HALF[i][0], HALF[i][1])
   ctx.closePath()
 
-  ctx.fillStyle = '#ffffff'
-  ctx.strokeStyle = 'rgba(7,11,18,0.92)'
+  ctx.fillStyle = '#1e293b'
+  ctx.strokeStyle = '#ffffff'
   ctx.lineWidth = 2.2
   ctx.lineJoin = 'round'
   ctx.fill()

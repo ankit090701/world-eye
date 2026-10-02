@@ -30,7 +30,7 @@ function dropMarker(map: maplibregl.Map, lng: number, lat: number) {
   wxMarker?.remove()
   const el = document.createElement('div')
   el.className = 'we-search-marker'
-  el.style.background = '#38bdf8'
+  el.style.background = '#0ea5e9'
   wxMarker = new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map)
 }
 
@@ -118,7 +118,7 @@ export default function WeatherPanel() {
   return (
     <PanelShell
       title="Weather Intelligence"
-      subtitle="Module 9 · conditions, storms, fires, quakes"
+      subtitle="Conditions, storms, fires, quakes"
       icon={<CloudSun size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

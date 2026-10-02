@@ -7,7 +7,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#ffffff',
+    color: '#1e293b',
     description: 'Live flights — click a plane for details',
   },
   {
@@ -16,7 +16,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#38bdf8',
+    color: '#0ea5e9',
     description: 'Live vessels — click a ship for details',
   },
   {
@@ -25,7 +25,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#34d399',
+    color: '#10b981',
     description: 'Live trains — click for route, schedule & delays',
   },
   {
@@ -43,7 +43,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Reference',
     visible: true,
     opacity: 0.7,
-    color: '#818cf8',
+    color: '#6366f1',
     description: 'Fleet operating zones & restricted areas',
   },
   {
@@ -79,7 +79,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#a78bfa',
+    color: '#8b5cf6',
     description: 'Hosting footprint of a looked-up domain (Domain panel)',
   },
   {
@@ -88,7 +88,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 0.7,
-    color: '#38bdf8',
+    color: '#0ea5e9',
     description: 'Precipitation radar — rain & snow (RainViewer, last 2h)',
   },
   {
@@ -106,7 +106,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 1,
-    color: '#38bdf8',
+    color: '#0ea5e9',
     description: 'Surface wind — arrows point downwind, sized by speed',
   },
   {
@@ -115,7 +115,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 1,
-    color: '#fbbf24',
+    color: '#f59e0b',
     description: 'Thunderstorm-risk cells (high CAPE)',
   },
   {
@@ -124,7 +124,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#c084fc',
+    color: '#a855f7',
     description: 'Active tropical cyclones (NOAA NHC)',
   },
   {
@@ -151,7 +151,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#22d3ee',
+    color: '#06b6d4',
     description: 'Crewed space stations, live-propagated (CelesTrak)',
   },
   {
@@ -160,7 +160,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#e2e8f0',
+    color: '#334155',
     description: 'Brightest / notable active satellites',
   },
   {
@@ -169,7 +169,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 1,
-    color: '#60a5fa',
+    color: '#3b82f6',
     description: 'Starlink constellation (sampled)',
   },
   {
@@ -178,7 +178,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 1,
-    color: '#f87171',
+    color: '#ef4444',
     description: 'Tracked orbital debris (sampled)',
   },
   {
@@ -187,7 +187,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: false,
     opacity: 1,
-    color: '#a3e635',
+    color: '#84cc16',
     description: 'Objects launched in the last 30 days',
   },
   {
@@ -196,7 +196,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#22d3ee',
+    color: '#06b6d4',
     description: 'Ground track of the selected satellite',
   },
   {
@@ -205,7 +205,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#fbbf24',
+    color: '#f59e0b',
     description: 'Where world news is happening (geoparsed headlines)',
   },
   {
@@ -250,7 +250,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#22d3ee',
+    color: '#06b6d4',
     description: 'Individual activity signals (click for details)',
   },
   {
@@ -259,7 +259,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     group: 'Overlays',
     visible: true,
     opacity: 1,
-    color: '#818cf8',
+    color: '#6366f1',
     description: 'Shapes created with the drawing tools',
   },
   {

@@ -20,7 +20,8 @@ export function normalizeAdsbLol(a: any): Aircraft | null {
 
   return {
     hex: String(a.hex ?? '').toLowerCase(),
-    callsign: a.flight ? String(a.flight).trim() : null,
+    // ADS-B pads unknown callsign characters with '@'.
+    callsign: String(a.flight ?? '').replace(/@/g, '').trim() || null,
     registration: a.r ? String(a.r).trim() : null,
     type: a.t ? String(a.t).trim() : null,
     category: a.category ?? null,

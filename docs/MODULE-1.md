@@ -24,22 +24,23 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 Use this to verify the module. Everything below should work with no setup.
 
 ### The map
-- [ ] On load you see a **3D globe** (dark) with a live **activity heatmap** and
-      coloured **signal points**.
+- [ ] On load you see a Europe-centred **3D globe** on the light Positron basemap with
+      a live **activity heatmap** and coloured **signal points**.
 - [ ] Drag to rotate, scroll to zoom, right-drag (or ctrl-drag) to tilt/rotate.
 - [ ] Bottom-right navigation control + compass; bottom-left scale bar.
 
 ### Top bar
-- [ ] **Sun/Moon** toggle switches the map between **dark** and **light** basemaps.
-- [ ] **LIVE / REPLAY** chip shows the feed state; click it to jump back to live.
-- [ ] The **search box** opens the Search panel.
+- [ ] **Live / Replay** chip shows the feed state; click it to jump back to live.
+- [ ] The **search box** (or pressing `/`) opens the Search panel: type a place (e.g.
+      `Tokyo`) → results → click to fly there; or type `48.8566, 2.3522` → "Go to
+      coordinate" flies there and drops a marker.
 
-### Left dock (panels)
-- [ ] **Layers** — pick any of 5 basemaps (Dark Matter, Satellite, Voyager,
-      Positron, Liberty); switch **3D Globe ⇄ Flat**; toggle each overlay and drag
-      its **opacity** slider (Heatmap, Points, Drawings, Graticule grid).
-- [ ] **Search** — type a place (e.g. `Tokyo`) → results → click to fly there;
-      or type `48.8566, 2.3522` → "Go to coordinate" flies there and drops a marker.
+### Left sidebar (panels)
+- [ ] Panels are grouped (map · tracking · environment · intelligence · operations);
+      hovering an icon shows its name, and the sidebar scrolls on short screens.
+- [ ] **Layers** — pick any of 4 basemaps (Positron, Voyager, Liberty, Satellite);
+      switch **3D Globe ⇄ Flat**; toggle each overlay and drag its **opacity** slider
+      (Heatmap, Points, Drawings, Graticule grid).
 - [ ] **Bookmarks** — "Bookmark current view", rename it, fly back to it, delete it.
       Reload the page — bookmarks persist (localStorage).
 - [ ] **Overview** — legend by category, live counts, heatmap scale, attributions.

@@ -46,7 +46,7 @@ function dropMarker(map: maplibregl.Map, lng: number, lat: number) {
   osintMarker?.remove()
   const el = document.createElement('div')
   el.className = 'we-search-marker'
-  el.style.background = '#2dd4bf'
+  el.style.background = '#14b8a6'
   osintMarker = new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map)
 }
 
@@ -109,7 +109,7 @@ export default function OsintPanel() {
   return (
     <PanelShell
       title="OSINT Search"
-      subtitle="Module 13 · public / consent-based intelligence"
+      subtitle="Public / consent-based intelligence"
       icon={<ScanSearch size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

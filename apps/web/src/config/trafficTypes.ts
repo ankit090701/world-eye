@@ -4,8 +4,8 @@ export const INCIDENT_COLORS: Record<IncidentType, string> = {
   accident: '#ef4444',
   closure: '#b91c1c',
   roadwork: '#f59e0b',
-  restriction: '#38bdf8',
-  other: '#94a3b8',
+  restriction: '#0ea5e9',
+  other: '#64748b',
 }
 
 export const INCIDENT_LABELS: Record<IncidentType, string> = {

@@ -114,7 +114,7 @@ export default function MapView() {
   }, [])
 
   return (
-    <div className="absolute inset-0">
+    <div className="we-map-bg absolute inset-0">
       <div ref={containerRef} className="absolute inset-0" />
       {/* headless syncers keep the map in step with Redux + data stores */}
       <BasemapSync />

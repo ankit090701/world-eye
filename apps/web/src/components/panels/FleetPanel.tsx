@@ -116,7 +116,7 @@ export default function FleetPanel() {
   return (
     <PanelShell
       title="Fleet Tracking"
-      subtitle="Module 5 · authorized devices"
+      subtitle="Authorized devices"
       icon={<Truck size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

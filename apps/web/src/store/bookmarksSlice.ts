@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { Bookmark } from '../types'
+import { BASEMAPS } from '../config/basemaps'
 
 const STORAGE_KEY = 'worldeye.bookmarks.v1'
 
@@ -8,7 +9,9 @@ function loadBookmarks(): Bookmark[] {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as Bookmark[]) : []
+    if (!Array.isArray(parsed)) return []
+    // Views saved with a since-retired basemap (e.g. the old dark style) reopen on Positron.
+    return (parsed as Bookmark[]).map((b) => (b.basemap in BASEMAPS ? b : { ...b, basemap: 'light' }))
   } catch {
     return []
   }

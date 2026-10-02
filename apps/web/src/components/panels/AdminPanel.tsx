@@ -43,7 +43,7 @@ export default function AdminPanel() {
   const dispatch = useAppDispatch()
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>('users')
   return (
-    <PanelShell title="Admin" subtitle="Module 18 · users · keys · audit · usage" icon={<Shield size={16} />} onClose={() => dispatch(setActivePanel(null))}>
+    <PanelShell title="Admin" subtitle="Users · keys · audit · usage" icon={<Shield size={16} />} onClose={() => dispatch(setActivePanel(null))}>
       <div className="mb-3 grid grid-cols-5 gap-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)} className={cx('flex flex-col items-center gap-0.5 rounded-md border py-1.5 text-[9px]', tab === id ? 'border-we-accent/60 bg-we-accent/15 text-we-accent' : 'border-we-border text-we-muted hover:text-we-text')}>

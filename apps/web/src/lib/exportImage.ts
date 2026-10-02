@@ -29,19 +29,21 @@ export function exportMapImage(map: MlMap) {
   // footer bar with branding + timestamp
   const scale = w / 1280
   const barH = Math.max(28, Math.round(34 * scale))
-  ctx.fillStyle = 'rgba(7, 11, 18, 0.72)'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.92)'
   ctx.fillRect(0, h - barH, w, barH)
+  ctx.fillStyle = '#e3e7ee'
+  ctx.fillRect(0, h - barH, w, Math.max(1, Math.round(scale)))
 
   const fs = Math.max(11, Math.round(13 * scale))
-  ctx.font = `600 ${fs}px system-ui, sans-serif`
+  ctx.font = `600 ${fs}px Inter, system-ui, sans-serif`
   ctx.textBaseline = 'middle'
-  ctx.fillStyle = '#22d3ee'
+  ctx.fillStyle = '#4f46e5'
   ctx.fillText('WorldEye', Math.round(14 * scale), h - barH / 2)
 
-  const label = `World Map Dashboard · ${new Date().toLocaleString()}`
-  ctx.fillStyle = '#cbd5e1'
+  const label = `Global intelligence · ${new Date().toLocaleString()}`
+  ctx.fillStyle = '#475569'
   const brandW = ctx.measureText('WorldEye').width
-  ctx.font = `400 ${fs}px system-ui, sans-serif`
+  ctx.font = `400 ${fs}px Inter, system-ui, sans-serif`
   ctx.fillText(label, Math.round(14 * scale) + brandW + Math.round(12 * scale), h - barH / 2)
 
   const attrib = '© OpenStreetMap · CARTO · Esri'

@@ -1,12 +1,12 @@
 import type { ShipCategory } from '../types'
 
 export const SHIP_COLORS: Record<ShipCategory, string> = {
-  cargo: '#38bdf8',
+  cargo: '#0ea5e9',
   tanker: '#f59e0b',
-  passenger: '#34d399',
-  fishing: '#22d3ee',
-  tug: '#a78bfa',
-  highspeed: '#f472b6',
+  passenger: '#10b981',
+  fishing: '#06b6d4',
+  tug: '#8b5cf6',
+  highspeed: '#ec4899',
   military: '#f43f5e',
   pleasure: '#94a3b8',
   other: '#64748b',

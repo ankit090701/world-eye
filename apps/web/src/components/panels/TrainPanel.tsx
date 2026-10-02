@@ -116,7 +116,7 @@ export default function TrainPanel() {
   return (
     <PanelShell
       title="Train Tracking"
-      subtitle="Module 4 · live rail"
+      subtitle="Live rail"
       icon={<TrainFront size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

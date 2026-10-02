@@ -182,7 +182,7 @@ export function SatelliteInteractions() {
         .setHTML(
           `<div style="font-size:11px">
             <div style="margin-bottom:2px"><strong>${esc(p.name)}</strong></div>
-            <div style="color:#94a3b8">NORAD ${esc(p.noradId)} · ${esc(p.group)}</div>
+            <div style="color:#475569">NORAD ${esc(p.noradId)} · ${esc(p.group)}</div>
             <div>alt ${esc(p.altKm)} km · ${esc(p.speed)} km/s</div>
           </div>`,
         )

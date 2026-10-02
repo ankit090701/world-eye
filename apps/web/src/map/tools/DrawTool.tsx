@@ -19,7 +19,7 @@ import type { ToolId } from '../../types'
 import { Check, Undo2, X, Trash2 } from 'lucide-react'
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] }
-const PALETTE = ['#818cf8', '#22d3ee', '#34d399', '#f59e0b', '#f43f5e', '#a78bfa']
+const PALETTE = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6']
 
 const isDrawTool = (t: ToolId) => t.startsWith('draw-')
 

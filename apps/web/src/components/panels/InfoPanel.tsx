@@ -60,19 +60,18 @@ export default function InfoPanel() {
       </div>
 
       <SectionTitle>Heatmap scale</SectionTitle>
-      <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-[#22d3ee] via-[#a78bfa] to-[#f43f5e]" />
+      <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-[#06b6d4] via-[#8b5cf6] to-[#f43f5e]" />
       <div className="mt-1 flex justify-between text-[10px] text-we-muted">
         <span>low density</span>
         <span>high density</span>
       </div>
 
-      <SectionTitle>About this module</SectionTitle>
+      <SectionTitle>About the activity layer</SectionTitle>
       <p className="text-[11px] leading-relaxed text-we-muted">
-        <span className="text-we-text">Module 1 — World Map Dashboard.</span> The operational
-        picture layer of WorldEye. Points and heatmap currently show a{' '}
-        <span className="text-we-text">simulated demo feed</span> so the timeline, playback and
-        live updates are demonstrable. Modules 2+ (aircraft, ships, trains, weather…) will replace
-        the demo feed with real tracked objects on this same map.
+        The heatmap and signal points show a{' '}
+        <span className="font-medium text-we-text">simulated demo feed</span> that drives the
+        timeline, playback and live updates. Live tracking data (aircraft, ships, trains, weather…)
+        renders on its own layers of the same map.
       </p>
 
       <SectionTitle>Data & attribution</SectionTitle>

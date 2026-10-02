@@ -69,12 +69,12 @@ export function DomainInfraInteractions() {
         .setHTML(
           `<div style="font-size:11px">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-              <span style="width:8px;height:8px;border-radius:50%;background:#a78bfa;display:inline-block"></span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;display:inline-block"></span>
               <strong style="font-family:ui-monospace,monospace">${esc(p.host)}</strong>
             </div>
-            <div style="color:#c4b5fd">${esc(ROLE_LABEL[role] ?? role)}</div>
+            <div style="color:#7c3aed">${esc(ROLE_LABEL[role] ?? role)}</div>
             <div style="font-family:ui-monospace,monospace">${esc(p.ip)}</div>
-            <div style="color:#94a3b8">${esc(p.org ?? '')}</div>
+            <div style="color:#475569">${esc(p.org ?? '')}</div>
             ${loc ? `<div style="color:#64748b">${loc}</div>` : ''}
           </div>`,
         )

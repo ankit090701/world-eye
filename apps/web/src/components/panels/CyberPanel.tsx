@@ -71,7 +71,7 @@ export default function CyberPanel() {
   return (
     <PanelShell
       title="Cyber Intelligence"
-      subtitle="Module 7 · IP / domain / ASN OSINT"
+      subtitle="IP / domain / ASN OSINT"
       icon={<ShieldAlert size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

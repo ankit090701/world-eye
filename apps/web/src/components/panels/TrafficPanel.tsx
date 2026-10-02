@@ -79,7 +79,7 @@ export default function TrafficPanel() {
   return (
     <PanelShell
       title="Traffic Intelligence"
-      subtitle="Module 6 · incidents & congestion"
+      subtitle="Incidents & congestion"
       icon={<TriangleAlert size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >

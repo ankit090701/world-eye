@@ -60,7 +60,7 @@ export default function SatellitePanel() {
   return (
     <PanelShell
       title="Satellite Intelligence"
-      subtitle="Module 10 · live orbital tracking"
+      subtitle="Live orbital tracking"
       icon={<Satellite size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
