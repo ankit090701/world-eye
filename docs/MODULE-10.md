@@ -60,7 +60,7 @@ SatelliteInteractions ▶ click → select + popup
   position, altitude and speed — so satellites move smoothly with zero server load.
 - **Groups load on demand.** Each group's TLEs are fetched only when its layer is
   enabled, then its objects join the propagation registry; disabling a group drops
-  them. ISS + notable satellites are on by default.
+  them. Every group starts off — turn one on in Layers or the Satellites panel.
 - **Orbit ground track.** When a satellite is selected, its track over one full
   orbital period is propagated and drawn, split at the ±180° antimeridian so the line
   doesn't smear across the map.

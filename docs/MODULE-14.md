@@ -24,9 +24,10 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 
 - [ ] Open the **Alerts** panel (bell icon, left dock). Two rules ship enabled:
       *Aircraft emergency squawk* and *Major earthquake (M5+)*.
-- [ ] **Alerts tab** — the M5+ rule fires against live USGS data on load (there is
-      usually a recent M5+ quake); you'll see a **toast**, entries in the feed, and
-      **markers on the map**. Click a feed entry to fly to it.
+- [ ] **Alerts tab** — turn on the **Earthquakes** layer and the M5+ rule fires against
+      live USGS data (there is usually a recent M5+ quake); you'll see a **toast**,
+      entries in the feed, and **markers on the map** once **Fired Alerts** is on.
+      Click a feed entry to fly to it.
 - [ ] **Rules tab → New alert rule** — create one:
   - **Speed**: aircraft > e.g. 500 kt (or fleet km/h).
   - **Geo-fence**: pick a radius, click **Use map centre** to set the zone — the amber
@@ -89,7 +90,8 @@ AlertZoneSync ▶ geo-rule circles on the map
 - **Evaluation sources.** The engine wires the stores that carry per-object live state:
   **aircraft** (emergency / speed / geo), **fleet** (speed / geo), **weather events**
   (earthquake / cyclone) and **cyber threats**. Weather/cyclone/threat rules require that
-  layer's engine to be polling (weather events + threats are on by default).
+  layer's engine to be polling, and every layer starts off — turn on the layers your
+  rules watch.
 - **Delivery scope.** Slack / Discord / generic webhooks deliver for real to URLs **you**
   provide. Email & SMS need a provider (SendGrid / Twilio) and are intentionally stubbed —
   the config is stored so wiring a provider later is a drop-in.

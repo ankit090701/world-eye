@@ -30,9 +30,13 @@ export default function StatusBar() {
   const trainSource = useAppSelector((s) => s.train.source)
   const fleetCount = useAppSelector((s) => s.fleet.count)
   const incidentCount = useAppSelector((s) => s.traffic.incidentCount)
+  const layers = useAppSelector((s) => s.layers.items)
   const draws = useDrawFeatures()
   const visible = useVisibleSignals()
   const feedTone = (source: string | null) => (source === 'live' ? 'text-we-good' : 'text-we-warn')
+  // Feeds only run while their layer is on, so only those layers get a count.
+  const shown = (...ids: string[]) => layers.some((l) => l.visible && ids.includes(l.id))
+  const anyCount = shown('aircraft', 'ships', 'trains', 'fleet', 'traffic-incidents')
 
   return (
     <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex h-[30px] items-center gap-3 whitespace-nowrap border-t border-we-border bg-white/90 px-3 text-[11px] text-we-muted backdrop-blur-xl sm:gap-4 sm:px-4">
@@ -62,17 +66,25 @@ export default function StatusBar() {
         <PencilRuler size={12} className="text-slate-400" />
         {draws.features.length} drawings
       </span>
-      <span className="hidden items-center gap-1 lg:flex">
-        <span className="font-medium tabular-nums text-slate-700">{visible.length.toLocaleString()}</span> signals
-      </span>
-      <Divider className="hidden md:block" />
-      <Count icon={<Plane size={12} />} value={acCount} tone={feedTone(acSource)} title="Aircraft" />
-      <Count icon={<Ship size={12} />} value={shipCount} tone={feedTone(shipSource)} title="Vessels" />
-      <Count icon={<TrainFront size={12} />} value={trainCount} tone={feedTone(trainSource)} title="Trains" />
-      <Count icon={<Truck size={12} />} value={fleetCount} tone="text-we-good" title="Fleet vehicles" className="hidden sm:flex" />
-      <Count icon={<TriangleAlert size={12} />} value={incidentCount} tone="text-we-warn" title="Traffic incidents" className="hidden sm:flex" />
+      {shown('activity-heatmap', 'activity-points') && (
+        <span className="hidden items-center gap-1 lg:flex">
+          <span className="font-medium tabular-nums text-slate-700">{visible.length.toLocaleString()}</span> signals
+        </span>
+      )}
+      {anyCount && <Divider className="hidden md:block" />}
+      {shown('aircraft') && <Count icon={<Plane size={12} />} value={acCount} tone={feedTone(acSource)} title="Aircraft" />}
+      {shown('ships') && <Count icon={<Ship size={12} />} value={shipCount} tone={feedTone(shipSource)} title="Vessels" />}
+      {shown('trains') && (
+        <Count icon={<TrainFront size={12} />} value={trainCount} tone={feedTone(trainSource)} title="Trains" />
+      )}
+      {shown('fleet') && (
+        <Count icon={<Truck size={12} />} value={fleetCount} tone="text-we-good" title="Fleet vehicles" className="hidden sm:flex" />
+      )}
+      {shown('traffic-incidents') && (
+        <Count icon={<TriangleAlert size={12} />} value={incidentCount} tone="text-we-warn" title="Traffic incidents" className="hidden sm:flex" />
+      )}
       <div className="flex-1 md:hidden" />
-      <Divider className="hidden sm:block" />
+      <Divider className={cx('hidden', anyCount ? 'sm:block' : 'md:block')} />
       <span className="hidden font-medium uppercase tracking-wide sm:inline">{projection === 'globe' ? '3D globe' : '2D map'}</span>
       <span className={cx('font-semibold', mode === 'live' ? 'text-we-good' : 'text-we-warn')}>
         {mode === 'live' ? 'LIVE' : 'REPLAY'}

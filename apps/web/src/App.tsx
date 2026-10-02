@@ -4,6 +4,7 @@ import TopBar from './components/TopBar'
 import LeftDock, { PanelLauncher } from './components/LeftDock'
 import RightToolbar from './components/RightToolbar'
 import PanelHost from './components/PanelHost'
+import LayerHint from './components/LayerHint'
 import TimelineBar from './components/TimelineBar'
 import StatusBar from './components/StatusBar'
 import Toast from './components/Toast'
@@ -17,6 +18,7 @@ export default function App() {
         <LeftDock />
         <RightToolbar />
         <PanelHost />
+        <LayerHint />
         <TimelineBar />
         <StatusBar />
         <PanelLauncher />

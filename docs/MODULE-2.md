@@ -24,7 +24,8 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 
 ## Feature walkthrough & test checklist
 
-- [ ] On load, planes appear near the map centre. Zoom to a busy region
+- [ ] Turn on **Aircraft (live)** in Layers (or **Show aircraft** in the Aircraft panel) —
+      planes appear near the map centre. Zoom to a busy region
       (e.g. **London / Europe**) → 100+ **live** aircraft, each a plane icon
       **rotated to its heading**, coloured by **altitude** (cyan low → amber/red high).
 - [ ] Open the **Aircraft** panel (plane icon, left dock). The header shows

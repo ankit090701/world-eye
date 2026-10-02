@@ -139,6 +139,9 @@ in favour of a single light theme:
 Plus: live cursor lat/lng + DMS, center/zoom/bearing/pitch read-out, place search
 (OpenStreetMap Nominatim), category legend and live statistics.
 
+The globe opens with every layer off, so nothing loads until you turn on what you want
+to see in **Layers**.
+
 Works on phones and tablets too: on a phone the panels open from a launcher in the
 top bar as bottom sheets you can swipe down to close; tablets keep the side rail and
 panels.

@@ -83,8 +83,8 @@ AnalyticsPanel
 ## Notes / limitations
 
 - **Live-data dependency.** Charts reflect what's currently loaded — aircraft/ships are
-  viewport-scoped, and a chart reads empty until its source has fetched (weather &
-  threats are on by default; ships need the map over a covered region).
+  viewport-scoped, and a chart reads empty until its source has fetched (every layer
+  starts off; ships also need the map over a covered region).
 - **Heatmaps.** The BRD's geographic heatmaps are rendered as **map layers** (activity,
   traffic congestion, weather). This panel provides the analytical distribution/intensity
   breakdowns; it doesn't duplicate the on-map heatmaps.

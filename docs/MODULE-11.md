@@ -30,7 +30,7 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 - [ ] **Trending** chips show the most-mentioned names/places across current headlines.
 - [ ] Each article shows its **source**, **time-ago**, and a **place** badge when a
       location was detected in the headline.
-- [ ] **News Hotspots** overlay (on by default, toggle in the panel or Layers): dots
+- [ ] **News Hotspots** overlay (off at start — turn it on in the panel or Layers): dots
       where news is happening, colour-coded by category, sized by story count. Click a
       dot → popup with the place, story count and top headline (links out).
 - [ ] Switch basemap — the news hotspots persist.

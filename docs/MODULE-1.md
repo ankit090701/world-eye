@@ -24,8 +24,10 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 Use this to verify the module. Everything below should work with no setup.
 
 ### The map
-- [ ] On load you see a Europe-centred **3D globe** on the light Positron basemap with
-      a live **activity heatmap** and coloured **signal points**.
+- [ ] On load you see a clean, Europe-centred **3D globe** on the light Positron basemap
+      with **every layer off** — nothing is fetched until you choose. Turn layers on in
+      **Layers** (open at start on wide screens; otherwise tap **Choose what to show**),
+      e.g. the live **activity heatmap** and coloured **signal points**.
 - [ ] Drag to rotate, scroll to zoom, right-drag (or ctrl-drag) to tilt/rotate.
 - [ ] Bottom-right zoom/compass control on mouse and trackpad screens (touch screens
       pinch to zoom and rotate instead); bottom-left scale bar.
