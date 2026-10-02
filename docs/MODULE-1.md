@@ -8,11 +8,14 @@ WorldEye tracking module renders onto.
 ## How to run
 
 ```bash
-npm install      # from repo root (installs the web workspace)
-npm run dev      # http://localhost:5173
+npm install      # from repo root (installs all workspaces)
+npm run dev      # http://localhost:5173 (also starts the API on :8787)
 ```
 
-No API keys, no accounts, no backend needed — all providers are free & keyless.
+Module 1 itself needs no API keys, accounts or backend — all its providers are free &
+keyless.
+
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
 
 ---
 
@@ -106,10 +109,11 @@ main.tsx ── <Provider store> ── <App>
 
 ---
 
-## Swapping the demo feed for real data (for Modules 2+)
+## Swapping the demo feed for real data
 
-The activity layer reads GeoJSON from the `we-activity` source. To feed it real
-tracked objects later:
+The activity layer reads GeoJSON from the `we-activity` source. Modules 2–18 render
+their live data on their own layers, so this feed remains demo data. To drive it from
+a real source:
 
 1. Replace `src/data/activitySimulator.ts` / `activityStore.ts` with a real source
    (REST poll or WebSocket) that emits `ActivitySignal`-shaped records.
@@ -123,9 +127,10 @@ rather than being hard-wired to any one data type.
 
 ## Notes / known limitations
 
-- The activity feed is **simulated demo data** (clearly labelled in-app) until the
-  real tracking modules land.
+- The activity feed (heatmap, signal points, timeline) is **simulated demo data**,
+  labelled as such in the Overview panel; the tracking modules' live data renders on
+  its own layers.
 - Place search uses public Nominatim; heavy use should respect its usage policy —
   fine for interactive use.
-- The production JS bundle is ~1.2 MB (mostly MapLibre); code-splitting can be
-  added later if needed. It does not affect functionality.
+- The main JS bundle is ~1.5 MB minified (~420 KB gzipped), mostly MapLibre; the
+  PDF/Excel export libraries are code-split and load only on demand.

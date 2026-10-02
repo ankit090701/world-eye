@@ -14,6 +14,8 @@ npm run dev      # web (:5173) + API (:8787)
 
 Open **http://localhost:5173**. The **API must be running** for the traffic feed.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. Traffic incidents + road sensors: **Fintraffic Digitraffic Road**.
 
 ---

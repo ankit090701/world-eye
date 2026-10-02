@@ -16,6 +16,8 @@ npm run dev      # web (:5173) + API (:8787)
 Open **http://localhost:5173**, use a few panels/lookups (to generate audit + usage),
 then open the **Admin** panel.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 ---
 
 ## Feature walkthrough & test checklist
@@ -45,8 +47,9 @@ Browser (apps/web)
 AdminPanel (Users · Keys · Audit · Usage · Orgs)
    ├─ adminSlice ── users / apiKeys / orgs (localStorage) · audit (session)
    ├─ auditMiddleware ── Redux middleware: watches meaningful actions
-   │                     (ui/setActivePanel, cyber/domain/osint lookupOk,
-   │                      alerts/addRule, reports/addRecent, admin/*) → logAudit
+   │                     (ui/setActivePanel, cyber|domain|osint/lookupOk,
+   │                      alerts/addRule|deleteRule, reports/addRecent|addSchedule,
+   │                      admin user/role/key/org changes) → logAudit
    ├─ usageStore + installUsageTracker ── one-time window.fetch interceptor,
    │                                       counts /api/<category> calls (live)
    └─ lib/permissions.ts ── role → permission matrix

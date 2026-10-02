@@ -17,6 +17,8 @@ npm run dev      # web (:5173) + API (:8787)
 Open **http://localhost:5173**. Keep the app open a few seconds so the tracking feeds
 populate, then open the **AI** panel.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 ---
 
 ## Feature walkthrough & test checklist
@@ -94,4 +96,6 @@ lib/aiEngine.ts            aircraft · ships · trains · fleet · traffic ·
   image/vision pipeline in scope.
 - **Live-data dependency.** Answers reflect what's currently loaded: aircraft/ships are
   viewport-scoped, and a domain reads as `0` until its layer/engine has fetched (weather,
-  threats and satellites are on by default).
+  threats and satellites are on by default). Simulated fallback data counts too — e.g.
+  where there's no ADS-B coverage, the simulated feed's demo emergency squawks raise the
+  risk index.

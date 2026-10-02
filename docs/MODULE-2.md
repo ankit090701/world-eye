@@ -15,6 +15,8 @@ npm run dev      # starts BOTH web (:5173) and API (:8787)
 Open **http://localhost:5173** in a normal browser. The **API must be running**
 for live aircraft (it is, under `npm run dev`).
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. Aircraft: adsb.lol · Route/airline/airports: adsbdb ·
 > Weather radar: RainViewer.
 
@@ -43,9 +45,11 @@ for live aircraft (it is, under `npm run dev`).
       across the style change.
 
 ### Verifying the fallback
-Stop the API (`Ctrl-C` the `api` process) — the panel shows **Feed offline**,
-then within a poll it serves a **Simulated** feed so planes keep moving. Restart
-`npm run dev:api` to return to live data.
+The simulator lives in the API: when adsb.lol is unreachable or has no traffic for
+the area (e.g. pan out over an ocean), `/api/aircraft` serves a **Simulated** feed —
+the header turns amber and planes keep moving. If the API itself is stopped
+(`Ctrl-C` the `api` process), the panel shows **Feed offline** and the last positions
+stay frozen until `npm run dev:api` is running again.
 
 ---
 
@@ -90,7 +94,8 @@ WeatherOverlay  ── RainViewer tiles (direct)
 
 - **Coverage** is community ADS-B (excellent over land/Europe/US; sparser mid-ocean
   and over China). Where the feed is empty, the simulated fallback fills in so the
-  module is always demonstrable.
+  module is always demonstrable. The simulated feed includes occasional demo emergency
+  squawks, which the Alert Engine and AI risk index treat like real ones.
 - **Route/type** enrichment depends on adsbdb having the callsign/airframe; unknown
   fields show `—`.
 - RainViewer public tiles are past-radar, ~last 2 h, refreshed every 5 min.

@@ -15,6 +15,8 @@ npm run dev      # web (:5173) + API (:8787)
 
 Open **http://localhost:5173**. The **API must be running** for lookups.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. Sources: RDAP · Google DoH · certspotter (crt.sh fallback) · ip-api.
 
 ---
@@ -81,8 +83,9 @@ DomainInfraSync/Interactions ▶ map                   ├─ Google DoH (A/AAAA
   certificate-transparency logs. The query is validated as a domain, normalised, and
   passed only as an encoded parameter to **fixed** services (no SSRF).
 - **Abuse guardrails.** `/api/domain/lookup` caps the query at 200 chars, validates
-  it is a real domain, and shares the per-IP rate limiter with the cyber route
-  (20 uncached lookups / min → `429`). Results cached 10 min.
+  it is a real domain, and has its own per-IP rate limit (15 uncached lookups / min →
+  `429`) — lower than the cyber route's 20 because each lookup fans out to ~25
+  upstream calls. Results cached 10 min; cached hits don't count against the limit.
 - **Untrusted feed data is escaped.** Infra-popup values come from DNS / CT / ip-api,
   so they're HTML-escaped before rendering.
 

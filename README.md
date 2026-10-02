@@ -28,13 +28,13 @@ provider is required).
 | **15** | **AI Intelligence** | ✅ Built |
 | **16** | **Analytics** | ✅ Built |
 | **17** | **Reports** | ✅ Built |
-| **18** | **Admin** | ✅ **Built — ready for review** |
+| **18** | **Admin** | ✅ Built |
 
 ---
 
 ## Quick start
 
-Requires **Node.js ≥ 20** (tested on Node 22).
+Requires **Node.js 20.19+ or 22.12+** (Vite 8's minimum; tested on Node 22).
 
 ```bash
 # from the repository root
@@ -45,10 +45,11 @@ npm run dev
 Then open **http://localhost:5173**.
 
 `npm run dev` starts **both** the web app (`:5173`) and the WorldEye API
-(`:8787`, needed by Module 2 for live aircraft). To run just Module 1's frontend:
+(`:8787`, which serves every live feed and lookup for Modules 2–14). To run one
+side only:
 
 ```bash
-npm run dev:web     # web only (Module 1)
+npm run dev:web     # web only (Module 1 works without the API)
 npm run dev:api     # API only
 ```
 
@@ -125,10 +126,11 @@ Plus: live cursor lat/lng + DMS, center/zoom/bearing/pitch read-out, place searc
 ### About the activity data
 
 Module 1 ships with a **self-contained simulated activity feed** (`src/data/`)
-so heatmaps, the timeline, playback and live updates are all demonstrable today.
-It is clearly labelled as demo data in the UI. When Modules 2+ come online
-(aircraft, ships, trains, weather…), their real feeds replace the simulator —
-**the map, layers, timeline and tools stay exactly the same.**
+that drives the heatmap, signal points, timeline, playback and live updates. It is
+labelled as demo data in the Overview panel. The tracking modules (2–18) render
+their real feeds on **their own layers** of the same map, so the activity feed stays
+demo data; it can still be swapped for a real source without touching the map,
+layers, timeline or tools (see [`docs/MODULE-1.md`](docs/MODULE-1.md)).
 
 ### Free & open data sources (no keys)
 
@@ -147,25 +149,28 @@ worldeye/
 ├── apps/
 │   ├── web/                 # React + TypeScript + Vite frontend
 │   │   └── src/
-│   │       ├── map/         # MapLibre integration, syncers, tools, aircraft/
-│   │       ├── components/  # UI shell + panels
-│   │       ├── store/       # Redux Toolkit slices
-│   │       ├── data/        # activity simulator + external stores
-│   │       ├── api/         # WorldEye API client (Module 2+)
-│   │       ├── config/      # basemaps, layers, api base
-│   │       └── lib/         # geodesy, export, helpers
-│   └── api/                 # Express data proxy & enrichment (Module 2+)
-│       └── src/aircraft/    # adsb.lol + adsbdb + simulated fallback
+│   │       ├── map/         # MapLibre setup, syncers, tools + one folder per map module
+│   │       ├── components/  # UI shell, panels, charts
+│   │       ├── store/       # Redux Toolkit slices + audit middleware
+│   │       ├── data/        # activity simulator + live data stores
+│   │       ├── api/         # WorldEye API client
+│   │       ├── config/      # basemaps, layers, API base, type colours
+│   │       ├── hooks/       # shared React hooks
+│   │       └── lib/         # geodesy, AI engine, analytics, reports, helpers
+│   └── api/                 # Express data proxy & enrichment
+│       └── src/             # one folder per module (aircraft, ships, trains, fleet,
+│                            #   traffic, cyber, domain, weather, satellites, news,
+│                            #   social, osint, alerts) + lib/ (cache, fetch, PRNG)
 ├── docker/nginx/            # nginx config template for the web image
-├── docs/                    # module documentation
+├── docs/                    # per-module documentation
 ├── Dockerfile               # multi-stage build: `api` and `web` targets
 ├── compose.yaml             # web + api stack (`docker compose up`)
 └── worldeye-brd.md          # source requirements
 ```
 
-The repo is an **npm-workspaces monorepo** so upcoming modules (`apps/api`,
-`apps/worker`, `apps/gateway`, `packages/*` per the BRD) slot in without
-restructuring.
+The repo is an **npm-workspaces monorepo** (`apps/web`, `apps/api`), so further
+services from the BRD (a worker or gateway, shared `packages/*`) can be added under
+`apps/*` / `packages/*` without restructuring.
 
 See [`docs/MODULE-1.md`](docs/MODULE-1.md) for the full feature walkthrough and
 architecture notes.
@@ -538,7 +543,7 @@ sized by story count; click a hotspot for the place + top headline.
 ### How it works
 
 The API pulls **Google News RSS** (free, keyless, reliable) per category, parses it,
-and **geoparses each headline** against a built-in gazetteer of ~140 countries and
+and **geoparses each headline** against a built-in gazetteer of ~120 countries and
 major cities to assign coordinates — giving news a real map presence without any
 paid geocoding. Trending topics are derived from the frequency of proper nouns across
 current headlines. Every feed is cached server-side; a small sample set is served if
@@ -838,9 +843,12 @@ See [`docs/MODULE-18.md`](docs/MODULE-18.md) for the test checklist & details.
 
 ## Tech stack
 
-**Frontend:** React 18 · TypeScript · Vite · Redux Toolkit · MapLibre GL JS 5 ·
-Tailwind CSS · lucide-react.
-**Backend (`apps/api`):** Node · Express · TypeScript (run with `tsx`).
+**Frontend:** React 18 · TypeScript · Vite 8 · Redux Toolkit · MapLibre GL JS 5 ·
+Tailwind CSS · lucide-react · satellite.js · jsPDF · write-excel-file.
+**Backend (`apps/api`):** Node · Express · TypeScript (`tsx` in development, compiled
+with `tsc` for production).
+**Deployment:** Docker multi-stage images (Node API + nginx web) run via `compose.yaml`.
 
-Further BRD services (WebSocket gateway, workers, the databases) arrive with the
-modules that need them.
+Not part of this keyless build: the BRD's WebSocket gateway, background workers and
+databases. Every module runs without them; the per-module notes say what a production
+deployment would add.

@@ -14,6 +14,8 @@ npm run dev      # starts web (:5173) and API (:8787)
 
 Open **http://localhost:5173**. The **API must be running** for live ships.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. Ships/AIS: **Fintraffic Digitraffic Marine**.
 
 ---
@@ -41,8 +43,11 @@ Open **http://localhost:5173**. The **API must be running** for live ships.
       tracking alongside ships (both counts in the status bar).
 
 ### Verifying the fallback
-Stop the API (`Ctrl-C` the `api` process) — the panel shows **Feed offline**,
-then a **Simulated** feed keeps vessels moving. Restart `npm run dev:api`.
+The simulator lives in the API: outside Digitraffic's coverage (pan away from the
+Baltic), or when Digitraffic is unreachable, `/api/ships` serves a **Simulated** feed
+— the header turns amber and vessels keep moving. If the API itself is stopped
+(`Ctrl-C` the `api` process), the panel shows **Feed offline** and the last positions
+stay frozen until `npm run dev:api` is running again.
 
 ---
 

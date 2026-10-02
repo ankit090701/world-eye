@@ -14,6 +14,8 @@ npm run dev      # web (:5173) + API (:8787)
 
 Open **http://localhost:5173**. The **API must be running** for live trains.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. Rail data: **Fintraffic Digitraffic Rail**.
 
 ---
@@ -41,8 +43,11 @@ Open **http://localhost:5173**. The **API must be running** for live trains.
       alongside trains; switching basemaps preserves everything.
 
 ### Verifying the fallback
-Stop the API (`Ctrl-C` the `api` process) — the panel shows **Feed offline**,
-then a **Simulated** feed keeps trains moving. Restart `npm run dev:api`.
+The simulator lives in the API: outside Finland, or when Digitraffic is unreachable,
+`/api/trains` serves a **Simulated** feed — the header turns amber and trains keep
+moving. If the API itself is stopped (`Ctrl-C` the `api` process), the panel shows
+**Feed offline** and the last positions stay frozen until `npm run dev:api` is
+running again.
 
 ---
 

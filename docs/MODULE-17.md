@@ -15,6 +15,8 @@ npm run dev      # web (:5173) + API (:8787)
 
 Open **http://localhost:5173**, let the feeds populate, then open the **Reports** panel.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 ---
 
 ## Feature walkthrough & test checklist

@@ -15,6 +15,8 @@ npm run dev      # web (:5173) + API (:8787)
 
 Open **http://localhost:5173**. The **API must be running** for the news feeds.
 
+With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
+
 > No API keys. News from **Google News RSS**; locations inferred from headlines.
 
 ---
@@ -51,7 +53,7 @@ NewsSync / NewsInteractions ▶ map (category-coloured hotspots + linked popups)
 - **Feeds.** Each category maps to a Google News RSS query (breaking = top stories);
   the API parses the RSS (no XML dependency — a small, entity-decoding parser) into
   normalized articles.
-- **Geoparsing.** Every headline is matched against a **built-in gazetteer** of ~140
+- **Geoparsing.** Every headline is matched against a **built-in gazetteer** of ~120
   countries and major cities (longest-name-first, word-boundary, precompiled regexes)
   to assign coordinates — so news gets a map presence with no paid geocoder.
 - **Hotspots.** `/map` aggregates geolocated headlines from the disasters / wars /
