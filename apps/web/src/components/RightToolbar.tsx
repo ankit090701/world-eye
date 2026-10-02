@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import {
   Ruler,
   PencilRuler,
@@ -16,7 +16,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setActiveTool, setToast } from '../store/uiSlice'
-import { DEFAULT_VIEW, toggleProjection } from '../store/mapSlice'
+import { defaultView, toggleProjection } from '../store/mapSlice'
 import { useMapContext } from '../map/MapContext'
 import { exportMapImage } from '../lib/exportImage'
 import type { ToolId } from '../types'
@@ -30,7 +30,10 @@ const DRAW_ITEMS: { id: ToolId; label: string; icon: LucideIcon }[] = [
   { id: 'draw-circle', label: 'Circle', icon: Circle },
 ]
 
-type Tip = { label: string; y: number } | null
+type Tip = { label: string; style: CSSProperties } | null
+
+// Matches the tailwind `short` screen, where the toolbar runs as a row under the top bar.
+const SHORT = '(max-height: 500px)'
 
 function ToolButton({
   active,
@@ -50,11 +53,15 @@ function ToolButton({
       onClick={onClick}
       aria-label={title}
       aria-pressed={active}
-      onMouseEnter={(e) => {
+      onPointerEnter={(e) => {
+        if (e.pointerType !== 'mouse') return
         const r = e.currentTarget.getBoundingClientRect()
-        onTip({ label: title, y: r.top + r.height / 2 })
+        const style: CSSProperties = window.matchMedia(SHORT).matches
+          ? { top: r.bottom + 8, right: window.innerWidth - r.right }
+          : { top: r.top + r.height / 2, right: 62, transform: 'translateY(-50%)' }
+        onTip({ label: title, style })
       }}
-      onMouseLeave={() => onTip(null)}
+      onPointerLeave={() => onTip(null)}
       className={cx(
         'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
         active ? 'bg-we-accent/10 text-we-accent' : 'text-slate-500 hover:bg-we-panel-2 hover:text-we-text',
@@ -65,7 +72,7 @@ function ToolButton({
   )
 }
 
-const CARD = 'flex flex-col gap-0.5 rounded-xl border border-we-border bg-white/90 p-1 shadow-card backdrop-blur-xl'
+const CARD = 'flex flex-col gap-0.5 rounded-xl border border-we-border bg-white/90 p-1 shadow-card backdrop-blur-xl short:flex-row'
 
 export default function RightToolbar() {
   const dispatch = useAppDispatch()
@@ -77,8 +84,10 @@ export default function RightToolbar() {
   const drawing = tool.startsWith('draw-')
 
   const resetNorth = () => map?.easeTo({ bearing: 0, pitch: 0, duration: 600 })
-  const zoomWorld = () =>
-    map?.flyTo({ center: [DEFAULT_VIEW.lng, DEFAULT_VIEW.lat], zoom: DEFAULT_VIEW.zoom, pitch: 0, bearing: 0, speed: 1.2 })
+  const zoomWorld = () => {
+    const v = defaultView()
+    map?.flyTo({ center: [v.lng, v.lat], zoom: v.zoom, pitch: 0, bearing: 0, speed: 1.2 })
+  }
   const exportPng = () => {
     if (!map) return
     exportMapImage(map)
@@ -87,7 +96,7 @@ export default function RightToolbar() {
 
   return (
     <>
-      <div className="pointer-events-auto absolute right-3 top-[68px] z-30 flex flex-col gap-2">
+      <div className="pointer-events-auto absolute right-3 top-[68px] z-30 flex flex-col gap-2 short:flex-row">
         <div className={CARD}>
           <ToolButton
             active={tool === 'measure'}
@@ -107,7 +116,7 @@ export default function RightToolbar() {
               <PencilRuler size={17} strokeWidth={1.8} />
             </ToolButton>
             {drawOpen && (
-              <div className="absolute right-11 top-0 flex w-36 flex-col gap-0.5 rounded-xl border border-we-border bg-white p-1 shadow-panel">
+              <div className="absolute right-11 top-0 flex w-36 flex-col gap-0.5 rounded-xl border border-we-border bg-white p-1 shadow-panel short:right-0 short:top-11">
                 {DRAW_ITEMS.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
@@ -156,8 +165,8 @@ export default function RightToolbar() {
       </div>
       {tip && !drawOpen && (
         <div
-          className="pointer-events-none fixed right-[62px] z-50 -translate-y-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-[12px] font-medium text-white shadow-lg"
-          style={{ top: tip.y }}
+          className="pointer-events-none fixed z-50 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-[12px] font-medium text-white shadow-lg"
+          style={tip.style}
         >
           {tip.label}
         </div>

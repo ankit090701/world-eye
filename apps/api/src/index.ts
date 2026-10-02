@@ -580,6 +580,11 @@ app.get('/', (_req, res) => {
   res.type('text/plain').send('WorldEye API — see /api/health')
 })
 
-app.listen(PORT, () => {
-  console.log(`[worldeye-api] listening on http://localhost:${PORT}`)
-})
+// Vercel invokes the exported app per request; everywhere else it listens on PORT.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[worldeye-api] listening on http://localhost:${PORT}`)
+  })
+}
+
+export default app

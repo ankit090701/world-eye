@@ -27,7 +27,8 @@ Use this to verify the module. Everything below should work with no setup.
 - [ ] On load you see a Europe-centred **3D globe** on the light Positron basemap with
       a live **activity heatmap** and coloured **signal points**.
 - [ ] Drag to rotate, scroll to zoom, right-drag (or ctrl-drag) to tilt/rotate.
-- [ ] Bottom-right navigation control + compass; bottom-left scale bar.
+- [ ] Bottom-right zoom/compass control on mouse and trackpad screens (touch screens
+      pinch to zoom and rotate instead); bottom-left scale bar.
 
 ### Top bar
 - [ ] **Live / Replay** chip shows the feed state; click it to jump back to live.
@@ -65,6 +66,19 @@ Use this to verify the module. Everything below should work with no setup.
 - [ ] Live **cursor lat/lng + DMS**, map **center/zoom/bearing/pitch**, drawings
       count, visible-signal count, projection, and LIVE/REPLAY state.
 
+### Phones & tablets
+- [ ] On a phone (under 768 px wide) the whole globe opens in view with no panel
+      open. The left rail is replaced by the **grid button** in the top bar, which
+      lists every panel (Search included) as labelled tiles.
+- [ ] Panels open as **bottom sheets** over the map: drag the handle or header down
+      (or flick it) to close, or tap ✕. The map stays usable above the sheet.
+- [ ] Tablets keep the rail and side panels. In portrait the globe opens
+      unobstructed; the Layers panel only opens by default from 1024 px wide.
+- [ ] On a landscape phone (under 500 px tall) the right toolbar runs as a row under
+      the top bar.
+- [ ] The scale bar and attribution never sit under the timeline, and the status bar
+      keeps only the live counts on narrow screens.
+
 ---
 
 ## Architecture
@@ -75,7 +89,7 @@ main.tsx ── <Provider store> ── <App>
                                         ├── <MapView>       (creates the map + mounts syncers/tools)
                                         │     ├── Syncers   (headless: keep map ⇄ Redux/data in step)
                                         │     └── Tools     (Measure, Draw — render HUDs)
-                                        ├── TopBar / LeftDock / RightToolbar
+                                        ├── TopBar / LeftDock (+ phone PanelLauncher) / RightToolbar
                                         ├── PanelHost (Layers | Search | Bookmarks | Overview)
                                         ├── TimelineBar / StatusBar / Toast
 ```
@@ -102,7 +116,7 @@ main.tsx ── <Provider store> ── <App>
 
 | slice | owns |
 |-------|------|
-| `ui` | active panel, active tool, theme, toasts |
+| `ui` | active panel, active tool, phone panel-launcher state, toasts |
 | `map` | basemap, projection, `styleEpoch`, camera view, cursor |
 | `layers` | overlay visibility + opacity |
 | `bookmarks` | saved views (persisted to localStorage) |

@@ -19,6 +19,8 @@ body {
   background: #f4f6fa;
   color: #0f172a;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -91,6 +93,16 @@ input[type='range']::-moz-range-thumb {
 }
 input[type='range']:focus-visible::-webkit-slider-thumb {
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+}
+@media (pointer: coarse) {
+  input[type='range']::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .we-map-bg {
@@ -214,4 +226,41 @@ input[type='range']:focus-visible::-webkit-slider-thumb {
   backdrop-filter: blur(14px) saturate(1.4);
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
   border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* Where the timeline reaches into a corner, the map's own controls there sit above it:
+   the scale bar below lg, the attribution up to ~1680px wide. */
+@media (max-width: 1023px) {
+  .maplibregl-ctrl-bottom-left {
+    bottom: 100px;
+  }
+}
+@media (max-width: 1679px) {
+  .maplibregl-ctrl-bottom-right {
+    bottom: 100px;
+  }
+}
+
+/* Touch screens pinch to zoom and rotate (the toolbar resets the bearing), so the zoom buttons only crowd the map. */
+@media (max-width: 767px), (pointer: coarse) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  /* No rail on phones. */
+  .maplibregl-ctrl-bottom-left {
+    left: 0;
+  }
+  /* Wrap the attribution rather than run it into the scale bar on narrow phones. */
+  .maplibregl-ctrl-attrib.maplibregl-compact-show {
+    max-width: calc(100vw - 176px);
+  }
+  /* iOS zooms the whole page when an input under 16px gets focus. */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }

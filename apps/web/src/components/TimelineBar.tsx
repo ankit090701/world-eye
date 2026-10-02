@@ -72,8 +72,8 @@ export default function TimelineBar() {
   const hhmm = (t: number) => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className="pointer-events-auto absolute bottom-[42px] left-[calc(50%+30px)] z-20 w-[min(1060px,calc(100%-420px))] -translate-x-1/2">
-      <div className="flex items-center gap-3 rounded-2xl border border-we-border bg-white/90 px-3 py-2 shadow-panel backdrop-blur-xl">
+    <div className="pointer-events-auto absolute inset-x-3 bottom-[40px] z-20 md:inset-x-auto md:bottom-[42px] md:left-[calc(50%+30px)] md:w-[min(1060px,calc(100%-160px))] md:-translate-x-1/2 lg:w-[min(1060px,calc(100%-420px))]">
+      <div className="flex items-center gap-2 rounded-2xl border border-we-border bg-white/90 px-2 py-1.5 shadow-panel backdrop-blur-xl sm:gap-3 sm:px-3 sm:py-2">
         <button
           onClick={() => dispatch(togglePlaying())}
           title={playing ? 'Pause playback' : 'Play historical playback'}
@@ -107,8 +107,8 @@ export default function TimelineBar() {
             className="w-full"
             aria-label="Timeline position"
           />
-          <div className="mt-1.5 flex items-center justify-between gap-3 whitespace-nowrap text-[10.5px] text-we-muted">
-            <span className="font-mono tabular-nums">
+          <div className="mt-1.5 flex items-center justify-center gap-3 whitespace-nowrap text-[10.5px] text-we-muted sm:justify-between">
+            <span className="hidden font-mono tabular-nums sm:inline">
               {hhmm(rangeStart)}
               <span className="ml-1 opacity-70">−24h</span>
             </span>
@@ -122,7 +122,7 @@ export default function TimelineBar() {
               })}
               <span className="font-normal text-we-muted">({relative(behind)})</span>
             </span>
-            <span className="font-mono tabular-nums">
+            <span className="hidden font-mono tabular-nums sm:inline">
               now <span className="opacity-70">{hhmm(rangeEnd)}</span>
             </span>
           </div>

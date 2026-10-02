@@ -10,14 +10,21 @@ interface MapState {
   cursor: { lng: number; lat: number } | null
 }
 
-/** Opening camera (and the "zoom to world" target): Europe-centred, so live feeds have data. */
-export const DEFAULT_VIEW: CameraView = { lng: 12, lat: 42, zoom: 2.1, pitch: 0, bearing: 0 }
+/** Opening camera (and the "back to world" target): Europe-centred so live feeds have data, zoomed so the globe fits the screen. */
+export function defaultView(
+  width = typeof window !== 'undefined' ? window.innerWidth : 1920,
+  height = typeof window !== 'undefined' ? window.innerHeight : 1080,
+): CameraView {
+  const phone = width < 640 || height < 500
+  const zoom = phone ? 0.9 : width < 1024 ? 1.8 : 2.1
+  return { lng: 12, lat: 42, zoom, pitch: 0, bearing: 0 }
+}
 
 const initialState: MapState = {
   basemap: 'light',
   projection: 'globe',
   styleEpoch: 0,
-  view: DEFAULT_VIEW,
+  view: defaultView(),
   cursor: null,
 }
 

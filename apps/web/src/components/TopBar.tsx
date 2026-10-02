@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { Search } from 'lucide-react'
+import { LayoutGrid, Search } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { openPanel, setActivePanel } from '../store/uiSlice'
+import { openPanel, setActivePanel, setMenuOpen } from '../store/uiSlice'
 import { jumpToNow } from '../store/timelineSlice'
 import { cx } from '../lib/cx'
 
@@ -32,6 +32,7 @@ export default function TopBar() {
   const dispatch = useAppDispatch()
   const mode = useAppSelector((s) => s.timeline.mode)
   const currentTime = useAppSelector((s) => s.timeline.currentTime)
+  const menuOpen = useAppSelector((s) => s.ui.menuOpen)
 
   // "/" opens search from anywhere outside a text field.
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function TopBar() {
   const live = mode === 'live'
 
   return (
-    <header className="pointer-events-auto absolute inset-x-0 top-0 z-40 flex h-14 items-center gap-4 border-b border-we-border bg-white/85 px-4 backdrop-blur-xl">
+    <header className="pointer-events-auto absolute inset-x-0 top-0 z-40 flex h-14 items-center gap-2 border-b border-we-border bg-white/85 px-3 backdrop-blur-xl sm:gap-4 sm:px-4">
       <div className="flex shrink-0 items-center gap-2.5">
         <LogoMark className="h-8 w-8 drop-shadow-sm" />
         <div className="leading-tight">
@@ -58,7 +59,7 @@ export default function TopBar() {
 
       <button
         onClick={() => dispatch(setActivePanel('search'))}
-        className="ml-4 hidden h-9 min-w-0 flex-1 items-center gap-2.5 rounded-xl border border-we-border bg-we-panel-2 px-3 text-left text-[13px] text-we-muted transition-colors hover:border-we-border-2 hover:bg-white sm:flex md:max-w-[420px]"
+        className="hidden h-9 min-w-0 flex-1 items-center gap-2.5 rounded-xl lg:ml-4 border border-we-border bg-we-panel-2 px-3 text-left text-[13px] text-we-muted transition-colors hover:border-we-border-2 hover:bg-white sm:flex md:max-w-[420px]"
       >
         <Search size={15} className="shrink-0" />
         <span className="truncate">Search places or coordinates</span>
@@ -68,6 +69,14 @@ export default function TopBar() {
       </button>
 
       <div className="flex-1" />
+
+      <button
+        onClick={() => dispatch(openPanel('search'))}
+        aria-label="Search places or coordinates"
+        className="flex h-9 w-9 items-center justify-center rounded-xl border border-we-border bg-we-panel-2 text-slate-500 sm:hidden"
+      >
+        <Search size={16} />
+      </button>
 
       <button
         onClick={() => dispatch(jumpToNow())}
@@ -89,6 +98,15 @@ export default function TopBar() {
         <span className="hidden font-mono text-[11px] font-medium text-we-muted md:inline">
           {new Date(currentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
+      </button>
+
+      <button
+        onClick={() => dispatch(setMenuOpen(!menuOpen))}
+        aria-label="Panels"
+        aria-expanded={menuOpen}
+        className="flex h-9 w-9 items-center justify-center rounded-xl border border-we-border bg-white text-slate-600 md:hidden"
+      >
+        <LayoutGrid size={17} />
       </button>
     </header>
   )

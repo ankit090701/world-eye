@@ -15,6 +15,8 @@ function Count({ icon, value, tone, title, className }: { icon: ReactNode; value
   )
 }
 
+const Divider = ({ className }: { className?: string }) => <span className={cx('h-3 w-px shrink-0 bg-we-border', className)} />
+
 export default function StatusBar() {
   const cursor = useAppSelector((s) => s.map.cursor)
   const view = useAppSelector((s) => s.map.view)
@@ -33,44 +35,45 @@ export default function StatusBar() {
   const feedTone = (source: string | null) => (source === 'live' ? 'text-we-good' : 'text-we-warn')
 
   return (
-    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex h-[30px] items-center gap-4 border-t border-we-border bg-white/90 px-4 text-[11px] text-we-muted backdrop-blur-xl">
-      <div className="pointer-events-auto flex items-center gap-1.5">
+    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex h-[30px] items-center gap-3 whitespace-nowrap border-t border-we-border bg-white/90 px-3 text-[11px] text-we-muted backdrop-blur-xl sm:gap-4 sm:px-4">
+      <div className="pointer-events-auto hidden items-center gap-1.5 md:flex">
         <MousePointer2 size={12} className="text-slate-400" />
         <span className="font-mono tabular-nums text-slate-700">
           {cursor ? formatLngLat(cursor.lng, cursor.lat) : '—, —'}
         </span>
         {cursor && (
-          <span className="hidden font-mono text-we-muted md:inline">{formatDMS(cursor.lng, cursor.lat)}</span>
+          <span className="hidden font-mono text-we-muted xl:inline">{formatDMS(cursor.lng, cursor.lat)}</span>
         )}
       </div>
 
-      <span className="h-3 w-px bg-we-border" />
+      <Divider className="hidden lg:block" />
 
-      <div className="hidden items-center gap-1.5 sm:flex">
+      <div className="hidden items-center gap-1.5 lg:flex">
         <Crosshair size={12} className="text-slate-400" />
         <span className="font-mono tabular-nums">{formatLngLat(view.lng, view.lat, 2)}</span>
         <span className="ml-2 tabular-nums">z{view.zoom.toFixed(1)}</span>
-        <span className="ml-2 hidden tabular-nums lg:inline">brg {Math.round(view.bearing)}°</span>
-        <span className="ml-2 hidden tabular-nums lg:inline">pitch {Math.round(view.pitch)}°</span>
+        <span className="ml-2 hidden tabular-nums xl:inline">brg {Math.round(view.bearing)}°</span>
+        <span className="ml-2 hidden tabular-nums xl:inline">pitch {Math.round(view.pitch)}°</span>
       </div>
 
-      <div className="flex-1" />
+      <div className="hidden flex-1 md:block" />
 
-      <span className="flex items-center gap-1.5">
+      <span className="hidden items-center gap-1.5 md:flex">
         <PencilRuler size={12} className="text-slate-400" />
         {draws.features.length} drawings
       </span>
-      <span className="hidden items-center gap-1 sm:flex">
+      <span className="hidden items-center gap-1 lg:flex">
         <span className="font-medium tabular-nums text-slate-700">{visible.length.toLocaleString()}</span> signals
       </span>
-      <span className="h-3 w-px bg-we-border" />
+      <Divider className="hidden md:block" />
       <Count icon={<Plane size={12} />} value={acCount} tone={feedTone(acSource)} title="Aircraft" />
       <Count icon={<Ship size={12} />} value={shipCount} tone={feedTone(shipSource)} title="Vessels" />
       <Count icon={<TrainFront size={12} />} value={trainCount} tone={feedTone(trainSource)} title="Trains" />
-      <Count icon={<Truck size={12} />} value={fleetCount} tone="text-we-good" title="Fleet vehicles" className="hidden lg:flex" />
-      <Count icon={<TriangleAlert size={12} />} value={incidentCount} tone="text-we-warn" title="Traffic incidents" className="hidden xl:flex" />
-      <span className="h-3 w-px bg-we-border" />
-      <span className="font-medium uppercase tracking-wide">{projection === 'globe' ? '3D globe' : '2D map'}</span>
+      <Count icon={<Truck size={12} />} value={fleetCount} tone="text-we-good" title="Fleet vehicles" className="hidden sm:flex" />
+      <Count icon={<TriangleAlert size={12} />} value={incidentCount} tone="text-we-warn" title="Traffic incidents" className="hidden sm:flex" />
+      <div className="flex-1 md:hidden" />
+      <Divider className="hidden sm:block" />
+      <span className="hidden font-medium uppercase tracking-wide sm:inline">{projection === 'globe' ? '3D globe' : '2D map'}</span>
       <span className={cx('font-semibold', mode === 'live' ? 'text-we-good' : 'text-we-warn')}>
         {mode === 'live' ? 'LIVE' : 'REPLAY'}
       </span>

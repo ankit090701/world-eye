@@ -3,6 +3,10 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        // landscape phones: too short for the vertical map toolbar
+        short: { raw: '(max-height: 500px)' },
+      },
       colors: {
         we: {
           bg: '#f4f6fa',

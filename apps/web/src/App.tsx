@@ -1,7 +1,7 @@
 import { MapProvider } from './map/MapContext'
 import MapView from './map/MapView'
 import TopBar from './components/TopBar'
-import LeftDock from './components/LeftDock'
+import LeftDock, { PanelLauncher } from './components/LeftDock'
 import RightToolbar from './components/RightToolbar'
 import PanelHost from './components/PanelHost'
 import TimelineBar from './components/TimelineBar'
@@ -19,6 +19,7 @@ export default function App() {
         <PanelHost />
         <TimelineBar />
         <StatusBar />
+        <PanelLauncher />
         <Toast />
       </div>
     </MapProvider>
