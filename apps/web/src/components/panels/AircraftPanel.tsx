@@ -68,7 +68,6 @@ export default function AircraftPanel() {
       .slice(0, 16)
   }, [snap, view.lng, view.lat])
 
-  // enrichment for the selected flight
   const [route, setRoute] = useState<FlightRoute | null>(null)
   const [meta, setMeta] = useState<AircraftMeta | null>(null)
   useEffect(() => {
@@ -92,7 +91,6 @@ export default function AircraftPanel() {
       icon={<Plane size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* feed status */}
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="flex items-center gap-2">
           <span
@@ -117,7 +115,6 @@ export default function AircraftPanel() {
       </div>
       {error && <div className="mt-2 text-[11px] text-we-warn">{error}</div>}
 
-      {/* toggles */}
       <div className="mt-3 space-y-2">
         <ToggleRow label="Show aircraft" checked={aircraftLayerOn} onChange={() => dispatch(toggleLayer('aircraft'))} />
         <ToggleRow label="Weather radar" checked={weatherOn} onChange={() => dispatch(toggleLayer('weather-radar'))} />
@@ -128,7 +125,6 @@ export default function AircraftPanel() {
         />
       </div>
 
-      {/* emergency alerts */}
       {emergencies.length > 0 && (
         <>
           <SectionTitle>Emergency squawks</SectionTitle>
@@ -157,7 +153,6 @@ export default function AircraftPanel() {
         </>
       )}
 
-      {/* selected flight */}
       {selected ? (
         <>
           <SectionTitle>Selected flight</SectionTitle>
@@ -187,7 +182,6 @@ export default function AircraftPanel() {
               </button>
             </div>
 
-            {/* route */}
             {(route?.origin || route?.destination) && (
               <div className="mt-2 flex items-center gap-2 rounded-lg bg-we-bg/50 px-2.5 py-2">
                 <PlaneTakeoff size={14} className="text-we-accent" />
@@ -212,7 +206,6 @@ export default function AircraftPanel() {
               </div>
             )}
 
-            {/* metrics */}
             <div className="mt-3 grid grid-cols-2 gap-2">
               <Metric icon={<ArrowUp size={12} />} label="Altitude" value={fmtAlt(selected)} />
               <Metric icon={<Gauge size={12} />} label="Ground speed" value={fmtSpd(selected)} />
@@ -256,7 +249,6 @@ export default function AircraftPanel() {
         </div>
       ) : null}
 
-      {/* nearby */}
       <SectionTitle>Nearby flights</SectionTitle>
       {nearby.length === 0 ? (
         <p className="text-[11px] text-we-muted">

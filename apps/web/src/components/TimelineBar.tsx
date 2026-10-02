@@ -37,7 +37,6 @@ export default function TimelineBar() {
   return (
     <div className="pointer-events-auto absolute bottom-9 left-1/2 z-20 w-[min(920px,calc(100%-7rem))] -translate-x-1/2">
       <div className="we-glass flex items-center gap-3 rounded-xl px-3 py-2 shadow-panel">
-        {/* play / pause */}
         <button
           onClick={() => dispatch(togglePlaying())}
           title={playing ? 'Pause playback' : 'Play historical playback'}
@@ -51,7 +50,6 @@ export default function TimelineBar() {
           {playing ? <Pause size={16} /> : <Play size={16} />}
         </button>
 
-        {/* live */}
         <button
           onClick={() => dispatch(jumpToNow())}
           title="Jump to live"
@@ -66,7 +64,6 @@ export default function TimelineBar() {
           LIVE
         </button>
 
-        {/* scrubber */}
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <input
             type="range"
@@ -107,7 +104,6 @@ export default function TimelineBar() {
           </div>
         </div>
 
-        {/* speed */}
         <div className="hidden shrink-0 items-center gap-1 lg:flex">
           <span className="text-[10px] uppercase text-we-muted">Speed</span>
           <div className="flex overflow-hidden rounded-lg border border-we-border">
@@ -128,7 +124,6 @@ export default function TimelineBar() {
           </div>
         </div>
 
-        {/* window */}
         <div className="hidden shrink-0 items-center gap-1 xl:flex">
           <span className="text-[10px] uppercase text-we-muted">Window</span>
           <div className="flex overflow-hidden rounded-lg border border-we-border">

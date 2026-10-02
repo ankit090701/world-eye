@@ -83,7 +83,6 @@ export default function AiPanel() {
       icon={<Sparkles size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* risk gauge */}
       <div className="rounded-xl border border-we-border bg-we-panel-2/40 p-3">
         <div className="mb-1 flex items-center justify-between text-[11px]">
           <span className="flex items-center gap-1.5 text-we-muted"><Gauge size={13} className="text-we-accent" /> Risk index</span>
@@ -97,7 +96,6 @@ export default function AiPanel() {
         )}
       </div>
 
-      {/* metrics */}
       <div className="mt-2 grid grid-cols-3 gap-1.5">
         {metrics.map(([label, val]) => (
           <div key={label} className="rounded-lg border border-we-border bg-we-panel-2/30 px-2 py-1.5 text-center">
@@ -107,7 +105,6 @@ export default function AiPanel() {
         ))}
       </div>
 
-      {/* report */}
       <div className="mt-2 flex gap-1.5">
         <button onClick={makeReport} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-we-border bg-we-panel-2/40 px-2 py-1.5 text-[11px] text-we-text hover:border-we-border-2">
           <FileText size={12} /> Generate report
@@ -124,7 +121,6 @@ export default function AiPanel() {
         </pre>
       )}
 
-      {/* chat */}
       <div className="mt-3 flex items-center justify-between">
         <SectionTitle>Assistant</SectionTitle>
         <button onClick={() => dispatch(clearChat())} className="flex items-center gap-1 text-[10px] text-we-muted hover:text-we-text">
@@ -150,7 +146,6 @@ export default function AiPanel() {
         ))}
       </div>
 
-      {/* quick actions */}
       <div className="mt-2 flex flex-wrap gap-1">
         {QUICK.map((q) => (
           <button key={q} onClick={() => ask(q)} className="rounded-full border border-we-border px-2 py-0.5 text-[10px] text-we-muted hover:border-we-border-2 hover:text-we-text">
@@ -159,7 +154,6 @@ export default function AiPanel() {
         ))}
       </div>
 
-      {/* input */}
       <form
         onSubmit={(e) => {
           e.preventDefault()

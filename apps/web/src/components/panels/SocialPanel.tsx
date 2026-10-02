@@ -69,7 +69,6 @@ export default function SocialPanel() {
       icon={<Share2 size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* source tabs */}
       <div className="flex flex-wrap gap-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
@@ -102,7 +101,6 @@ export default function SocialPanel() {
 
       <div className="space-y-1.5">{!loading && posts.map((p) => <PostRow key={p.id} p={p} />)}</div>
 
-      {/* map toggle */}
       <SectionTitle>Map</SectionTitle>
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="min-w-0">

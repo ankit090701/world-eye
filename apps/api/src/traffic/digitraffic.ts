@@ -13,14 +13,12 @@ import {
 const BASE = 'https://tie.digitraffic.fi/api'
 const DT_HEADERS = { 'Digitraffic-User': 'WorldEye/1.0' }
 
-const messagesCache = new TTLCache<any>(60000) // 1min
+const messagesCache = new TTLCache<any>(60000)
 const tmsStationsCache = new TTLCache<Map<number, [number, number]>>(24 * 60 * 60 * 1000)
-const tmsDataCache = new TTLCache<any>(60000) // 1min
+const tmsDataCache = new TTLCache<any>(60000)
 
 const inBbox = (lon: number, lat: number, b: BBox) =>
   lon >= b.minLon && lon <= b.maxLon && lat >= b.minLat && lat <= b.maxLat
-
-// ---- incidents ----
 
 function firstPoint(geom: any): [number, number] | null {
   if (!geom) return null
@@ -92,8 +90,6 @@ export async function fetchIncidents(bbox: BBox, cap = 300): Promise<TrafficInci
   }
   return out
 }
-
-// ---- flow / congestion (TMS) ----
 
 async function getTmsStations(): Promise<Map<number, [number, number]>> {
   const hit = tmsStationsCache.get('all')

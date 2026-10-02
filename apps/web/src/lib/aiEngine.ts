@@ -59,7 +59,6 @@ export function gatherContext(): AiContext {
   }
 }
 
-// ---------- risk ----------
 export function computeRisk(ctx: AiContext): RiskAssessment {
   const factors: { label: string; points: number }[] = []
   const add = (label: string, points: number) => {
@@ -79,7 +78,6 @@ export function computeRisk(ctx: AiContext): RiskAssessment {
   return { score, level, factors: factors.sort((a, b) => b.points - a.points) }
 }
 
-// ---------- summary ----------
 export function generateSummary(ctx: AiContext): string {
   const risk = computeRisk(ctx)
   const parts: string[] = []
@@ -100,7 +98,6 @@ export function generateSummary(ctx: AiContext): string {
   return parts.join(' ')
 }
 
-// ---------- anomalies / patterns ----------
 export function detectAnomalies(ctx: AiContext): { severity: 'critical' | 'warning' | 'info'; text: string; action?: AiAction }[] {
   const out: { severity: 'critical' | 'warning' | 'info'; text: string; action?: AiAction }[] = []
   for (const a of ctx.aircraft.emergencies.slice(0, 4)) {
@@ -118,7 +115,6 @@ export function detectAnomalies(ctx: AiContext): { severity: 'critical' | 'warni
   return out.slice(0, 10)
 }
 
-// ---------- outlook / forecast ----------
 export function forecast(ctx: AiContext): string[] {
   const out: string[] = []
   if (ctx.weather.majorCyclones.length)
@@ -131,7 +127,6 @@ export function forecast(ctx: AiContext): string[] {
   return out
 }
 
-// ---------- report ----------
 export function generateReport(ctx: AiContext): string {
   const risk = computeRisk(ctx)
   const now = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC'
@@ -162,7 +157,6 @@ export function generateReport(ctx: AiContext): string {
   return lines.join('\n')
 }
 
-// ---------- natural-language answer ----------
 export interface AiAnswer {
   text: string
   actions?: AiAction[]

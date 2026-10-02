@@ -7,15 +7,7 @@ import { newsMapStore, useNewsMap } from '../../data/newsStore'
 import { fetchNewsMap } from '../../api/newsApi'
 import { setNewsData } from '../mapLayers'
 import { LYR } from '../ids'
-
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
+import { esc } from '../../lib/html'
 
 function useNewsEnabled(): boolean {
   return useAppSelector((s) => s.layers.items.find((l) => l.id === 'news-hotspots')?.visible ?? false)

@@ -111,7 +111,6 @@ export default function MapView() {
       setMap(null)
       setReady(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -125,60 +124,46 @@ export default function MapView() {
       <DrawSync />
       <TimelineEngine />
       <ActivityInteractions />
-      {/* Module 2: aircraft tracking */}
       <AircraftEngine />
       <AircraftSync />
       <AircraftInteractions />
       <WeatherOverlaySync />
-      {/* Module 3: ship tracking */}
       <ShipEngine />
       <ShipSync />
       <ShipInteractions />
-      {/* Module 4: train tracking */}
       <TrainEngine />
       <TrainSync />
       <TrainInteractions />
-      {/* Module 5: fleet tracking */}
       <FleetEngine />
       <FleetSync />
       <FleetInteractions />
-      {/* Module 6: traffic intelligence */}
       <TrafficEngine />
       <TrafficSync />
       <TrafficInteractions />
-      {/* Module 7: cyber threat overlay */}
       <CyberThreatEngine />
       <CyberThreatSync />
       <CyberThreatInteractions />
-      {/* Module 8: domain infrastructure footprint */}
       <DomainInfraSync />
       <DomainInfraInteractions />
-      {/* Module 9: weather intelligence */}
       <WeatherGridEngine />
       <WeatherEventsEngine />
       <WeatherGridSync />
       <WeatherEventsSync />
       <WeatherInteractions />
-      {/* Module 10: satellite intelligence */}
       <SatelliteEngine />
       <SatelliteSync />
       <SatelliteInteractions />
-      {/* Module 11: news intelligence */}
       <NewsEngine />
       <NewsSync />
       <NewsInteractions />
-      {/* Module 12: social intelligence */}
       <SocialEngine />
       <SocialSync />
       <SocialInteractions />
-      {/* Module 14: alert engine */}
       <AlertEngine />
       <AlertZoneSync />
       <AlertEventSync />
       <AlertInteractions />
-      {/* Module 16: analytics trend sampler */}
       <AnalyticsSampler />
-      {/* Module 17: scheduled reports */}
       <ReportScheduler />
       {/* interactive map tools (render HUD when active) */}
       <MeasureTool />

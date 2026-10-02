@@ -14,19 +14,12 @@ import { deliverAlert } from '../../api/alertsApi'
 import { setAlertEventData, setAlertZoneData } from '../mapLayers'
 import { LYR } from '../ids'
 import type { AlertEvent, AlertRule, ChannelConfig } from '../../types'
+import { esc } from '../../lib/html'
 
 const COOLDOWN_MS = 5 * 60 * 1000
 // key (ruleId:objectKey) → last fired ms; module-level so it survives re-renders
 const cooldown = new Map<string, number>()
 
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
 const sevIcon = (s: string) => (s === 'critical' ? '🔴' : s === 'warning' ? '🟠' : '🔵')
 
 function deliver(rule: AlertRule, ev: AlertEvent, channels: ChannelConfig) {

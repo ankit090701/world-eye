@@ -1,3 +1,5 @@
+import { fetchText } from '../lib/cache.js'
+
 // Minimal Google News RSS fetch + parse (no XML dependency). Google News RSS is
 // free, keyless and reliable; each query returns up to ~100 items.
 
@@ -58,13 +60,5 @@ export async function fetchGoogleNews(query: string | null, timeoutMs = 10000): 
   const url = query
     ? `${base}/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`
     : `${base}?hl=en-US&gl=US&ceid=US:en`
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': 'WorldEye/1.0' } })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return parseRss(await res.text())
-  } finally {
-    clearTimeout(t)
-  }
+  return parseRss(await fetchText(url, timeoutMs))
 }

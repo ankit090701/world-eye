@@ -60,7 +60,6 @@ export function FleetSync() {
   const statusFilter = useAppSelector((s) => s.fleet.statusFilter)
   const follow = useAppSelector((s) => s.fleet.follow)
 
-  // vehicles
   useEffect(() => {
     if (!map || epoch === 0) return
     const list = statusFilter
@@ -80,7 +79,6 @@ export function FleetSync() {
     setFleetData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap, selectedId, statusFilter])
 
-  // geofences (polygons)
   useEffect(() => {
     if (!map || epoch === 0) return
     const features: Feature[] = snap.geofences.map((g) => ({
@@ -91,7 +89,6 @@ export function FleetSync() {
     setGeofenceData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap.geofences])
 
-  // selected trail
   useEffect(() => {
     if (!map || epoch === 0) return
     const trail = fleetStore.trailFor(selectedId)
@@ -102,7 +99,6 @@ export function FleetSync() {
     setFleetTrailData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap, selectedId])
 
-  // follow
   useEffect(() => {
     if (!map || !follow || !selectedId) return
     const v = snap.byId[selectedId]

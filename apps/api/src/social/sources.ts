@@ -1,20 +1,9 @@
-import { fetchJSON } from '../lib/cache.js'
+import { fetchJSON, fetchText } from '../lib/cache.js'
 import { geoparse } from '../news/gazetteer.js'
 import type { SocialMapPoint, SocialPost, SocialSource } from './types.js'
 
 const UA = 'Mozilla/5.0 (compatible; WorldEye/1.0; +https://worldeye.local)'
-
-async function fetchText(url: string, timeoutMs = 10000): Promise<string> {
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': UA } })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return await res.text()
-  } finally {
-    clearTimeout(t)
-  }
-}
+const fetchPage = (url: string, timeoutMs: number) => fetchText(url, timeoutMs, { 'User-Agent': UA })
 
 const ENT: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'", '&#39;': "'", '&nbsp;': ' ' }
 function decode(s: string): string {
@@ -40,9 +29,9 @@ function hashId(s: string): string {
   return (h >>> 0).toString(36)
 }
 
-// ---------- Reddit (Atom RSS — .json is blocked without auth) ----------
+// Reddit via Atom RSS — the .json API is blocked without auth.
 export async function fetchReddit(sub = 'popular'): Promise<SocialPost[]> {
-  const xml = await fetchText(`https://www.reddit.com/r/${encodeURIComponent(sub)}/.rss?limit=40`, 10000)
+  const xml = await fetchPage(`https://www.reddit.com/r/${encodeURIComponent(sub)}/.rss?limit=40`, 10000)
   if (!xml.includes('<entry')) throw new Error('reddit blocked')
   const entries = xml.match(/<entry>[\s\S]*?<\/entry>/g) ?? []
   const posts: SocialPost[] = []
@@ -67,7 +56,7 @@ export async function fetchReddit(sub = 'popular'): Promise<SocialPost[]> {
   return posts.slice(0, 40)
 }
 
-// ---------- Google Trends (RSS — keyless proxy for search/X trends) ----------
+// Google Trends RSS — a keyless stand-in for search/X trends.
 function parseTraffic(s: string | null): number | null {
   if (!s) return null
   const m = s.replace(/,/g, '').match(/([\d.]+)\s*([KM]?)/i)
@@ -79,7 +68,7 @@ function parseTraffic(s: string | null): number | null {
 }
 
 export async function fetchTrends(geoParam = 'US'): Promise<SocialPost[]> {
-  const xml = await fetchText(`https://trends.google.com/trending/rss?geo=${geoParam}`, 10000)
+  const xml = await fetchPage(`https://trends.google.com/trending/rss?geo=${geoParam}`, 10000)
   const items = xml.match(/<item>[\s\S]*?<\/item>/g) ?? []
   const posts: SocialPost[] = []
   for (const it of items) {
@@ -104,7 +93,6 @@ export async function fetchTrends(geoParam = 'US'): Promise<SocialPost[]> {
   return posts.slice(0, 30)
 }
 
-// ---------- Hacker News (Algolia front page) ----------
 export async function fetchHN(): Promise<SocialPost[]> {
   const d = await fetchJSON('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30', 9000)
   const hits: any[] = Array.isArray(d?.hits) ? d.hits : []
@@ -124,7 +112,7 @@ export async function fetchHN(): Promise<SocialPost[]> {
   })
 }
 
-// ---------- YouTube (Piped — keyless Invidious/Piped proxy) ----------
+// YouTube trending via Piped, a keyless YouTube API proxy (instances tried in order).
 const PIPED_HOSTS = ['https://pipedapi.kavin.rocks', 'https://pipedapi.adminforge.de']
 function fmtViews(v: number): string {
   if (v >= 1e6) return `${(v / 1e6).toFixed(1)}M views`
@@ -162,13 +150,12 @@ export async function fetchYouTube(region = 'US'): Promise<SocialPost[]> {
   })
 }
 
-// ---------- Telegram (public channel web previews) ----------
 const TG_CHANNELS = ['telegram', 'durov']
 export async function fetchTelegram(): Promise<SocialPost[]> {
   const posts: SocialPost[] = []
   for (const ch of TG_CHANNELS) {
     try {
-      const html = await fetchText(`https://t.me/s/${ch}`, 9000)
+      const html = await fetchPage(`https://t.me/s/${ch}`, 9000)
       const blocks = html.match(/<div class="tgme_widget_message_text[^"]*"[^>]*>([\s\S]*?)<\/div>/g) ?? []
       for (const b of blocks.slice(-8)) {
         const text = stripTags(b).slice(0, 180)
@@ -193,7 +180,6 @@ export async function fetchTelegram(): Promise<SocialPost[]> {
   return posts.slice(0, 24).reverse()
 }
 
-// ---------- dispatch + map ----------
 export function fetchSource(source: SocialSource): Promise<SocialPost[]> {
   switch (source) {
     case 'reddit':

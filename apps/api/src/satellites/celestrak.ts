@@ -1,3 +1,4 @@
+import { fetchText } from '../lib/cache.js'
 import type { SatGroup, TleRecord } from './types.js'
 
 // group → CelesTrak GROUP name + a sample cap (some groups have thousands of
@@ -53,18 +54,6 @@ const ISS_FALLBACK: TleRecord[] = [
     line2: '2 48274  41.4672 224.3616 0002880 262.1202  97.9309 15.57904594296214',
   },
 ]
-
-async function fetchText(url: string, timeoutMs: number): Promise<string> {
-  const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': 'WorldEye/1.0' } })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return await res.text()
-  } finally {
-    clearTimeout(t)
-  }
-}
 
 // Last successful fetch per group, kept beyond the route cache's TTL. CelesTrak
 // returns 403 ("data has not updated since your last download") if the same

@@ -2,8 +2,8 @@ import { fetchJSON, TTLCache } from '../lib/cache.js'
 import type { Airport, AircraftMeta, FlightRoute } from './types.js'
 
 // adsbdb.com — free, keyless callsign->route and hex/reg->aircraft metadata.
-const routeCache = new TTLCache<FlightRoute | null>(6 * 60 * 60 * 1000) // 6h
-const metaCache = new TTLCache<AircraftMeta | null>(24 * 60 * 60 * 1000) // 24h
+const routeCache = new TTLCache<FlightRoute | null>(6 * 60 * 60 * 1000)
+const metaCache = new TTLCache<AircraftMeta | null>(24 * 60 * 60 * 1000)
 
 function airport(a: any): Airport | null {
   if (!a) return null

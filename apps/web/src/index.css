@@ -21,14 +21,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Light theme chrome (map dashboard supports both) */
 html.light body {
   background: #eef2f7;
   color: #0f172a;
   color-scheme: light;
 }
 
-/* ---- Scrollbars ---- */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -41,7 +39,6 @@ html.light body {
   background: transparent;
 }
 
-/* ---- Range sliders ---- */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
@@ -70,7 +67,6 @@ input[type='range']::-moz-range-thumb {
   cursor: pointer;
 }
 
-/* ---- MapLibre control + popup theming ---- */
 .maplibregl-map {
   font-family: inherit;
 }
@@ -141,7 +137,6 @@ html.light .maplibregl-popup-tip {
   border-bottom-color: #ffffff !important;
 }
 
-/* ---- DOM markers used for measurement labels ---- */
 .we-measure-label {
   background: rgba(14, 21, 36, 0.92);
   color: #22d3ee;
@@ -164,7 +159,6 @@ html.light .maplibregl-popup-tip {
   box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.25);
 }
 
-/* utility for glassy panels */
 .we-glass {
   background: rgba(14, 21, 36, 0.9);
   backdrop-filter: blur(8px);

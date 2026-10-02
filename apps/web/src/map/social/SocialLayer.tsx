@@ -7,15 +7,7 @@ import { socialMapStore, useSocialMap } from '../../data/socialStore'
 import { fetchSocialMap } from '../../api/socialApi'
 import { setSocialData } from '../mapLayers'
 import { LYR } from '../ids'
-
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
+import { esc } from '../../lib/html'
 
 function useSocialEnabled(): boolean {
   return useAppSelector((s) => s.layers.items.find((l) => l.id === 'social-buzz')?.visible ?? false)

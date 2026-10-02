@@ -17,15 +17,8 @@ import {
   setWildfireData,
 } from '../mapLayers'
 import { LYR } from '../ids'
+import { esc } from '../../lib/html'
 
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
 function compass(deg: number | null | undefined): string {
   if (deg == null) return ''
   const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
@@ -45,7 +38,7 @@ function useLayerVisible(id: string): boolean {
   return useAppSelector((s) => s.layers.items.find((l) => l.id === id)?.visible ?? false)
 }
 
-// ---------- engines (poll only while a relevant layer is visible) ----------
+// The weather engines poll only while one of their layers is visible.
 export function WeatherGridEngine() {
   const temp = useLayerVisible('weather-temp')
   const wind = useLayerVisible('weather-wind')
@@ -109,7 +102,6 @@ export function WeatherEventsEngine() {
   return null
 }
 
-// ---------- syncers (store → map source) ----------
 export function WeatherGridSync() {
   const { map } = useMapContext()
   const epoch = useAppSelector((s) => s.map.styleEpoch)
@@ -171,7 +163,6 @@ export function WeatherEventsSync() {
   return null
 }
 
-// ---------- interactions (click popups) ----------
 function bindPopup(
   map: maplibregl.Map,
   layerId: string,

@@ -100,7 +100,6 @@ export function buildReport(kind: ReportKind): Report {
   return { title: KIND_TITLE[kind], kind, generatedAt: new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC', sections }
 }
 
-// ---------- text renderers ----------
 export function toMarkdown(r: Report): string {
   const out: string[] = [`# ${r.title}`, `_Generated ${r.generatedAt}_`, '']
   for (const s of r.sections) {

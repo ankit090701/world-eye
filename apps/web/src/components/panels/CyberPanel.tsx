@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { PanelShell, SectionTitle, Switch } from '../ui'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { setActivePanel, setToast } from '../../store/uiSlice'
+import { setActivePanel } from '../../store/uiSlice'
 import { clearReport, lookupError, lookupOk, lookupStart, setQuery } from '../../store/cyberSlice'
 import { toggleLayer } from '../../store/layersSlice'
 import { useMapContext } from '../../map/MapContext'
@@ -118,7 +118,6 @@ export default function CyberPanel() {
 
       {report && <Report report={report} onLocate={() => report.geo?.lat != null && report.geo?.lon != null && map && (dropMarker(map, report.geo.lon, report.geo.lat, report.threat.listed), map.flyTo({ center: [report.geo.lon, report.geo.lat], zoom: 5 }))} />}
 
-      {/* threat feed */}
       <SectionTitle>Global threat feed</SectionTitle>
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="min-w-0">
@@ -143,7 +142,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
   const t = report.threat
   return (
     <div className="mt-3 space-y-3">
-      {/* header + verdict */}
       <div className="rounded-xl border border-we-border bg-we-panel-2/40 p-3">
         <div className="flex items-center justify-between">
           <div className="min-w-0">
@@ -172,7 +170,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </div>
       </div>
 
-      {/* geolocation */}
       {report.geo && (
         <Section icon={<Globe size={13} />} title="Geolocation">
           <Row label="Country" value={report.geo.country} />
@@ -188,7 +185,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </Section>
       )}
 
-      {/* asn */}
       {report.asn?.asn && (
         <Section icon={<Network size={13} />} title="ASN">
           <Row label="AS" value={report.asn.asn} />
@@ -197,7 +193,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </Section>
       )}
 
-      {/* whois / rdap */}
       {report.rdap && (
         <Section icon={<ScrollText size={13} />} title="WHOIS / RDAP">
           <Row label="Network" value={report.rdap.name} />
@@ -210,7 +205,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </Section>
       )}
 
-      {/* dns */}
       {report.dns && (
         <Section icon={<Server size={13} />} title="DNS records">
           <RecordRow label="A" values={report.dns.A} />
@@ -222,7 +216,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </Section>
       )}
 
-      {/* certs */}
       {report.certs.length > 0 && (
         <Section icon={<Lock size={13} />} title={`Certificates (${report.certs.length})`}>
           {report.certs.slice(0, 4).map((c, i) => (
@@ -236,7 +229,6 @@ function Report({ report, onLocate }: { report: CyberReport; onLocate: () => voi
         </Section>
       )}
 
-      {/* ports (gated) */}
       <Section icon={<Ban size={13} />} title="Open ports">
         <p className="text-[10px] leading-relaxed text-we-muted">{report.ports.note}</p>
       </Section>

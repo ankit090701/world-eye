@@ -8,7 +8,6 @@ import type {
   ThreatMapPoint,
 } from './types.js'
 
-// ---------- query classification ----------
 export function detectKind(q: string): { kind: QueryKind; value: string } {
   const s = q.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '')
   if (/^(\d{1,3}\.){3}\d{1,3}$/.test(s)) return { kind: 'ip', value: s }
@@ -19,7 +18,6 @@ export function detectKind(q: string): { kind: QueryKind; value: string } {
   return { kind: 'unknown', value: s }
 }
 
-// ---------- geolocation (ip-api, keyless) ----------
 const GEO_FIELDS = 'status,country,countryCode,city,lat,lon,isp,org,as,asname,mobile,proxy,hosting,query'
 
 export async function geoIp(ip: string): Promise<GeoInfo | null> {
@@ -62,7 +60,6 @@ export async function geoBatch(ips: string[]): Promise<any[]> {
   }
 }
 
-// ---------- RDAP (whois) ----------
 function rdapEntities(entities: any[]): { role: string; name: string }[] {
   const out: { role: string; name: string }[] = []
   for (const e of entities ?? []) {
@@ -128,7 +125,6 @@ export async function rdapAsn(asn: string): Promise<{ asn: string; name: string 
   }
 }
 
-// ---------- DNS over HTTPS ----------
 export async function doh(name: string, type: string): Promise<string[]> {
   try {
     const d = await fetchJSON(`https://dns.google/resolve?name=${encodeURIComponent(name)}&type=${type}`, 6000)
@@ -163,7 +159,6 @@ export async function reverseDns(ip: string): Promise<string | null> {
   return r[0]?.replace(/\.$/, '') ?? null
 }
 
-// ---------- certificates (crt.sh) ----------
 export async function certs(domain: string): Promise<CertInfo[]> {
   try {
     const d = await fetchJSON(`https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`, 9000)
@@ -188,8 +183,7 @@ export async function certs(domain: string): Promise<CertInfo[]> {
   }
 }
 
-// ---------- threat lists ----------
-const feodoCache = new TTLCache<Map<string, string>>(60 * 60 * 1000) // 1h
+const feodoCache = new TTLCache<Map<string, string>>(60 * 60 * 1000)
 const torCache = new TTLCache<Set<string>>(60 * 60 * 1000)
 
 export async function getFeodo(): Promise<Map<string, string>> {
@@ -243,7 +237,6 @@ export async function checkThreat(ip: string, geo: GeoInfo | null) {
   }
 }
 
-// ---------- cloud detection ----------
 const CLOUDS: [RegExp, string][] = [
   [/amazon|aws|ec2/i, 'Amazon AWS'],
   [/google|gcp|1e100/i, 'Google Cloud'],
@@ -262,8 +255,7 @@ export function cloudFromText(...text: (string | null | undefined)[]): string | 
   return null
 }
 
-// ---------- threat map points ----------
-const threatPointsCache = new TTLCache<ThreatMapPoint[]>(30 * 60 * 1000) // 30min
+const threatPointsCache = new TTLCache<ThreatMapPoint[]>(30 * 60 * 1000)
 
 export async function threatMapPoints(): Promise<ThreatMapPoint[]> {
   const hit = threatPointsCache.get('all')

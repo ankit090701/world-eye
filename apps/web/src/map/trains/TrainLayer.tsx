@@ -112,7 +112,6 @@ export function TrainSync() {
     setTrainData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap, selectedId, categoryFilter])
 
-  // observed trail of selected
   useEffect(() => {
     if (!map || epoch === 0) return
     const trail = trainStore.trailFor(selectedId)
@@ -123,7 +122,6 @@ export function TrainSync() {
     setTrainTrailData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap, selectedId])
 
-  // scheduled route + stops of selected
   useEffect(() => {
     if (!map || epoch === 0) return
     const coords = (route?.stops ?? [])
@@ -145,7 +143,6 @@ export function TrainSync() {
     setTrainRouteStopsData(map, { type: 'FeatureCollection', features: stops })
   }, [map, epoch, route])
 
-  // follow
   useEffect(() => {
     if (!map || !follow || !selectedId) return
     const t = snap.byId[selectedId]

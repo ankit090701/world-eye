@@ -114,7 +114,6 @@ export default function TrafficPanel() {
         <MapPin size={13} className="text-we-accent" /> Go to live coverage (Finland)
       </button>
 
-      {/* congestion summary */}
       <SectionTitle>Congestion</SectionTitle>
       <div className="rounded-lg border border-we-border bg-we-panel-2/40 p-3">
         <div className="flex items-center justify-between">
@@ -145,7 +144,6 @@ export default function TrafficPanel() {
         </div>
       </div>
 
-      {/* layer toggles */}
       <div className="mt-3 space-y-2">
         <ToggleRow label="Incidents" checked={incidentsOn} onChange={() => dispatch(toggleLayer('traffic-incidents'))} />
         <ToggleRow
@@ -155,7 +153,6 @@ export default function TrafficPanel() {
         />
       </div>
 
-      {/* selected incident */}
       {selected && (
         <>
           <SectionTitle>Selected incident</SectionTitle>
@@ -199,7 +196,6 @@ export default function TrafficPanel() {
         </>
       )}
 
-      {/* incident type filter */}
       <div className="mt-3 flex items-center justify-between">
         <SectionTitle>Incidents ({incidents.length})</SectionTitle>
         {typeFilter && (

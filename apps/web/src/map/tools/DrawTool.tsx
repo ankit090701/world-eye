@@ -151,7 +151,6 @@ export default function DrawTool() {
       map.getCanvas().style.cursor = ''
       if (dcz) map.doubleClickZoom.enable()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, active])
 
   // Reset draft when the tool changes / deactivates. Intentionally NOT keyed on
@@ -161,7 +160,6 @@ export default function DrawTool() {
     setPts([])
     setPreview(null)
     if (map && epoch > 0) setDraftData(map, EMPTY)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tool, map])
 
   // Render the draft geometry.

@@ -99,7 +99,6 @@ export function AircraftSync() {
     setAircraftData(map, { type: 'FeatureCollection', features })
   }, [map, epoch, snap, selectedHex, emergencyOnly])
 
-  // selected aircraft trail (observed positions)
   useEffect(() => {
     if (!map || epoch === 0) return
     const trail = aircraftStore.trailFor(selectedHex)
@@ -110,7 +109,6 @@ export function AircraftSync() {
     setAircraftTrailData(map, { type: 'FeatureCollection', features } as FeatureCollection)
   }, [map, epoch, snap, selectedHex])
 
-  // follow mode
   useEffect(() => {
     if (!map || !follow || !selectedHex) return
     const a = snap.byHex[selectedHex]

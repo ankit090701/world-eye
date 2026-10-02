@@ -5,27 +5,9 @@ import {
   type IncidentType,
   type TrafficIncident,
 } from './types.js'
+import { hashStr, mulberry32 } from '../lib/random.js'
 
 // Deterministic fallback traffic feed for areas outside Digitraffic (Finland).
-
-function mulberry32(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a |= 0
-    a = (a + 0x6d2b79f5) | 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-function hashStr(s: string): number {
-  let h = 2166136261
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i)
-    h = Math.imul(h, 16777619)
-  }
-  return h >>> 0
-}
 
 const INCIDENTS: { type: IncidentType; sev: 'low' | 'medium' | 'high'; titles: string[]; w: number }[] = [
   { type: 'accident', sev: 'high', titles: ['Multi-vehicle collision', 'Vehicle accident', 'Overturned lorry'], w: 0.25 },
@@ -53,7 +35,6 @@ export function simulateTraffic(bbox: BBox, now: number): { incidents: TrafficIn
   const bucket = `${cLon.toFixed(1)}_${cLat.toFixed(1)}_${spanLon.toFixed(1)}`
   const rng = mulberry32(hashStr(bucket))
 
-  // incidents
   const incidents: TrafficIncident[] = []
   const nInc = 5 + Math.floor(rng() * 6)
   for (let i = 0; i < nInc; i++) {

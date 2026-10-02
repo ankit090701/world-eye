@@ -1,7 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import type { Cyclone, Earthquake, GridPoint, Wildfire } from '../types'
 
-// ---- grid (temperature / wind / lightning field) ----
 export interface GridSnapshot {
   points: GridPoint[]
   source: 'live' | 'sim' | null
@@ -26,7 +25,6 @@ export function useWeatherGrid(): GridSnapshot {
   return useSyncExternalStore(weatherGridStore.subscribe, weatherGridStore.getSnapshot)
 }
 
-// ---- events (cyclones / wildfires / earthquakes) ----
 export interface EventsSnapshot {
   cyclones: Cyclone[]
   wildfires: Wildfire[]

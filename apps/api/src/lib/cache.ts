@@ -28,26 +28,30 @@ export class TTLCache<T> {
   }
 }
 
-/** fetch with an abort timeout so a slow upstream never hangs a request. */
-export async function fetchJSON(
+/** fetch with an abort timeout (covering the body read) so a slow upstream never hangs a request. */
+async function fetchWithTimeout<T>(
   url: string,
-  timeoutMs = 6000,
-  extraHeaders?: Record<string, string>,
-): Promise<any> {
+  timeoutMs: number,
+  headers: Record<string, string>,
+  read: (res: Response) => Promise<T>,
+): Promise<T> {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), timeoutMs)
   try {
-    const res = await fetch(url, {
-      signal: ctrl.signal,
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'WorldEye/1.0',
-        ...extraHeaders,
-      },
-    })
+    const res = await fetch(url, { signal: ctrl.signal, headers })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return await res.json()
+    return await read(res)
   } finally {
     clearTimeout(t)
   }
+}
+
+export function fetchJSON(url: string, timeoutMs = 6000, extraHeaders?: Record<string, string>): Promise<any> {
+  const headers = { Accept: 'application/json', 'User-Agent': 'WorldEye/1.0', ...extraHeaders }
+  return fetchWithTimeout(url, timeoutMs, headers, (res) => res.json())
+}
+
+export function fetchText(url: string, timeoutMs = 6000, extraHeaders?: Record<string, string>): Promise<string> {
+  const headers = { 'User-Agent': 'WorldEye/1.0', ...extraHeaders }
+  return fetchWithTimeout(url, timeoutMs, headers, (res) => res.text())
 }

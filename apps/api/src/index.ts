@@ -228,7 +228,7 @@ app.get('/api/domain/lookup', async (req, res) => {
   const domain = normalizeDomain(raw)
   if (!isDomainLike(domain)) return res.status(400).json({ error: 'enter a valid domain, e.g. example.com' })
   const cached = domainCache.get(domain)
-  if (cached) return res.json(cached) // cached hits don't touch upstreams → not rate-limited
+  if (cached) return res.json(cached)
   const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
   // Separate budget from the cyber route, and lower because each uncached domain
   // lookup fans out to ~25 upstream calls (DoH + RDAP + CT + ip-api).
@@ -242,7 +242,6 @@ app.get('/api/domain/lookup', async (req, res) => {
   }
 })
 
-// Module 9: Weather Intelligence.
 app.get('/api/weather/current', async (req, res) => {
   const lat = Number(req.query.lat)
   const lon = Number(req.query.lon)
@@ -251,7 +250,7 @@ app.get('/api/weather/current', async (req, res) => {
   }
   const key = `${lat.toFixed(2)}_${lon.toFixed(2)}`
   const cached = weatherCurrentCache.get(key)
-  if (cached) return res.json(cached) // cached hits don't touch Open-Meteo → not rate-limited
+  if (cached) return res.json(cached)
   const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
   if (rateLimited(`weather:${ip}`, 30, 60000)) return res.status(429).json({ error: 'rate limited — slow down' })
   try {
@@ -324,7 +323,6 @@ app.get('/api/satellites/tle', async (req, res) => {
   }
 })
 
-// Module 11: News Intelligence — Google News RSS + headline geoparsing.
 app.get('/api/news/feed', async (req, res) => {
   const category = String(req.query.category ?? 'breaking') as NewsCategory
   if (!NEWS_CATEGORIES.has(category)) {
@@ -384,7 +382,6 @@ app.get('/api/news/trending', async (_req, res) => {
   res.json(payload)
 })
 
-// Module 12: Social Intelligence — Reddit / Google Trends / HN / YouTube / Telegram.
 app.get('/api/social/feed', async (req, res) => {
   const source = String(req.query.source ?? 'reddit') as SocialSource
   if (!SOCIAL_SOURCES.has(source)) return res.status(400).json({ error: 'unknown source' })
@@ -437,7 +434,7 @@ app.get('/api/osint/lookup', async (req, res) => {
   if (q.length > 200) return res.status(400).json({ error: 'query too long' })
   const cacheKey = `${kind}:${q.toLowerCase()}:${country ?? ''}`
   const cached = osintCache.get(cacheKey)
-  if (cached) return res.json(cached) // cached hits don't touch upstreams → not rate-limited
+  if (cached) return res.json(cached)
   const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
   // Each uncached lookup fans out to several public OSINT services.
   if (rateLimited(`osint:${ip}`, 15, 60000)) return res.status(429).json({ error: 'rate limited — slow down' })
@@ -580,6 +577,5 @@ app.get('/', (_req, res) => {
 })
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`[worldeye-api] listening on http://localhost:${PORT}`)
 })

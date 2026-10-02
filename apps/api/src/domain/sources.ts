@@ -15,7 +15,6 @@ import type {
 
 const clean = (s: string) => s.replace(/^"|"$/g, '').replace(/\.$/, '').trim()
 
-// ---------- RDAP domain WHOIS ----------
 function vcardField(entity: any, field: string): string | null {
   const v = entity?.vcardArray?.[1]
   if (!Array.isArray(v)) return null
@@ -67,7 +66,6 @@ export async function rdapDomain(domain: string): Promise<DomainWhois | null> {
   }
 }
 
-// ---------- extended DNS ----------
 export async function extendedDns(domain: string): Promise<DomainDns> {
   const [A, AAAA, MX, NS, TXT, CNAME, SOA, CAA] = await Promise.all([
     doh(domain, 'A'),
@@ -91,7 +89,6 @@ export async function extendedDns(domain: string): Promise<DomainDns> {
   }
 }
 
-// ---------- email security (SPF / DMARC / DKIM) ----------
 // Kept to the most common selectors — each is a DNS query, so the list is a
 // direct multiplier on the route's upstream fan-out.
 const DKIM_SELECTORS = ['google', 'default', 'selector1', 'selector2', 'k1', 's1']
@@ -155,7 +152,6 @@ export async function emailSecurity(domain: string, txt: string[], mx: string[])
   }
 }
 
-// ---------- certificate transparency (certs + subdomains + CT history) ----------
 // Passive OSINT: reads public CT logs. certspotter (keyless, fast, reliable) is
 // tried first; crt.sh is a fallback since it is frequently overloaded.
 export interface CrtDerived {
@@ -273,7 +269,6 @@ export async function certTransparency(domain: string): Promise<CrtDerived> {
   return { certs, subdomains, history, firstSeen, source }
 }
 
-// ---------- hosting (apex IP → geo/ASN/cloud) ----------
 export async function hostingInfo(ip: string | null): Promise<DomainHosting | null> {
   if (!ip) return null
   const geo = await geoIp(ip)
@@ -290,7 +285,6 @@ export async function hostingInfo(ip: string | null): Promise<DomainHosting | nu
   }
 }
 
-// ---------- infrastructure footprint (geolocated host IPs) ----------
 async function resolveA(host: string): Promise<string | null> {
   const a = await doh(host, 'A')
   return a.find((x) => /^(\d{1,3}\.){3}\d{1,3}$/.test(x)) ?? null

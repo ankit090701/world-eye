@@ -27,7 +27,6 @@ const FREE = new Set([
   'protonmail.com', 'gmx.com', 'mail.com', 'yandex.com', 'zoho.com', 'live.com', 'msn.com',
 ])
 
-// ---------- email ----------
 async function gravatar(md5: string) {
   try {
     const d = await fetchJSON(`https://en.gravatar.com/${md5}.json`, 6000, { 'User-Agent': UA })
@@ -99,7 +98,6 @@ export async function emailLookup(raw: string): Promise<{ report: EmailReport; l
   return { report, location }
 }
 
-// ---------- username ----------
 async function githubUser(u: string) {
   try {
     const d = await fetchJSON(`https://api.github.com/users/${encodeURIComponent(u)}`, 7000, {
@@ -159,7 +157,6 @@ export async function usernameLookup(raw: string): Promise<{ report: UsernameRep
   return { report: { username, github, platforms }, location }
 }
 
-// ---------- phone (metadata only) ----------
 const TYPE_LABEL: Record<string, string> = {
   MOBILE: 'Mobile',
   FIXED_LINE: 'Fixed line',
@@ -199,7 +196,6 @@ export function phoneLookup(raw: string, defaultCountry?: string): { report: Pho
   }
 }
 
-// ---------- company / organization ----------
 async function clearbitSuggest(q: string): Promise<CompanySuggestion[]> {
   try {
     const d = await fetchJSON(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(q)}`, 7000, {

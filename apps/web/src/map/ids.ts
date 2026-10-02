@@ -1,4 +1,3 @@
-// Central registry of source & layer ids used for WorldEye overlays.
 export const SRC = {
   activity: 'we-activity',
   graticule: 'we-graticule',

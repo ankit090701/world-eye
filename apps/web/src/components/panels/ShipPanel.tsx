@@ -79,7 +79,6 @@ export default function ShipPanel() {
       icon={<ShipIcon size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* feed status */}
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="flex items-center gap-2">
           <span
@@ -109,7 +108,6 @@ export default function ShipPanel() {
         <Switch checked={shipsLayerOn} onChange={() => dispatch(toggleLayer('ships'))} />
       </div>
 
-      {/* category filter */}
       <div className="mt-3 flex items-center justify-between">
         <SectionTitle>Vessel types</SectionTitle>
         {categoryFilter && (
@@ -139,7 +137,6 @@ export default function ShipPanel() {
         ))}
       </div>
 
-      {/* selected ship */}
       {selected ? (
         <>
           <SectionTitle>Selected vessel</SectionTitle>
@@ -228,7 +225,6 @@ export default function ShipPanel() {
         </div>
       ) : null}
 
-      {/* nearby */}
       <SectionTitle>Nearby vessels</SectionTitle>
       {nearby.length === 0 ? (
         <p className="text-[11px] text-we-muted">

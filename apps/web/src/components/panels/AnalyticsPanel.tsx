@@ -106,12 +106,10 @@ export default function AnalyticsPanel() {
       icon={<BarChart3 size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* overview */}
       <Section icon={<Layers size={12} />} title="Tracked objects">
         {overview.length ? <Donut data={overview} label="objects" /> : <Empty>No tracked objects yet.</Empty>}
       </Section>
 
-      {/* distributions */}
       <Section icon={<BarChart3 size={12} />} title="Aircraft altitude (ft)">
         {ac.aircraft.length ? <BarChart data={alt} /> : <Empty>No aircraft in view.</Empty>}
       </Section>
@@ -129,12 +127,10 @@ export default function AnalyticsPanel() {
         </Section>
       )}
 
-      {/* timeline */}
       <Section icon={<Clock size={12} />} title="Seismic timeline (24h)">
         {wx.earthquakes.length ? <BarChart data={timeline} /> : <Empty>No events yet.</Empty>}
       </Section>
 
-      {/* movement */}
       <Section icon={<Move size={12} />} title={`Aircraft movement · avg ${speed.avg} kt`}>
         {ac.aircraft.length ? (
           <>
@@ -147,7 +143,6 @@ export default function AnalyticsPanel() {
         )}
       </Section>
 
-      {/* clusters */}
       <Section icon={<Grid3x3 size={12} />} title="Cluster analysis">
         <div className="mb-1.5 flex gap-1">
           {(['quakes', 'aircraft', 'threats'] as const).map((k) => (
@@ -178,7 +173,6 @@ export default function AnalyticsPanel() {
         )}
       </Section>
 
-      {/* trend */}
       <Section icon={<TrendingUp size={12} />} title="Session trend">
         <div className="mb-1.5 flex flex-wrap gap-1">
           {(['total', 'aircraft', 'ships', 'threats', 'quakes'] as const).map((k) => (
@@ -194,7 +188,6 @@ export default function AnalyticsPanel() {
         <LineChart points={trendPoints} />
       </Section>
 
-      {/* export */}
       <SectionTitle>Export</SectionTitle>
       <div className="flex gap-1.5">
         <button onClick={exportCsv} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-we-border bg-we-panel-2/40 px-2 py-1.5 text-[11px] text-we-text hover:border-we-border-2">

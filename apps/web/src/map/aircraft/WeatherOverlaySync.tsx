@@ -4,8 +4,7 @@ import { useMapContext } from '../MapContext'
 import { useAppSelector } from '../../store/hooks'
 import { SRC, LYR } from '../ids'
 
-// Free RainViewer precipitation radar (no key). Toggled via the "Weather Radar"
-// layer. A fuller weather module arrives in Module 9.
+// RainViewer precipitation radar (free, keyless), toggled via the "Weather Radar" layer.
 
 interface Frame {
   host: string
@@ -87,7 +86,6 @@ export function WeatherOverlaySync() {
     }
   }, [map, epoch, visible])
 
-  // opacity live update
   useEffect(() => {
     if (map && map.getLayer(LYR.weatherRaster)) {
       map.setPaintProperty(LYR.weatherRaster, 'raster-opacity', opacity)

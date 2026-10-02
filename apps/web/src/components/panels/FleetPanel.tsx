@@ -120,7 +120,6 @@ export default function FleetPanel() {
       icon={<Truck size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* status + overview */}
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="flex items-center gap-2">
           <span
@@ -193,7 +192,6 @@ export default function FleetPanel() {
         </button>
       )}
 
-      {/* alerts */}
       {snap.alerts.length > 0 && (
         <>
           <SectionTitle>Alerts ({snap.alerts.length})</SectionTitle>
@@ -222,7 +220,6 @@ export default function FleetPanel() {
         </>
       )}
 
-      {/* selected vehicle */}
       {selected ? (
         <>
           <SectionTitle>Selected vehicle</SectionTitle>
@@ -251,7 +248,6 @@ export default function FleetPanel() {
               </button>
             </div>
 
-            {/* fuel gauge */}
             <div className="mt-3">
               <div className="mb-1 flex items-center justify-between text-[10px] text-we-muted">
                 <span className="flex items-center gap-1">
@@ -314,7 +310,6 @@ export default function FleetPanel() {
             </div>
           </div>
 
-          {/* trip history */}
           <SectionTitle>Trip history</SectionTitle>
           <div className="space-y-1">
             {selected.trips.map((t, i) => (
@@ -332,7 +327,6 @@ export default function FleetPanel() {
         </>
       ) : null}
 
-      {/* vehicle list */}
       <SectionTitle>Vehicles ({list.length})</SectionTitle>
       <div className="space-y-1">
         {list.map((v) => (

@@ -17,8 +17,8 @@ interface VesselMeta {
   imo?: number
 }
 
-const locationsCache = new TTLCache<any>(12000) // 12s
-const vesselsCache = new TTLCache<Map<number, VesselMeta>>(300000) // 5min
+const locationsCache = new TTLCache<any>(12000)
+const vesselsCache = new TTLCache<Map<number, VesselMeta>>(5 * 60 * 1000)
 
 async function getLocations(): Promise<any> {
   const hit = locationsCache.get('all')

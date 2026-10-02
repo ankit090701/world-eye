@@ -62,7 +62,6 @@ export default function ReportsPanel() {
 }
 
 function GenerateTab({ recent }: { recent: GeneratedReport[] }) {
-  const dispatch = useAppDispatch()
   const [kind, setKind] = useState<ReportKind>('situation')
   const [report, setReport] = useState<Report | null>(null)
   const [busy, setBusy] = useState<string | null>(null)

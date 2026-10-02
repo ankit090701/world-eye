@@ -2,7 +2,7 @@
 // listed alongside countries so a headline mentioning a city plots precisely.
 // Matched case-insensitively on word boundaries, longest name first.
 export const PLACES: [string, number, number][] = [
-  // --- major cities ---
+  // Major cities
   ['New York', 40.71, -74.01],
   ['Washington', 38.9, -77.04],
   ['Los Angeles', 34.05, -118.24],
@@ -60,7 +60,7 @@ export const PLACES: [string, number, number][] = [
   ['Atlanta', 33.75, -84.39],
   ['Dallas', 32.78, -96.8],
   ['Kabul', 34.53, 69.17],
-  // --- countries ---
+  // Countries
   ['United States', 39.5, -98.35],
   ['America', 39.5, -98.35],
   ['United Kingdom', 54.0, -2.0],

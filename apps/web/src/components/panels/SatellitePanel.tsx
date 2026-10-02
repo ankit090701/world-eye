@@ -64,7 +64,6 @@ export default function SatellitePanel() {
       icon={<Satellite size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* layer toggles */}
       <div className="space-y-1">
         {TOGGLES.map(({ id, group, label, icon: Icon }) => {
           const m = group ? meta[group] : null
@@ -90,10 +89,8 @@ export default function SatellitePanel() {
         })}
       </div>
 
-      {/* selected satellite */}
       {selected && <SelectedCard p={selected} onClear={() => dispatch(selectSat(null))} />}
 
-      {/* search + list */}
       <SectionTitle>Tracked objects</SectionTitle>
       <div className="mb-2 flex items-center gap-2 rounded-lg border border-we-border bg-we-panel-2/50 px-2.5 py-2 focus-within:border-we-accent/60">
         <Search size={14} className="text-we-muted" />

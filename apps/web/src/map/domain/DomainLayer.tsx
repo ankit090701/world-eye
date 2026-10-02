@@ -6,16 +6,7 @@ import { useAppSelector } from '../../store/hooks'
 import { useDomainInfraSnapshot } from '../../data/domainInfraStore'
 import { setDomainInfraData, setDomainInfraLinkData } from '../mapLayers'
 import { LYR } from '../ids'
-
-// Data from public DNS / CT logs — escape before putting it in popup innerHTML.
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
+import { esc } from '../../lib/html'
 
 const ROLE_LABEL: Record<string, string> = {
   apex: 'Apex / root',

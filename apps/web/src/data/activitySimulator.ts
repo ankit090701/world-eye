@@ -1,14 +1,8 @@
 import type { ActivityCategory, ActivitySignal } from '../types'
 
-// -----------------------------------------------------------------------------
-// DEMO DATA SOURCE
-// This is a self-contained *simulated* global activity feed. It exists so that
-// Module 1 (World Map Dashboard) can demonstrate heatmaps, the timeline,
-// historical playback and live/real-time updates without depending on the
-// later tracking modules. When Modules 2+ (aircraft, ships, trains, …) are
-// wired in, their live feeds replace this simulator — the map layer plumbing
-// stays the same.
-// -----------------------------------------------------------------------------
+// Self-contained simulated activity feed (demo data). It drives the Module 1
+// heatmap, timeline, historical playback and live updates independently of the
+// real tracking feeds.
 
 const CITIES: { name: string; lng: number; lat: number; weight: number }[] = [
   { name: 'New York', lng: -74.006, lat: 40.7128, weight: 1 },
@@ -116,7 +110,7 @@ function makeSignal(
   }
 }
 
-export const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000 // 24h
+export const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000
 
 /** Build a stable historical scene of `count` signals spread over the last 24h. */
 export function generateHistory(now: number, count = 700): ActivitySignal[] {

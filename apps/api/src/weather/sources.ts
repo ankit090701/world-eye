@@ -8,7 +8,6 @@ import type {
   Wildfire,
 } from './types.js'
 
-// ---------- WMO weather code → text ----------
 const WMO: Record<number, string> = {
   0: 'Clear sky',
   1: 'Mainly clear',
@@ -49,7 +48,6 @@ const CURRENT_FIELDS =
 
 const num = (v: any): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null)
 
-// ---------- current conditions (single point) ----------
 export async function currentConditions(lat: number, lon: number): Promise<CurrentConditions | null> {
   try {
     const url =
@@ -80,7 +78,6 @@ export async function currentConditions(lat: number, lon: number): Promise<Curre
   }
 }
 
-// ---------- global temperature / wind / cloud / lightning grid ----------
 function buildGrid(): { lat: number; lon: number }[] {
   const pts: { lat: number; lon: number }[] = []
   for (let lat = -60; lat <= 70; lat += 20) {
@@ -120,7 +117,6 @@ export async function weatherGrid(): Promise<GridPoint[]> {
   return out
 }
 
-// ---------- tropical cyclones (NOAA NHC) ----------
 export function cycloneCategory(windKt: number | null): CycloneCategory {
   const w = windKt ?? 0
   if (w >= 137) return 'cat5'
@@ -199,7 +195,6 @@ export async function cyclones(): Promise<Cyclone[]> {
   }
 }
 
-// ---------- wildfires (NASA EONET) ----------
 export async function wildfires(): Promise<Wildfire[]> {
   try {
     const d = await fetchJSON(
@@ -230,7 +225,6 @@ export async function wildfires(): Promise<Wildfire[]> {
   }
 }
 
-// ---------- earthquakes (USGS) ----------
 export async function earthquakes(): Promise<Earthquake[]> {
   try {
     const d = await fetchJSON(

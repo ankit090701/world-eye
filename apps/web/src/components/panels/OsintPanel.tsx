@@ -16,7 +16,7 @@ import {
   X,
   Users,
 } from 'lucide-react'
-import { PanelShell, SectionTitle } from '../ui'
+import { PanelShell } from '../ui'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { setActivePanel } from '../../store/uiSlice'
 import {
@@ -113,7 +113,6 @@ export default function OsintPanel() {
       icon={<ScanSearch size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* kind tabs */}
       <div className="flex flex-wrap gap-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
@@ -132,7 +131,6 @@ export default function OsintPanel() {
         ))}
       </div>
 
-      {/* search */}
       <form
         onSubmit={(e) => {
           e.preventDefault()

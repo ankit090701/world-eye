@@ -7,6 +7,7 @@ import type {
   VehicleStatus,
   VehicleType,
 } from './types.js'
+import { hashStr, mulberry32 } from '../lib/random.js'
 
 // Server start — used as the base epoch so odometer / distance accumulate
 // smoothly across requests within a session.
@@ -28,24 +29,6 @@ const PLACES = [
   'Airport Cargo', 'Harbour Gate', 'Retail Park', 'Old Town', 'Tech Campus', 'Cross Dock',
 ]
 
-function mulberry32(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a |= 0
-    a = (a + 0x6d2b79f5) | 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-function hashStr(s: string): number {
-  let h = 2166136261
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i)
-    h = Math.imul(h, 16777619)
-  }
-  return h >>> 0
-}
 const toRad = (d: number) => (d * Math.PI) / 180
 const toDeg = (r: number) => (r * 180) / Math.PI
 const R = 6371008.8
@@ -164,7 +147,7 @@ function makeGeofences(depot: [number, number]): Geofence[] {
   ]
 }
 
-function synthTrips(cfg: VehicleConfig, i: number, now: number): Trip[] {
+function synthTrips(cfg: VehicleConfig, now: number): Trip[] {
   const rng = mulberry32(hashStr(`${cfg.plate}:trips`))
   const trips: Trip[] = []
   let cursor = now - 30 * 60 * 1000
@@ -267,11 +250,10 @@ export function generateFleet(depot: [number, number], now: number, count = 16):
       lastUpdate,
       geofence,
       nextServiceKm,
-      trips: synthTrips(cfg, i, now),
+      trips: synthTrips(cfg, now),
     }
     vehicles.push(v)
 
-    // ---- alerts ----
     const push = (type: FleetAlert['type'], severity: FleetAlert['severity'], message: string) =>
       alerts.push({ id: `${v.id}-${type}`, vehicleId: v.id, vehicleName: v.name, type, severity, message, time: lastUpdate })
 

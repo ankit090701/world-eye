@@ -134,7 +134,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
   const d = report.dns
   return (
     <div className="mt-3 space-y-3">
-      {/* header */}
       <div className="rounded-xl border border-we-border bg-we-panel-2/40 p-3">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
@@ -151,7 +150,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </div>
       </div>
 
-      {/* whois */}
       {w && (
         <Section icon={<ScrollText size={13} />} title="WHOIS / Registration">
           <Row label="Registrar" value={w.registrar} />
@@ -171,10 +169,8 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </Section>
       )}
 
-      {/* email security */}
       <EmailSection email={report.email} />
 
-      {/* dns */}
       <Section icon={<Server size={13} />} title="DNS records">
         <RecordRow label="A" values={d.A} />
         <RecordRow label="AAAA" values={d.AAAA} />
@@ -185,7 +181,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         <RecordRow label="TXT" values={d.TXT} mono={false} />
       </Section>
 
-      {/* hosting */}
       {report.hosting && (
         <Section icon={<MapPin size={13} />} title="Hosting">
           <Row label="IP" value={report.hosting.ip} />
@@ -196,7 +191,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </Section>
       )}
 
-      {/* infrastructure footprint */}
       {report.infra.length > 0 && (
         <Section icon={<Network size={13} />} title={`Infrastructure footprint (${report.infra.length})`}>
           <div className="mb-1.5 text-[10px] text-we-muted">
@@ -210,7 +204,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </Section>
       )}
 
-      {/* certificates */}
       {report.certs.length > 0 && (
         <Section icon={<Lock size={13} />} title={`Certificates (${report.certs.length})`}>
           {report.certs.slice(0, 5).map((c, i) => (
@@ -224,7 +217,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </Section>
       )}
 
-      {/* subdomains */}
       {report.subdomains.length > 0 && (
         <Section icon={<Boxes size={13} />} title={`Subdomains (${report.subdomains.length})`}>
           <div className="max-h-40 space-y-0.5 overflow-y-auto pr-1">
@@ -240,7 +232,6 @@ function Report({ report, infraOn }: { report: DomainReport; infraOn: boolean })
         </Section>
       )}
 
-      {/* CT history */}
       {report.history.length > 0 && (
         <Section icon={<History size={13} />} title="Historical DNS / CT activity">
           <div className="mb-1 text-[10px] text-we-muted">

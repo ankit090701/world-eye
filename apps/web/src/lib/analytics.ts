@@ -2,7 +2,6 @@ import type { Aircraft, Earthquake, Ship, ThreatMapPoint } from '../types'
 import type { Datum } from '../components/charts/Charts'
 import { CHART_PALETTE } from '../components/charts/Charts'
 
-// ---------- distributions ----------
 export function altitudeBands(aircraft: Aircraft[]): Datum[] {
   const bands = [
     { label: '0-10k', lo: 0, hi: 10000 },
@@ -54,7 +53,6 @@ export function threatsByCountry(threats: ThreatMapPoint[]): Datum[] {
     .map(([label, value], i) => ({ label, value, color: CHART_PALETTE[i % CHART_PALETTE.length] }))
 }
 
-// ---------- timeline (earthquakes over last 24h) ----------
 export function quakeTimeline(quakes: Earthquake[], now: number): Datum[] {
   const buckets = 12 // 2-hour buckets
   const span = 24 * 3600 * 1000
@@ -69,7 +67,6 @@ export function quakeTimeline(quakes: Earthquake[], now: number): Datum[] {
   return arr.map((value, i) => ({ label: i % 3 === 0 ? `${(buckets - i) * 2}h` : '', value, color: '#38bdf8' }))
 }
 
-// ---------- movement analysis ----------
 export function speedHistogram(aircraft: Aircraft[]): { data: Datum[]; avg: number } {
   const bands = [
     { label: '<200', lo: 0, hi: 200 },
@@ -99,7 +96,6 @@ export function headingDistribution(aircraft: Aircraft[]): Datum[] {
   return COMPASS.map((label, i) => ({ label, value: arr[i], color: '#22d3ee' }))
 }
 
-// ---------- cluster analysis (spatial grid binning) ----------
 export interface Cluster {
   lat: number
   lon: number
@@ -122,7 +118,6 @@ export function gridClusters(points: { lat: number; lon: number }[], cellDeg = 1
     .slice(0, 6)
 }
 
-// ---------- export ----------
 export function toCsvSection(title: string, data: Datum[]): string {
   return `# ${title}\nlabel,value\n${data.map((d) => `${JSON.stringify(d.label)},${d.value}`).join('\n')}\n`
 }

@@ -1,5 +1,3 @@
-// Shared domain types for WorldEye Module 1 (World Map Dashboard).
-
 export type Theme = 'dark' | 'light'
 
 export type BasemapId = 'dark' | 'light' | 'voyager' | 'liberty' | 'satellite'
@@ -40,8 +38,6 @@ export type PanelId =
   | 'reports'
   | 'admin'
   | null
-
-// ---- Module 2: Aircraft Tracking ----
 
 export interface Aircraft {
   hex: string
@@ -94,8 +90,6 @@ export interface AircraftMeta {
   registeredOwnerCountry: string | null
 }
 
-// ---- Module 3: Ship Tracking ----
-
 export type ShipCategory =
   | 'cargo'
   | 'tanker'
@@ -133,8 +127,6 @@ export interface ShipsResponse {
   count: number
   ships: Ship[]
 }
-
-// ---- Module 4: Train Tracking ----
 
 export type TrainCategory = 'longdistance' | 'commuter' | 'cargo' | 'other'
 
@@ -181,8 +173,6 @@ export interface TrainRoute {
   destination: string | null
   delayMin: number | null
 }
-
-// ---- Module 5: Fleet Tracking ----
 
 export type VehicleType = 'van' | 'truck' | 'car' | 'bike'
 export type VehicleStatus = 'moving' | 'idle' | 'parked' | 'offline'
@@ -254,8 +244,6 @@ export interface FleetResponse {
   alerts: FleetAlert[]
 }
 
-// ---- Module 6: Traffic Intelligence ----
-
 export type IncidentType = 'accident' | 'roadwork' | 'closure' | 'restriction' | 'other'
 export type IncidentSeverity = 'low' | 'medium' | 'high'
 export type CongestionLevel = 'free' | 'moderate' | 'heavy' | 'unknown'
@@ -291,8 +279,6 @@ export interface TrafficResponse {
   incidents: TrafficIncident[]
   flow: FlowPoint[]
 }
-
-// ---- Module 7: Cyber Intelligence ----
 
 export type QueryKind = 'ip' | 'domain' | 'asn' | 'unknown'
 
@@ -378,8 +364,6 @@ export interface ThreatMapResponse {
   source: 'live' | 'sim'
   points: ThreatMapPoint[]
 }
-
-// ---- Module 8: Domain Intelligence ----
 
 export interface DomainWhois {
   handle: string | null
@@ -470,8 +454,6 @@ export interface DomainReport {
   errors: string[]
 }
 
-// ---- Module 9: Weather Intelligence ----
-
 export interface CurrentConditions {
   lat: number
   lon: number
@@ -557,8 +539,6 @@ export interface WeatherEventsResponse {
   cycloneSource: 'live' | 'sim'
 }
 
-// ---- Module 10: Satellite Intelligence ----
-
 export type SatGroup = 'iss' | 'active' | 'starlink' | 'debris' | 'launches'
 
 export interface TleRecord {
@@ -588,8 +568,6 @@ export interface SatPosition {
   inclinationDeg: number | null
   selected: boolean
 }
-
-// ---- Module 11: News Intelligence ----
 
 export type NewsCategory = 'breaking' | 'disasters' | 'wars' | 'economic' | 'political'
 
@@ -639,8 +617,6 @@ export interface TrendingResponse {
   topics: TrendingTopic[]
 }
 
-// ---- Module 12: Social Intelligence ----
-
 export type SocialSource = 'reddit' | 'trends' | 'youtube' | 'hn' | 'telegram'
 
 export interface SocialPost {
@@ -680,8 +656,6 @@ export interface SocialMapResponse {
   count: number
   points: SocialMapPoint[]
 }
-
-// ---- Module 13: OSINT Search (public / consent-based only) ----
 
 export type OsintKind = 'email' | 'username' | 'phone' | 'company'
 
@@ -768,8 +742,6 @@ export interface OsintResponse {
   errors: string[]
 }
 
-// ---- Module 14: Alert Engine ----
-
 export type AlertRuleType = 'emergency' | 'speed' | 'geo' | 'earthquake' | 'cyclone' | 'threat'
 export type AlertSource = 'aircraft' | 'fleet'
 // AlertSeverity ('info' | 'warning' | 'critical') is already defined for Module 5.
@@ -815,8 +787,6 @@ export interface ChannelConfig {
   sms: { enabled: boolean; number: string }
 }
 
-// ---- Module 15: AI Intelligence ----
-
 export interface AiAction {
   label: string
   lat: number
@@ -840,8 +810,6 @@ export interface RiskAssessment {
   factors: { label: string; points: number }[]
 }
 
-// ---- Module 17: Reports ----
-
 export type ReportKind = 'situation' | 'analytics' | 'full'
 
 export interface ScheduledReport {
@@ -862,8 +830,6 @@ export interface GeneratedReport {
   at: number
   markdown: string
 }
-
-// ---- Module 18: Admin ----
 
 export type Role = 'Administrator' | 'Analyst' | 'Operator' | 'Viewer' | 'API User'
 

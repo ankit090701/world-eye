@@ -8,20 +8,10 @@ import { cyberThreatStore, useThreatSnapshot } from '../../data/cyberThreatStore
 import { fetchCyberThreats } from '../../api/cyberApi'
 import { setCyberThreatData } from '../mapLayers'
 import { LYR } from '../ids'
+import { esc } from '../../lib/html'
 
 function useThreatsEnabled(): boolean {
   return useAppSelector((s) => s.layers.items.find((l) => l.id === 'cyber-threats')?.visible ?? false)
-}
-
-// Escape values before putting them in popup innerHTML. The data comes from
-// external feeds (abuse.ch / ip-api over HTTP), so treat it as untrusted.
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }
 
 export function CyberThreatEngine() {

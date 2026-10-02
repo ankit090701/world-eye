@@ -35,9 +35,9 @@ interface TrainMeta {
   rows: SlimRow[]
 }
 
-const locationsCache = new TTLCache<any[]>(10000) // 10s
-const stationsCache = new TTLCache<Map<string, Station>>(24 * 60 * 60 * 1000) // 24h
-const trainMetaCache = new TTLCache<TrainMeta | null>(5 * 60 * 1000) // 5min
+const locationsCache = new TTLCache<any[]>(10000)
+const stationsCache = new TTLCache<Map<string, Station>>(24 * 60 * 60 * 1000)
+const trainMetaCache = new TTLCache<TrainMeta | null>(5 * 60 * 1000)
 
 async function getLocations(): Promise<any[]> {
   const hit = locationsCache.get('all')

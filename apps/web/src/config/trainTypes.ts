@@ -1,10 +1,10 @@
 import type { TrainCategory } from '../types'
 
 export const TRAIN_COLORS: Record<TrainCategory, string> = {
-  longdistance: '#34d399', // green
-  commuter: '#38bdf8', // blue
-  cargo: '#f59e0b', // amber
-  other: '#a78bfa', // purple
+  longdistance: '#34d399',
+  commuter: '#38bdf8',
+  cargo: '#f59e0b',
+  other: '#a78bfa',
 }
 
 export const TRAIN_LABELS: Record<TrainCategory, string> = {

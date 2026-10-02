@@ -19,7 +19,6 @@ export default function TopBar() {
 
   return (
     <header className="pointer-events-auto absolute inset-x-0 top-0 z-40 flex h-14 items-center gap-3 border-b border-we-border bg-we-bg/85 px-3 backdrop-blur">
-      {/* brand */}
       <div className="flex items-center gap-2.5">
         <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-we-accent/15 ring-1 ring-we-accent/40">
           <Globe2 size={20} className="text-we-accent" />
@@ -36,7 +35,6 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* search trigger */}
       <button
         onClick={() => dispatch(setActivePanel('search'))}
         className="ml-2 hidden min-w-0 flex-1 items-center gap-2 rounded-lg border border-we-border bg-we-panel-2/50 px-3 py-2 text-left text-xs text-we-muted hover:border-we-border-2 hover:text-we-text sm:flex md:max-w-md"
@@ -47,7 +45,6 @@ export default function TopBar() {
 
       <div className="flex-1 sm:hidden" />
 
-      {/* live / replay status */}
       <button
         onClick={() => dispatch(jumpToNow())}
         title={mode === 'live' ? 'Live feed active' : 'Click to return to live'}

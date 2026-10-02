@@ -16,6 +16,7 @@ import {
 import { setSatOrbitData, setSatelliteData } from '../mapLayers'
 import { LYR } from '../ids'
 import type { SatGroup, SatPosition } from '../../types'
+import { esc } from '../../lib/html'
 
 interface RegEntry {
   satrec: SatRec
@@ -26,22 +27,6 @@ interface RegEntry {
 }
 
 const GROUPS: SatGroup[] = ['iss', 'active', 'starlink', 'debris', 'launches']
-const LAYER_OF: Record<SatGroup, string> = {
-  iss: 'sat-iss',
-  active: 'sat-active',
-  starlink: 'sat-starlink',
-  debris: 'sat-debris',
-  launches: 'sat-launches',
-}
-
-function esc(v: unknown): string {
-  return String(v ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-}
 
 export function SatelliteEngine() {
   const dispatch = useAppDispatch()

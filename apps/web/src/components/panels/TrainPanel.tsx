@@ -257,7 +257,6 @@ export default function TrainPanel() {
             </div>
           </div>
 
-          {/* schedule */}
           <SectionTitle>Schedule &amp; delays</SectionTitle>
           {routeLoading ? (
             <p className="text-[11px] text-we-muted">Loading route…</p>

@@ -55,7 +55,6 @@ const trainColorExpr: any = [
   TRAIN_COLORS.other,
 ]
 
-// Colour ships by AIS category.
 const shipColorExpr: any = [
   'match',
   ['get', 'category'],
@@ -95,7 +94,6 @@ function addLayerSafe(map: MlMap, layer: LayerSpecification) {
   map.addLayer(layer)
 }
 
-// ---- Module 9: weather colour ramps ----
 const tempColorExpr: any = [
   'interpolate',
   ['linear'],
@@ -151,7 +149,6 @@ const quakeDepthColorExpr: any = [
   700, '#3b82f6',
 ]
 
-// Colour domain-infrastructure nodes by their role in the domain (Module 8).
 const infraRoleColorExpr: any = [
   'match',
   ['get', 'role'],
@@ -177,10 +174,10 @@ const categoryColorExpr: any = [
 /**
  * (Re)install all WorldEye overlay sources + layers on top of the current base
  * style. Called on every `style.load` because setStyle() wipes custom layers.
- * Idempotent — guards against re-adding existing sources/layers.
+ * Idempotent — guards against re-adding existing sources/layers. Layers are
+ * added bottom-up, so their order here is the map's draw order.
  */
 export function installOverlays(map: MlMap) {
-  // ---- sources ----
   ensureGeoJSONSource(map, SRC.activity, EMPTY)
   ensureGeoJSONSource(map, SRC.graticule, buildGraticule(20) as FeatureCollection)
   ensureGeoJSONSource(map, SRC.draw, EMPTY)
@@ -213,44 +210,23 @@ export function installOverlays(map: MlMap) {
   ensureGeoJSONSource(map, SRC.alertZones, EMPTY)
   ensureGeoJSONSource(map, SRC.alertEvents, EMPTY)
 
-  // icon images (wiped by setStyle, so re-add on each style load)
-  if (!map.hasImage(PLANE_IMAGE)) {
+  // Icon images are wiped by setStyle too, so re-add them on each style load.
+  const icons: [string, () => ImageData][] = [
+    [PLANE_IMAGE, createPlaneImage],
+    [SHIP_IMAGE, createShipImage],
+    [TRAIN_IMAGE, createTrainImage],
+    [VEHICLE_IMAGE, createVehicleImage],
+    [WIND_IMAGE, createWindArrowImage],
+  ]
+  for (const [name, create] of icons) {
+    if (map.hasImage(name)) continue
     try {
-      map.addImage(PLANE_IMAGE, createPlaneImage(), { pixelRatio: 2 })
-    } catch {
-      /* ignore if already present */
-    }
-  }
-  if (!map.hasImage(SHIP_IMAGE)) {
-    try {
-      map.addImage(SHIP_IMAGE, createShipImage(), { pixelRatio: 2 })
-    } catch {
-      /* ignore if already present */
-    }
-  }
-  if (!map.hasImage(TRAIN_IMAGE)) {
-    try {
-      map.addImage(TRAIN_IMAGE, createTrainImage(), { pixelRatio: 2 })
-    } catch {
-      /* ignore if already present */
-    }
-  }
-  if (!map.hasImage(VEHICLE_IMAGE)) {
-    try {
-      map.addImage(VEHICLE_IMAGE, createVehicleImage(), { pixelRatio: 2 })
-    } catch {
-      /* ignore if already present */
-    }
-  }
-  if (!map.hasImage(WIND_IMAGE)) {
-    try {
-      map.addImage(WIND_IMAGE, createWindArrowImage(), { pixelRatio: 2 })
+      map.addImage(name, create(), { pixelRatio: 2 })
     } catch {
       /* ignore if already present */
     }
   }
 
-  // ---- graticule (reference grid), drawn under data ----
   addLayerSafe(map, {
     id: LYR.graticule,
     type: 'line',
@@ -263,7 +239,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- geofences (Module 5) — zones drawn beneath data ----
   addLayerSafe(map, {
     id: LYR.geofenceFill,
     type: 'fill',
@@ -285,7 +260,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 6: traffic (congestion heatmap + flow points + incidents) ----
   addLayerSafe(map, {
     id: LYR.trafficHeatmap,
     type: 'heatmap',
@@ -335,7 +309,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- activity heatmap ----
   addLayerSafe(map, {
     id: LYR.heatmap,
     type: 'heatmap',
@@ -359,7 +332,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- activity points ----
   addLayerSafe(map, {
     id: LYR.points,
     type: 'circle',
@@ -373,7 +345,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- committed drawings ----
   addLayerSafe(map, {
     id: LYR.drawFill,
     type: 'fill',
@@ -406,7 +377,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- draft (in-progress) drawing ----
   addLayerSafe(map, {
     id: LYR.draftFill,
     type: 'fill',
@@ -437,7 +407,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- measurement ----
   addLayerSafe(map, {
     id: LYR.measureLine,
     type: 'line',
@@ -461,7 +430,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 4: trains ----
   addLayerSafe(map, {
     id: LYR.trainsRouteLine,
     type: 'line',
@@ -521,7 +489,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 3: ships ----
   addLayerSafe(map, {
     id: LYR.shipsTrail,
     type: 'line',
@@ -558,7 +525,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 2: aircraft ----
   addLayerSafe(map, {
     id: LYR.aircraftTrail,
     type: 'line',
@@ -599,7 +565,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 5: fleet vehicles (topmost) ----
   addLayerSafe(map, {
     id: LYR.fleetTrail,
     type: 'line',
@@ -636,7 +601,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 7: cyber threat overlay (malicious infrastructure) ----
   addLayerSafe(map, {
     id: LYR.cyberThreatsGlow,
     type: 'circle',
@@ -661,7 +625,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 8: domain infrastructure footprint (star links + nodes) ----
   addLayerSafe(map, {
     id: LYR.domainInfraLinks,
     type: 'line',
@@ -698,7 +661,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 9: weather field (temperature / lightning / wind) ----
   addLayerSafe(map, {
     id: LYR.weatherTemp,
     type: 'circle',
@@ -742,7 +704,6 @@ export function installOverlays(map: MlMap) {
     paint: { 'icon-opacity': 0.9 },
   })
 
-  // ---- Module 9: wildfires (NASA EONET) ----
   addLayerSafe(map, {
     id: LYR.wildfiresGlow,
     type: 'circle',
@@ -767,7 +728,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 9: earthquakes (USGS) ----
   addLayerSafe(map, {
     id: LYR.earthquakesGlow,
     type: 'circle',
@@ -792,7 +752,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 9: tropical cyclones (NHC), topmost ----
   addLayerSafe(map, {
     id: LYR.cyclonesGlow,
     type: 'circle',
@@ -817,7 +776,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 10: satellites (orbit track under points, groups, selected halo) ----
   addLayerSafe(map, {
     id: LYR.satOrbit,
     type: 'line',
@@ -909,7 +867,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 11: news hotspots (geoparsed headlines) ----
   addLayerSafe(map, {
     id: LYR.newsGlow,
     type: 'circle',
@@ -934,7 +891,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 12: social buzz hotspots (geoparsed posts) ----
   addLayerSafe(map, {
     id: LYR.socialGlow,
     type: 'circle',
@@ -961,7 +917,6 @@ export function installOverlays(map: MlMap) {
     },
   })
 
-  // ---- Module 14: alert zones (geo-alert areas) + fired-alert markers ----
   addLayerSafe(map, {
     id: LYR.alertZoneFill,
     type: 'fill',

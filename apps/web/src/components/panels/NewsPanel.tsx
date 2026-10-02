@@ -45,7 +45,6 @@ export default function NewsPanel() {
   const trending = useAppSelector((s) => s.news.trending)
   const hotspotsOn = useAppSelector((s) => s.layers.items.find((l) => l.id === 'news-hotspots')?.visible ?? false)
 
-  // load the selected category's feed
   useEffect(() => {
     let cancelled = false
     dispatch(feedStart())
@@ -64,7 +63,6 @@ export default function NewsPanel() {
     }
   }, [category, dispatch])
 
-  // load trending once
   useEffect(() => {
     let cancelled = false
     fetchNewsTrending()
@@ -84,7 +82,6 @@ export default function NewsPanel() {
       icon={<Newspaper size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* category tabs */}
       <div className="flex flex-wrap gap-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
@@ -103,7 +100,6 @@ export default function NewsPanel() {
         ))}
       </div>
 
-      {/* trending */}
       {trending.length > 0 && (
         <>
           <SectionTitle>Trending</SectionTitle>
@@ -121,7 +117,6 @@ export default function NewsPanel() {
         </>
       )}
 
-      {/* feed */}
       <div className="mt-3 mb-1 flex items-center justify-between">
         <SectionTitle>{TABS.find((t) => t.id === category)?.label} headlines</SectionTitle>
         {source && <span className="text-[9px] text-we-muted">{source === 'sim' ? 'sample' : 'live'}</span>}
@@ -138,7 +133,6 @@ export default function NewsPanel() {
         {!loading && articles.map((a) => <ArticleRow key={a.id} a={a} />)}
       </div>
 
-      {/* map toggle */}
       <SectionTitle>Map</SectionTitle>
       <div className="flex items-center justify-between rounded-lg border border-we-border bg-we-panel-2/40 px-3 py-2">
         <div className="min-w-0">

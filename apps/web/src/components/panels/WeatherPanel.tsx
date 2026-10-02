@@ -122,7 +122,6 @@ export default function WeatherPanel() {
       icon={<CloudSun size={16} />}
       onClose={() => dispatch(setActivePanel(null))}
     >
-      {/* current conditions */}
       <button
         onClick={queryCentre}
         disabled={loading}
@@ -146,7 +145,6 @@ export default function WeatherPanel() {
       {error && <div className="mt-3 text-[11px] text-we-warn">{error}</div>}
       {current && <CurrentCard c={current} onClear={() => (dispatch(clearCurrent()), wxMarker?.remove())} />}
 
-      {/* layers */}
       <SectionTitle>Weather layers</SectionTitle>
       <div className="space-y-1">
         {LAYER_TOGGLES.map(({ id, label, icon: Icon }) => (
@@ -163,7 +161,6 @@ export default function WeatherPanel() {
         ))}
       </div>
 
-      {/* active events */}
       <SectionTitle>Active events</SectionTitle>
       <div className="space-y-2">
         <EventGroup
