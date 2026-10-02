@@ -1,0 +1,18 @@
+# Docker build context: only what the images need.
+**/node_modules
+**/dist
+**/.vite
+**/*.local
+**/.env
+**/.env.*
+!**/.env.example
+**/npm-debug.log*
+**/*.md
+.git
+.claude
+.vscode
+.idea
+docs
+Dockerfile
+.dockerignore
+compose*.yaml

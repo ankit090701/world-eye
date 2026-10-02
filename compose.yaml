@@ -1,0 +1,28 @@
+# WorldEye full stack: `docker compose up --build -d`, then open http://localhost:8080
+name: worldeye
+
+services:
+  api:
+    build:
+      context: .
+      target: api
+    image: worldeye-api
+    init: true # forwards SIGTERM to node, so stops are fast and clean
+    restart: unless-stopped
+    environment:
+      TRUST_PROXY: "1" # requests arrive via the web proxy; keeps per-client rate limits
+    # Not published to the host: the web service proxies /api/* to it.
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-}
+    image: worldeye-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy

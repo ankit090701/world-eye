@@ -1,0 +1,59 @@
+# WorldEye web: serves the Vite production build and proxies /api/* to the API,
+# so the browser talks to a single origin. Rendered at container start by the
+# nginx image's envsubst step (fills in API_UPSTREAM and NGINX_LOCAL_RESOLVERS).
+
+server {
+    listen 8080;
+    server_name _;
+    server_tokens off;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Resolve the API hostname per request, so a recreated api container
+    # (new IP) is picked up without restarting nginx.
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 6;
+    gzip_min_length 1024;
+    gzip_types text/css text/javascript application/javascript application/json image/svg+xml;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location /api/ {
+        set $api_upstream ${API_UPSTREAM};
+        proxy_pass $api_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # Domain / OSINT lookups fan out to many upstreams.
+        proxy_read_timeout 120s;
+    }
+
+    # Content-hashed bundles from Vite: safe to cache forever.
+    location /assets/ {
+        expires max;
+        access_log off;
+        try_files $uri =404;
+    }
+
+    # The HTML shell must revalidate so a new deploy is picked up at once.
+    location = /index.html {
+        expires -1;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -41,7 +41,11 @@ import type { OsintResponse } from './osint/types.js'
 import { deliverWebhook, type ChannelKind } from './alerts/deliver.js'
 
 const PORT = Number(process.env.PORT ?? 8787)
+// Reverse-proxy hops in front of the API (1 behind the Docker web/nginx proxy).
+// Lets req.ip — and so the per-IP rate limiter — see real client addresses.
+const TRUST_PROXY = Number(process.env.TRUST_PROXY ?? 0)
 const app = express()
+if (TRUST_PROXY > 0) app.set('trust proxy', TRUST_PROXY)
 app.use(cors())
 app.use(express.json({ limit: '32kb' }))
 

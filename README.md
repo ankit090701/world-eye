@@ -58,12 +58,44 @@ Other commands:
 npm run build       # production build (apps/web/dist)
 npm run preview     # serve the production build on :4173
 npm run typecheck   # TypeScript check across web + api
+npm run build -w @worldeye/api   # compile the API to apps/api/dist (run: node dist/index.js)
 ```
 
 > **No API keys required.** Every data/map provider is free and keyless (see
 > "Free & open data sources" per module), so it runs out of the box.
 > Open the app in a normal browser (not a network-restricted in-IDE preview) so
 > the external map/data providers can load.
+
+### Run with Docker
+
+Requires Docker with Compose v2. From the repository root:
+
+```bash
+docker compose up --build -d
+```
+
+Then open **http://localhost:8080**. Two containers start:
+
+| Service | Image | Role |
+|---------|-------|------|
+| `web` | nginx (unprivileged, Alpine) | Serves the production build and proxies `/api/*` to the API — one origin, no CORS |
+| `api` | Node 22 (Alpine, non-root) | The compiled Express API; not published to the host, reached through `web` |
+
+```bash
+docker compose logs -f   # follow logs
+docker compose down      # stop and remove the containers
+```
+
+| Setting | Applies to | Default | Notes |
+|---------|------------|---------|-------|
+| `WEB_PORT` | compose (shell or `.env`) | `8080` | Host port for the app |
+| `VITE_API_BASE` | web build arg | empty = same origin | Set only if the API is hosted elsewhere |
+| `API_UPSTREAM` | web container | `http://api:8787` | Where nginx proxies `/api/*` |
+| `PORT` | api container | `8787` | API listen port |
+| `TRUST_PROXY` | api container | `0` (compose: `1`) | Proxy hops to trust, so per-IP rate limits see real clients |
+
+Each image can also be built on its own from the root `Dockerfile`:
+`docker build --target api -t worldeye-api .` and `docker build --target web -t worldeye-web .`
 
 ---
 
@@ -124,7 +156,10 @@ worldeye/
 │   │       └── lib/         # geodesy, export, helpers
 │   └── api/                 # Express data proxy & enrichment (Module 2+)
 │       └── src/aircraft/    # adsb.lol + adsbdb + simulated fallback
+├── docker/nginx/            # nginx config template for the web image
 ├── docs/                    # module documentation
+├── Dockerfile               # multi-stage build: `api` and `web` targets
+├── compose.yaml             # web + api stack (`docker compose up`)
 └── worldeye-brd.md          # source requirements
 ```
 
