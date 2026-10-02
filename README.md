@@ -863,8 +863,21 @@ See [`docs/MODULE-18.md`](docs/MODULE-18.md) for the test checklist & details.
 Tailwind CSS · lucide-react · satellite.js · jsPDF · write-excel-file.
 **Backend (`apps/api`):** Node · Express · TypeScript (`tsx` in development, compiled
 with `tsc` for production).
-**Deployment:** Docker multi-stage images (Node API + nginx web) run via `compose.yaml`.
+**Deployment:** Docker multi-stage images (Node API + nginx web) run via `compose.yaml`,
+or Vercel services (web + API on one domain) via `vercel.json`.
 
 Not part of this keyless build: the BRD's WebSocket gateway, background workers and
 databases. Every module runs without them; the per-module notes say what a production
 deployment would add.
+
+---
+
+## Contributing
+
+WorldEye is open source and contributions are welcome, including from beginners. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for how to set up, make a change and open a pull
+request.
+
+## License
+
+[MIT](LICENSE)
