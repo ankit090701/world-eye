@@ -1,3 +1,4 @@
+import net from 'node:net'
 import express from 'express'
 import cors from 'cors'
 import { TTLCache } from './lib/cache.js'
@@ -41,9 +42,12 @@ import type { OsintResponse } from './osint/types.js'
 import { deliverWebhook, type ChannelKind } from './alerts/deliver.js'
 
 const PORT = Number(process.env.PORT ?? 8787)
-// Reverse-proxy hops in front of the API (1 behind the Docker web/nginx proxy).
-// Lets req.ip — and so the per-IP rate limiter — see real client addresses.
-const TRUST_PROXY = Number(process.env.TRUST_PROXY ?? 0)
+// Reverse-proxy hops in front of the API (1 behind the Docker web/nginx proxy or
+// Vercel's edge). Lets req.ip — and so the per-IP rate limiter — see real clients.
+const TRUST_PROXY = Number(process.env.TRUST_PROXY ?? (process.env.VERCEL ? 1 : 0))
+// Containers and serverless hosts often lack IPv6, so a slow upstream's IPv4
+// connect must not be cut off by Node's 250 ms happy-eyeballs attempt window.
+net.setDefaultAutoSelectFamilyAttemptTimeout(2500)
 const app = express()
 if (TRUST_PROXY > 0) app.set('trust proxy', TRUST_PROXY)
 app.use(cors())

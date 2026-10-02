@@ -43,9 +43,7 @@ USER node
 EXPOSE 8787
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --start-interval=2s --retries=3 \
     CMD wget -q -O /dev/null "http://127.0.0.1:${PORT}/api/health" || exit 1
-# Containers often lack IPv6, so a slow upstream's IPv4 connect must not be cut
-# off by Node's 250 ms happy-eyeballs attempt timeout (seen with NASA EONET).
-CMD ["node", "--network-family-autoselection-attempt-timeout=2500", "dist/index.js"]
+CMD ["node", "dist/index.js"]
 
 # Web: typecheck + Vite production build, served by nginx.
 FROM deps AS web-build

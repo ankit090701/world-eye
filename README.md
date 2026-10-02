@@ -45,7 +45,8 @@ npm run dev
 Then open **http://localhost:5173**.
 
 `npm run dev` starts **both** the web app (`:5173`) and the WorldEye API
-(`:8787`, which serves every live feed and lookup for Modules 2–14). To run one
+(`:8787`, which serves every live feed and lookup for Modules 2–14). The app calls
+`/api` on its own origin and the Vite dev server proxies it to the API. To run one
 side only:
 
 ```bash
@@ -57,7 +58,7 @@ Other commands:
 
 ```bash
 npm run build       # production build (apps/web/dist)
-npm run preview     # serve the production build on :4173
+npm run preview     # serve the production build on :4173 (/api proxied to :8787)
 npm run typecheck   # TypeScript check across web + api
 npm run build -w @worldeye/api   # compile the API to apps/api/dist (run: node dist/index.js)
 ```
@@ -93,10 +94,24 @@ docker compose down      # stop and remove the containers
 | `VITE_API_BASE` | web build arg | empty = same origin | Set only if the API is hosted elsewhere |
 | `API_UPSTREAM` | web container | `http://api:8787` | Where nginx proxies `/api/*` |
 | `PORT` | api container | `8787` | API listen port |
-| `TRUST_PROXY` | api container | `0` (compose: `1`) | Proxy hops to trust, so per-IP rate limits see real clients |
+| `TRUST_PROXY` | api container | `0` (compose and Vercel: `1`) | Proxy hops to trust, so per-IP rate limits see real clients |
 
 Each image can also be built on its own from the root `Dockerfile`:
 `docker build --target api -t worldeye-api .` and `docker build --target web -t worldeye-web .`
+
+### Deploy on Vercel
+
+The repo deploys as one Vercel project with two **services** (see [`vercel.json`](vercel.json)):
+the Vite app serves `/` and the Express API serves `/api/*` on the same domain, so no
+environment variables are needed.
+
+1. In Vercel, **Add New → Project** and import the GitHub repository.
+2. Keep **Root Directory** `./` and **Application Preset** **Services**. The root
+   `Dockerfile` (detected as a container) isn't used on Vercel.
+3. Click **Deploy**. Every push to `main` then redeploys automatically.
+
+The API runs as a single Vercel Function on Fluid compute, so its in-memory caches and
+per-IP rate limits apply per running instance.
 
 ---
 
