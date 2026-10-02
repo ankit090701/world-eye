@@ -73,7 +73,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     visible: false,
     opacity: 1,
     color: '#f43f5e',
-    description: 'Known malicious infrastructure (botnet C2 servers)',
+    description: 'Botnet C2 servers (abuse.ch) & top attacking IPs (SANS ISC)',
   },
   {
     id: 'domain-infra',
@@ -127,7 +127,7 @@ export const DEFAULT_LAYERS: LayerState[] = [
     visible: false,
     opacity: 1,
     color: '#a855f7',
-    description: 'Active tropical cyclones (NOAA NHC)',
+    description: 'Active tropical cyclones worldwide (NOAA NHC + GDACS)',
   },
   {
     id: 'wildfires',

@@ -123,14 +123,14 @@ export default function CyberPanel() {
         <div className="min-w-0">
           <div className="text-xs text-we-text">Malicious infrastructure</div>
           <div className="text-[10px] text-we-muted">
-            {threatCount} botnet C2 hosts · {threatSource === 'live' ? 'live (abuse.ch)' : threatSource === 'sim' ? 'sample' : '—'}
+            {threatCount} hosts · {threatSource === 'live' ? 'live (abuse.ch + SANS ISC)' : threatSource === 'sim' ? 'sample' : '—'}
           </div>
         </div>
         <Switch checked={threatsOn} onChange={() => dispatch(toggleLayer('cyber-threats'))} />
       </div>
 
       <p className="mt-4 text-[10px] leading-relaxed text-we-muted">
-        Sources: ip-api · RDAP · Google DoH · crt.sh · abuse.ch Feodo · Tor — all free, no keys.
+        Sources: ip-api · RDAP · Google DoH · crt.sh · abuse.ch Feodo · SANS ISC · Tor — all free, no keys.
         Active port scanning is disabled (authorized targets only).
       </p>
     </PanelShell>

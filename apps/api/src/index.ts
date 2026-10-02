@@ -2,7 +2,7 @@ import net from 'node:net'
 import express from 'express'
 import cors from 'cors'
 import { TTLCache } from './lib/cache.js'
-import { fetchAdsbLol } from './aircraft/adsblol.js'
+import { fetchLiveAircraft } from './aircraft/adsblol.js'
 import { fetchRoute, fetchMeta } from './aircraft/adsbdb.js'
 import { simulateAircraft } from './aircraft/simulator.js'
 import type { AircraftResponse } from './aircraft/types.js'
@@ -22,7 +22,7 @@ import type { CyberReport, ThreatMapPoint, ThreatMapResponse } from './cyber/typ
 import { buildDomainReport, isDomainLike, normalizeDomain } from './domain/report.js'
 import type { DomainReport } from './domain/types.js'
 import { currentConditions, cyclones, earthquakes, weatherGrid, wildfires } from './weather/sources.js'
-import { simCyclones, simGrid } from './weather/simulator.js'
+import { simGrid } from './weather/simulator.js'
 import type { WeatherEventsResponse, WeatherGridResponse } from './weather/types.js'
 import { fetchGroup, isSatGroup } from './satellites/celestrak.js'
 import type { TleResponse } from './satellites/types.js'
@@ -74,7 +74,7 @@ const NEWS_CATEGORIES = new Set<NewsCategory>(['breaking', 'disasters', 'wars', 
 
 const socialFeedCache = new TTLCache<SocialFeedResponse>(8 * 60 * 1000)
 const socialMapCache = new TTLCache<SocialMapResponse>(10 * 60 * 1000)
-const SOCIAL_SOURCES = new Set<SocialSource>(['reddit', 'trends', 'youtube', 'hn', 'telegram'])
+const SOCIAL_SOURCES = new Set<SocialSource>(['bluesky', 'trends', 'mastodon', 'hn', 'telegram'])
 const osintCache = new TTLCache<OsintResponse>(10 * 60 * 1000)
 
 // Tiny in-memory per-IP rate limiter for the cyber lookup route: each uncached
@@ -140,7 +140,7 @@ app.get('/api/aircraft', async (req, res) => {
   const now = Date.now()
   let payload: AircraftResponse
   try {
-    const live = await fetchAdsbLol(lat, lon, radius)
+    const live = await fetchLiveAircraft(lat, lon, radius)
     if (live.length > 0) {
       payload = { source: 'live', now, count: live.length, aircraft: live }
     } else {
@@ -292,20 +292,13 @@ app.get('/api/weather/events', async (_req, res) => {
   if (cached) return res.json(cached)
   const now = Date.now()
   try {
-    const [liveCyclones, fires, quakes] = await Promise.all([cyclones(), wildfires(), earthquakes()])
-    const useSim = liveCyclones.length === 0
-    const payload: WeatherEventsResponse = {
-      now,
-      cyclones: useSim ? simCyclones(now) : liveCyclones,
-      wildfires: fires,
-      earthquakes: quakes,
-      cycloneSource: useSim ? 'sim' : 'live',
-    }
+    const [storms, fires, quakes] = await Promise.all([cyclones(), wildfires(), earthquakes()])
+    const payload: WeatherEventsResponse = { now, cyclones: storms, wildfires: fires, earthquakes: quakes }
     weatherEventsCache.set('all', payload)
     res.json(payload)
   } catch {
     // sources catch internally, but keep the route infallible regardless
-    res.json({ now, cyclones: simCyclones(now), wildfires: [], earthquakes: [], cycloneSource: 'sim' })
+    res.json({ now, cyclones: [], wildfires: [], earthquakes: [] })
   }
 })
 
@@ -315,13 +308,19 @@ app.get('/api/satellites/tle', async (req, res) => {
   if (!isSatGroup(group)) {
     return res.status(400).json({ error: 'unknown group (iss|active|starlink|debris|launches)' })
   }
+  // CelesTrak refuses a repeat download of a group inside its 2h update window and every
+  // serverless instance starts with an empty cache, so let the CDN hold live sets that long.
+  const send = (payload: TleResponse) =>
+    res
+      .set('Cache-Control', payload.source === 'live' ? 'public, s-maxage=7200, stale-while-revalidate=86400' : 'public, s-maxage=300')
+      .json(payload)
   const cached = tleCache.get(group)
-  if (cached) return res.json(cached)
+  if (cached) return send(cached)
   try {
     const { sats, source } = await fetchGroup(group)
     const payload: TleResponse = { group, source, count: sats.length, sats }
     tleCache.set(group, payload)
-    res.json(payload)
+    send(payload)
   } catch {
     res.status(500).json({ error: 'TLE fetch failed' })
   }
@@ -387,7 +386,7 @@ app.get('/api/news/trending', async (_req, res) => {
 })
 
 app.get('/api/social/feed', async (req, res) => {
-  const source = String(req.query.source ?? 'reddit') as SocialSource
+  const source = String(req.query.source ?? 'bluesky') as SocialSource
   if (!SOCIAL_SOURCES.has(source)) return res.status(400).json({ error: 'unknown source' })
   const cached = socialFeedCache.get(source)
   if (cached) return res.json(cached)

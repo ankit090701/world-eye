@@ -257,29 +257,60 @@ export function cloudFromText(...text: (string | null | undefined)[]): string | 
 
 const threatPointsCache = new TTLCache<ThreatMapPoint[]>(30 * 60 * 1000)
 
+// SANS Internet Storm Center (DShield): the day's 100 most active attacking IPs. Keyless;
+// ISC asks for a User-Agent that identifies the project.
+async function getDshield(): Promise<{ ip: string; firstSeen: string | null }[]> {
+  try {
+    const arr: any[] = await fetchJSON('https://isc.sans.edu/api/sources/attacks/100?json', 9000, {
+      'User-Agent': 'WorldEye/1.0 (+https://github.com/ankit090701/world-eye)',
+    })
+    if (!Array.isArray(arr)) return []
+    return arr
+      .map((e) => ({
+        // some ISC feeds zero-pad octets ("079.124.059.078")
+        ip: String(e?.ip ?? '')
+          .split('.')
+          .map((o) => String(Number(o)))
+          .join('.'),
+        firstSeen: e?.firstseen ? String(e.firstseen) : null,
+      }))
+      .filter((e) => /^(\d{1,3}\.){3}\d{1,3}$/.test(e.ip))
+  } catch {
+    return []
+  }
+}
+
+/** abuse.ch's botnet C2 servers plus ISC's top attacking IPs, geolocated for the map. */
 export async function threatMapPoints(): Promise<ThreatMapPoint[]> {
   const hit = threatPointsCache.get('all')
   if (hit) return hit
-  const feodo = await getFeodo()
-  const entries = Array.from(feodo.keys()).slice(0, 100)
-  if (entries.length === 0) return []
-  let geoResults: any[] = []
-  try {
-    geoResults = await geoBatch(entries)
-  } catch {
-    geoResults = []
+  const [feodo, attackers] = await Promise.all([getFeodo(), getDshield()])
+  const meta = new Map<string, { label: string; firstSeen: string | null }>()
+  for (const [ip, malware] of feodo) meta.set(ip, { label: malware, firstSeen: null })
+  for (const a of attackers) if (!meta.has(a.ip)) meta.set(a.ip, { label: 'Attacking host', firstSeen: a.firstSeen })
+  const ips = Array.from(meta.keys()).slice(0, 200)
+  if (ips.length === 0) return []
+  const geoResults: any[] = []
+  // ip-api's batch endpoint takes up to 100 addresses per call
+  for (let i = 0; i < ips.length; i += 100) {
+    try {
+      geoResults.push(...(await geoBatch(ips.slice(i, i + 100))))
+    } catch {
+      /* best-effort: skip this chunk */
+    }
   }
   const points: ThreatMapPoint[] = []
   for (const g of geoResults) {
     if (g?.status !== 'success' || typeof g.lat !== 'number' || typeof g.lon !== 'number') continue
+    const m = meta.get(g.query)
     points.push({
       ip: g.query,
-      malware: feodo.get(g.query) ?? 'C2',
+      malware: m?.label ?? 'C2',
       country: g.country ?? null,
       as: g.as ?? null,
       lat: g.lat,
       lon: g.lon,
-      firstSeen: null,
+      firstSeen: m?.firstSeen ?? null,
     })
   }
   if (points.length > 0) threatPointsCache.set('all', points)

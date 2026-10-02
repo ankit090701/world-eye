@@ -82,7 +82,7 @@ export function CyberThreatInteractions() {
             </div>
             <div style="font-family:ui-monospace,monospace">${esc(p.ip)}</div>
             <div style="color:#475569">${esc(p.country)}${p.as ? ' · ' + esc(p.as) : ''}</div>
-            <div style="color:#64748b;font-size:10px;margin-top:3px">Botnet C2 · abuse.ch Feodo Tracker</div>
+            <div style="color:#64748b;font-size:10px;margin-top:3px">${p.malware === 'Attacking host' ? 'Top attacker today · SANS ISC DShield' : 'Botnet C2 · abuse.ch Feodo Tracker'}</div>
           </div>`,
         )
         .addTo(map)

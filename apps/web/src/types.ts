@@ -1,4 +1,4 @@
-export type BasemapId = 'light' | 'voyager' | 'liberty' | 'satellite'
+export type BasemapId = 'light' | 'bright' | 'liberty' | 'satellite'
 
 export type ProjectionType = 'globe' | 'mercator'
 
@@ -504,7 +504,6 @@ export interface Cyclone {
   movementDir: number | null
   movementSpeedKt: number | null
   lastUpdate: string | null
-  source: 'live' | 'sim'
 }
 
 export interface Wildfire {
@@ -534,16 +533,32 @@ export interface WeatherEventsResponse {
   cyclones: Cyclone[]
   wildfires: Wildfire[]
   earthquakes: Earthquake[]
-  cycloneSource: 'live' | 'sim'
 }
 
 export type SatGroup = 'iss' | 'active' | 'starlink' | 'debris' | 'launches'
 
+/** CelesTrak OMM element set (JSON form: TLE text can't hold 6-digit catalog numbers). */
+export type Omm = {
+  OBJECT_NAME: string
+  OBJECT_ID: string
+  EPOCH: string
+  MEAN_MOTION: number
+  ECCENTRICITY: number
+  INCLINATION: number
+  RA_OF_ASC_NODE: number
+  ARG_OF_PERICENTER: number
+  MEAN_ANOMALY: number
+  NORAD_CAT_ID: number
+  ELEMENT_SET_NO: number
+  BSTAR: number
+  MEAN_MOTION_DOT: number
+  MEAN_MOTION_DDOT: number
+}
+
 export interface TleRecord {
   name: string
   noradId: number
-  line1: string
-  line2: string
+  omm: Omm
 }
 
 export interface TleResponse {
@@ -615,7 +630,7 @@ export interface TrendingResponse {
   topics: TrendingTopic[]
 }
 
-export type SocialSource = 'reddit' | 'trends' | 'youtube' | 'hn' | 'telegram'
+export type SocialSource = 'bluesky' | 'trends' | 'mastodon' | 'hn' | 'telegram'
 
 export interface SocialPost {
   id: string

@@ -33,17 +33,22 @@ const CAT_RANK: Record<string, number> = { td: 0, ts: 1, cat1: 2, cat2: 3, cat3:
 
 export function gatherContext(): AiContext {
   const ac = aircraftStore.getSnapshot()
+  const ships = shipStore.getSnapshot()
+  const trains = trainStore.getSnapshot()
   const wx = weatherEventsStore.getSnapshot()
   const fl = fleetStore.getSnapshot()
   const tr = trafficStore.getSnapshot()
+  // Simulated fill-in (shown where a free feed has no coverage) never counts toward risk or summaries.
+  const aircraft = ac.source === 'live' ? ac.aircraft : []
+  const incidents = tr.source === 'live' ? tr.incidents : []
   const quakes = wx.earthquakes
   const maxMag = quakes.reduce((m, q) => Math.max(m, q.mag ?? 0), 0)
   return {
-    aircraft: { count: ac.aircraft.length, emergencies: ac.aircraft.filter((a) => a.emergency) },
-    ships: { count: shipStore.getSnapshot().ships.length },
-    trains: { count: trainStore.getSnapshot().trains.length },
+    aircraft: { count: aircraft.length, emergencies: aircraft.filter((a) => a.emergency) },
+    ships: { count: ships.source === 'live' ? ships.ships.length : 0 },
+    trains: { count: trains.source === 'live' ? trains.trains.length : 0 },
     fleet: { count: fl.vehicles.length, criticalAlerts: fl.alerts.filter((a) => a.severity === 'critical').length },
-    traffic: { incidents: tr.incidents.length, highSeverity: tr.incidents.filter((i) => i.severity === 'high').length },
+    traffic: { incidents: incidents.length, highSeverity: incidents.filter((i) => i.severity === 'high').length },
     weather: {
       quakes,
       maxMag,
@@ -220,10 +225,10 @@ export function answerQuery(raw: string, ctx: AiContext): AiAnswer {
     }
   }
   if (has(q, 'wildfire', 'fire')) return { text: `${ctx.weather.wildfires} active wildfires (NASA EONET).` }
-  if (has(q, 'threat', 'cyber', 'malware', 'c2', 'botnet', 'malicious')) return { text: `${ctx.cyber.threats} malicious hosts (botnet C2) currently on the threat map.` }
+  if (has(q, 'threat', 'cyber', 'malware', 'c2', 'botnet', 'malicious')) return { text: `${ctx.cyber.threats} malicious hosts (botnet C2 servers and top attackers) currently on the threat map.` }
   if (has(q, 'satellite', 'iss', 'orbit', 'starlink')) return { text: `${ctx.satellites.count} satellites being propagated in real time.` }
   if (has(q, 'news')) return { text: `${ctx.news.hotspots} geolocated news hotspots on the map.` }
-  if (has(q, 'social', 'trend', 'reddit')) return { text: `${ctx.social.buzz} social-buzz hotspots geolocated.` }
+  if (has(q, 'social', 'trend', 'bluesky', 'mastodon')) return { text: `${ctx.social.buzz} social-buzz hotspots geolocated.` }
 
   return {
     text: `I focus on the live operational picture. Try “situation summary”, “current risk”, “any anomalies”, or ask about aircraft, ships, weather, earthquakes, storms, cyber threats, satellites, news or social. Type “help” for the full list.`,

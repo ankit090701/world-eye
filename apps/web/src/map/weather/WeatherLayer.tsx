@@ -84,7 +84,6 @@ export function WeatherEventsEngine() {
             cyclones: r.cyclones,
             wildfires: r.wildfires,
             earthquakes: r.earthquakes,
-            cycloneSource: r.cycloneSource,
           })
         }
       } catch {
@@ -203,7 +202,7 @@ export function WeatherInteractions() {
       bindPopup(map, LYR.cyclones, popup, (p) => {
         const cat = CAT_LABEL[String(p.category)] ?? p.classification
         return `<div style="font-size:11px">
-          <div style="margin-bottom:2px"><strong>${esc(p.name)}</strong>${p.source === 'sim' ? ' <span style="color:#b45309">(sim)</span>' : ''}</div>
+          <div style="margin-bottom:2px"><strong>${esc(p.name)}</strong></div>
           <div style="color:#9333ea">${esc(cat)}</div>
           <div>${p.windKt != null ? esc(p.windKt) + ' kt winds' : ''}${p.pressureMb != null ? ' · ' + esc(p.pressureMb) + ' mb' : ''}</div>
           ${p.basin ? `<div style="color:#475569">${esc(p.basin)}</div>` : ''}

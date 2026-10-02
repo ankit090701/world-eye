@@ -175,6 +175,20 @@ const categoryColorExpr: any = [
 ]
 
 /**
+ * OpenFreeMap styles label places with the Latin and the native-script name together;
+ * keep one English (else Latin, else native) name per label. Road shields (`ref`) stay.
+ */
+export function englishLabels(map: MlMap) {
+  for (const layer of map.getStyle().layers ?? []) {
+    if (layer.type !== 'symbol') continue
+    const field = map.getLayoutProperty(layer.id, 'text-field')
+    if (field && JSON.stringify(field).includes('"name')) {
+      map.setLayoutProperty(layer.id, 'text-field', ['coalesce', ['get', 'name:en'], ['get', 'name_en'], ['get', 'name:latin'], ['get', 'name']])
+    }
+  }
+}
+
+/**
  * (Re)install all WorldEye overlay sources + layers on top of the current base
  * style. Called on every `style.load` because setStyle() wipes custom layers.
  * Idempotent — guards against re-adding existing sources/layers. Layers are
@@ -620,7 +634,7 @@ export function installOverlays(map: MlMap) {
     type: 'circle',
     source: SRC.cyberThreats,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 7, 4] as any,
+      'circle-radius': ['case', ['boolean', ['get', 'selected'], false], 7, 4] as any,
       'circle-color': '#f43f5e',
       'circle-opacity': 0.95,
       'circle-stroke-width': 1,
@@ -771,7 +785,7 @@ export function installOverlays(map: MlMap) {
     type: 'circle',
     source: SRC.cyclones,
     paint: {
-      'circle-radius': ['case', ['get', 'selected'], 11, 7] as any,
+      'circle-radius': ['case', ['boolean', ['get', 'selected'], false], 11, 7] as any,
       'circle-color': cycloneColorExpr,
       'circle-opacity': 0.95,
       'circle-stroke-width': 2,

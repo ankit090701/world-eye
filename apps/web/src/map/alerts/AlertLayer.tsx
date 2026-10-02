@@ -46,7 +46,8 @@ export function AlertEngine() {
 
   useEffect(() => {
     const ctx: EvalContext = {
-      aircraft: ac.aircraft,
+      // simulated planes (shown where there's no live coverage) must never raise alerts
+      aircraft: ac.source === 'live' ? ac.aircraft : [],
       vehicles: fl.vehicles,
       cyclones: wx.cyclones,
       earthquakes: wx.earthquakes,

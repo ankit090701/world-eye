@@ -29,14 +29,12 @@ export interface EventsSnapshot {
   cyclones: Cyclone[]
   wildfires: Wildfire[]
   earthquakes: Earthquake[]
-  cycloneSource: 'live' | 'sim' | null
   updatedAt: number
 }
 const EVENTS_EMPTY: EventsSnapshot = {
   cyclones: [],
   wildfires: [],
   earthquakes: [],
-  cycloneSource: null,
   updatedAt: 0,
 }
 let eventsSnap: EventsSnapshot = EVENTS_EMPTY

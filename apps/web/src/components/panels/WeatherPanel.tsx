@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Children, useEffect } from 'react'
 import maplibregl from 'maplibre-gl'
 import {
   CloudSun,
@@ -79,7 +79,6 @@ export default function WeatherPanel() {
             cyclones: r.cyclones,
             wildfires: r.wildfires,
             earthquakes: r.earthquakes,
-            cycloneSource: r.cycloneSource,
           })
       })
       .catch(() => {})
@@ -166,10 +165,15 @@ export default function WeatherPanel() {
         <EventGroup
           icon={<Tornado size={12} />}
           title={`Cyclones (${events.cyclones.length})`}
-          note={events.cycloneSource === 'sim' ? 'sample — none active now' : events.cycloneSource === 'live' ? 'live · NOAA NHC' : ''}
+          note="live · NOAA NHC + GDACS"
         >
           {events.cyclones.slice(0, 6).map((c) => (
-            <EventRow key={c.id} onClick={() => flyToEvent(c.lat, c.lon)} left={c.name} right={`${c.category.toUpperCase()} · ${c.windKt ?? '?'}kt`} />
+            <EventRow
+              key={c.id}
+              onClick={() => flyToEvent(c.lat, c.lon)}
+              left={c.name}
+              right={c.windKt != null ? `${c.category.toUpperCase()} · ${c.windKt}kt` : c.category.toUpperCase()}
+            />
           ))}
         </EventGroup>
 
@@ -253,7 +257,9 @@ function EventGroup({
         </span>
         {note && <span className="text-[9px] text-we-muted">{note}</span>}
       </div>
-      <div className="space-y-0.5">{children}</div>
+      <div className="space-y-0.5">
+        {Children.count(children) ? children : <div className="px-1 text-[11px] text-we-muted">None right now</div>}
+      </div>
     </div>
   )
 }

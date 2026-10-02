@@ -46,19 +46,19 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 ```
 Browser (apps/web)                         apps/api (Express, :8787)
 ──────────────────                         ─────────────────────────
-SatellitePanel ── toggles/select           /api/satellites/tle?group=  → CelesTrak GP (TLE)
-SatelliteEngine                              (proxy · sample · cache 2h · last-known-good)
-  • fetch TLEs for enabled groups
+SatellitePanel ── toggles/select           /api/satellites/tle?group=  → CelesTrak GP (OMM JSON)
+SatelliteEngine                              (proxy · sample · cache 2h + CDN · last-known-good)
+  • fetch element sets for enabled groups
   • satellite.js SGP4 propagate @ 1 Hz  ─▶ satelliteStore (positions + orbit segments)
 SatelliteSync ▶ map source (per-group circle layers + orbit line + selected halo)
 SatelliteInteractions ▶ click → select + popup
 ```
 
-- **Client-side propagation.** The API only fetches, parses, samples and caches TLE
-  element sets. The browser builds SGP4 satrecs with **satellite.js** and propagates
+- **Client-side propagation.** The API only fetches, samples and caches CelesTrak's
+  element sets (OMM JSON — TLE text can't hold 6-digit catalog numbers). The browser builds SGP4 satrecs with **satellite.js** and propagates
   every registered object to "now" **once per second**, computing real geodetic
   position, altitude and speed — so satellites move smoothly with zero server load.
-- **Groups load on demand.** Each group's TLEs are fetched only when its layer is
+- **Groups load on demand.** Each group's element sets are fetched only when its layer is
   enabled, then its objects join the propagation registry; disabling a group drops
   them. Every group starts off — turn one on in Layers or the Satellites panel.
 - **Orbit ground track.** When a satellite is selected, its track over one full
@@ -97,8 +97,9 @@ SatelliteInteractions ▶ click → select + popup
 - **Sampled constellations.** Starlink has ~10,000 objects; rendering all of them at
   1 Hz would be heavy, so WorldEye samples evenly. It's an operational overview, not a
   complete catalog.
-- **TLE freshness.** Element sets update a few times per day; propagation accuracy is
-  excellent near the epoch and degrades over days — WorldEye refreshes within CelesTrak's
-  2 h window.
+- **Element-set freshness.** Element sets update a few times per day; propagation
+  accuracy is excellent near the epoch and degrades over days. CelesTrak refuses a repeat
+  download of a group within 2 h, so the API caches each group for 2 h and tells the CDN
+  to do the same.
 - **Debris** uses the Cosmos-2251 breakup catalog as a representative, well-tracked
   debris field (sampled).

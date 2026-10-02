@@ -2,8 +2,8 @@ import type { StyleSpecification } from 'maplibre-gl'
 import type { BasemapId } from '../types'
 
 // All basemaps below are FREE and require NO API key.
-//  - CARTO GL styles (positron / voyager): free, keyless vector basemaps.
-//  - OpenFreeMap "liberty": free (MIT), keyless vector tiles from OpenStreetMap data.
+//  - OpenFreeMap (positron / bright / liberty): free and open (MIT), no usage limits,
+//    vector tiles from OpenStreetMap data.
 //  - Esri World Imagery: free keyless raster imagery (attribution required).
 
 export interface BasemapDef {
@@ -40,17 +40,17 @@ export const BASEMAPS: Record<BasemapId, BasemapDef> = {
     id: 'light',
     label: 'Positron',
     kind: 'vector',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    style: 'https://tiles.openfreemap.org/styles/positron',
   },
-  voyager: {
-    id: 'voyager',
-    label: 'Voyager',
+  bright: {
+    id: 'bright',
+    label: 'Bright',
     kind: 'vector',
-    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+    style: 'https://tiles.openfreemap.org/styles/bright',
   },
   liberty: {
     id: 'liberty',
-    label: 'Liberty (OSM)',
+    label: 'Liberty',
     kind: 'vector',
     style: 'https://tiles.openfreemap.org/styles/liberty',
   },
@@ -62,7 +62,7 @@ export const BASEMAPS: Record<BasemapId, BasemapDef> = {
   },
 }
 
-export const BASEMAP_ORDER: BasemapId[] = ['light', 'voyager', 'liberty', 'satellite']
+export const BASEMAP_ORDER: BasemapId[] = ['light', 'bright', 'liberty', 'satellite']
 
 export function getBasemapStyle(id: BasemapId): string | StyleSpecification {
   return BASEMAPS[id].style

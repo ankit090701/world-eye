@@ -5,7 +5,7 @@ import { store } from '../store'
 import { useAppDispatch } from '../store/hooks'
 import { bumpStyleEpoch, setCursor, setView } from '../store/mapSlice'
 import { getBasemapStyle } from '../config/basemaps'
-import { installOverlays } from './mapLayers'
+import { englishLabels, installOverlays } from './mapLayers'
 import {
   ActivityInteractions,
   ActivitySync,
@@ -69,6 +69,7 @@ export default function MapView() {
 
     // Re-installs WorldEye overlays every time a style (re)loads (initial + setStyle).
     const onStyleLoad = () => {
+      englishLabels(map)
       installOverlays(map)
       dispatch(bumpStyleEpoch())
     }

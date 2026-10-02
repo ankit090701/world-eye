@@ -10,7 +10,7 @@ interface SocialState {
 }
 
 const initialState: SocialState = {
-  source: 'reddit',
+  source: 'bluesky',
   posts: [],
   origin: null,
   loading: false,

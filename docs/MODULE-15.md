@@ -96,6 +96,6 @@ lib/aiEngine.ts            aircraft · ships · trains · fleet · traffic ·
   image/vision pipeline in scope.
 - **Live-data dependency.** Answers reflect what's currently loaded: aircraft/ships are
   viewport-scoped, and a domain reads as `0` until its layer/engine has fetched (weather,
-  threats and satellites included — every layer starts off). Simulated fallback data
-  counts too — e.g. where there's no ADS-B coverage, the simulated feed's demo emergency
-  squawks raise the risk index.
+  threats and satellites included — every layer starts off). Simulated fill-in (planes,
+  ships, trains and traffic shown where a free feed has no coverage) never counts toward
+  the risk index or the summaries.

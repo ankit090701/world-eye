@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import {
   Share2,
-  MessageCircle,
+  Cloud,
   TrendingUp,
-  Video,
+  MessagesSquare,
   Hash,
   Send,
   ExternalLink,
@@ -20,9 +20,9 @@ import type { SocialPost, SocialSource } from '../../types'
 import { cx } from '../../lib/cx'
 
 const TABS: { id: SocialSource; label: string; icon: typeof Hash }[] = [
-  { id: 'reddit', label: 'Reddit', icon: MessageCircle },
+  { id: 'bluesky', label: 'Bluesky', icon: Cloud },
   { id: 'trends', label: 'Trends', icon: TrendingUp },
-  { id: 'youtube', label: 'YouTube', icon: Video },
+  { id: 'mastodon', label: 'Mastodon', icon: MessagesSquare },
   { id: 'hn', label: 'Hacker News', icon: Hash },
   { id: 'telegram', label: 'Telegram', icon: Send },
 ]
@@ -111,7 +111,7 @@ export default function SocialPanel() {
       </div>
 
       <p className="mt-4 text-[10px] leading-relaxed text-we-muted">
-        Sources: Reddit · Google Trends · Hacker News · YouTube (Piped) · Telegram — all free, no keys.
+        Sources: Bluesky · Google Trends · Hacker News · Mastodon · Telegram — all free, no keys.
         X/Twitter's API is paid, so Google Trends stands in for search-trend signals.
       </p>
     </PanelShell>

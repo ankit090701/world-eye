@@ -17,7 +17,7 @@ for live aircraft (it is, under `npm run dev`).
 
 With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
 
-> No API keys. Aircraft: adsb.lol · Route/airline/airports: adsbdb ·
+> No API keys. Aircraft: adsb.lol (adsb.fi as fallback) · Route/airline/airports: adsbdb ·
 > Weather radar: RainViewer.
 
 ---
@@ -46,7 +46,7 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
       across the style change.
 
 ### Verifying the fallback
-The simulator lives in the API: when adsb.lol is unreachable or has no traffic for
+The simulator lives in the API: when adsb.lol and adsb.fi are unreachable or have no traffic for
 the area (e.g. pan out over an ocean), `/api/aircraft` serves a **Simulated** feed —
 the header turns amber and planes keep moving. If the API itself is stopped
 (`Ctrl-C` the `api` process), the panel shows **Feed offline** and the last positions
@@ -59,7 +59,7 @@ stay frozen until `npm run dev:api` is running again.
 ```
 Browser (apps/web)                         apps/api (Express, :8787)
 ──────────────────                         ─────────────────────────
-AircraftEngine  ── GET /api/aircraft ─────▶ /aircraft  ┌─ adsb.lol (live ADS-B)
+AircraftEngine  ── GET /api/aircraft ─────▶ /aircraft  ┌─ adsb.lol → adsb.fi (live ADS-B)
   (polls per viewport, 10s + on move)                  └─ simulator (fallback)
 AircraftSync    ── renders GeoJSON ▶ map               /aircraft/route/:cs ─▶ adsbdb
 AircraftPanel   ── GET /route,/meta ─────▶ /aircraft/meta/:id  ─▶ adsbdb
@@ -95,8 +95,8 @@ WeatherOverlay  ── RainViewer tiles (direct)
 
 - **Coverage** is community ADS-B (excellent over land/Europe/US; sparser mid-ocean
   and over China). Where the feed is empty, the simulated fallback fills in so the
-  module is always demonstrable. The simulated feed includes occasional demo emergency
-  squawks, which the Alert Engine and AI risk index treat like real ones.
+  module is always demonstrable. Simulated planes only squawk ordinary codes and never
+  reach the Alert Engine or the AI risk index.
 - **Route/type** enrichment depends on adsbdb having the callsign/airframe; unknown
   fields show `—`.
 - RainViewer public tiles are past-radar, ~last 2 h, refreshed every 5 min.

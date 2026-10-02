@@ -41,7 +41,7 @@ Use this to verify the module. Everything below should work with no setup.
 ### Left sidebar (panels)
 - [ ] Panels are grouped (map · tracking · environment · intelligence · operations);
       hovering an icon shows its name, and the sidebar scrolls on short screens.
-- [ ] **Layers** — pick any of 4 basemaps (Positron, Voyager, Liberty, Satellite);
+- [ ] **Layers** — pick any of 4 basemaps (Positron, Bright, Liberty, Satellite);
       switch **3D Globe ⇄ Flat**; toggle each overlay and drag its **opacity** slider
       (Heatmap, Points, Drawings, Graticule grid).
 - [ ] **Bookmarks** — "Bookmark current view", rename it, fly back to it, delete it.

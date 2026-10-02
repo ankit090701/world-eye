@@ -37,6 +37,8 @@ function addWeather(map: MlMap, frame: Frame, opacity: number) {
     type: 'raster',
     tiles: [`${frame.host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`],
     tileSize: 256,
+    // RainViewer's free tier stops at zoom 7; MapLibre scales those tiles up beyond it.
+    maxzoom: 7,
     attribution: 'Radar © RainViewer',
   })
   // keep radar beneath the data overlays

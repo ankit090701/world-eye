@@ -157,8 +157,8 @@ layers, timeline or tools (see [`docs/MODULE-1.md`](docs/MODULE-1.md)).
 
 ### Free & open data sources (no keys)
 
-- **Basemaps** — CARTO GL styles (Dark Matter / Positron / Voyager), OpenFreeMap
-  Liberty, all free & keyless; Esri World Imagery for satellite.
+- **Basemaps** — [OpenFreeMap](https://openfreemap.org/) Positron / Bright / Liberty
+  (free and open, no usage limits); Esri World Imagery for satellite.
 - **Map engine** — [MapLibre GL JS](https://maplibre.org/) (open source).
 - **Place search** — OpenStreetMap [Nominatim](https://nominatim.org/).
 - Basemap data © OpenStreetMap contributors.
@@ -207,7 +207,7 @@ Live flights rendered on the Module 1 map, with a dedicated **Aircraft** panel
 
 | BRD feature | How it works |
 |-------------|--------------|
-| **Live Flights** | Real ADS-B from **adsb.lol** (free, no key), polled per viewport |
+| **Live Flights** | Real ADS-B from **adsb.lol** (free, no key; **adsb.fi** as automatic fallback), polled per viewport |
 | **Flight Path** | Observed trail of the selected aircraft, drawn as you watch |
 | **Altitude / Speed / Heading** | Live values + altitude colour ramp + heading-rotated plane icons |
 | **Aircraft Type / Registration** | From the ADS-B feed (`t` / `r` fields) |
@@ -230,7 +230,7 @@ and renders them through the same `styleEpoch`/syncer pattern as Module 1.
 
 ### Free & open data sources (no keys)
 
-- **Aircraft** — [adsb.lol](https://api.adsb.lol/docs) (ADS-B Exchange v2 schema).
+- **Aircraft** — [adsb.lol](https://api.adsb.lol/docs) (ADS-B Exchange v2 schema), falling back to [adsb.fi](https://github.com/adsbfi/opendata) (same format).
 - **Route / airline / airports** — [adsbdb.com](https://www.adsbdb.com/).
 - **Weather radar** — [RainViewer](https://www.rainviewer.com/api.html).
 
@@ -388,13 +388,13 @@ All BRD Module 7 capabilities are implemented:
 | **ASN** | AS number + name + country (from geo + RDAP autnum) |
 | **DNS** | A / AAAA / MX / NS / TXT + reverse DNS (Google DoH) |
 | **SSL** | Certificates from **crt.sh** (issuer, CN, validity) |
-| **Threat Feeds / Blacklists / Malware** | **abuse.ch Feodo** (botnet C2), **Tor** exit list, proxy/hosting flags |
+| **Threat Feeds / Blacklists / Malware** | **abuse.ch Feodo** (botnet C2), **SANS ISC** top attackers, **Tor** exit list, proxy/hosting flags |
 | **Country / ISP / Hosting / Cloud Provider** | From geolocation + ASN, with cloud-provider detection |
 | **Open Ports (authorized targets)** | **Intentionally gated** — no active scanning of arbitrary targets |
 
 Enter an IP, domain or ASN → a full report with a threat verdict; resolved hosts
 are located on the map. The **Cyber Threats** overlay plots geolocated botnet C2
-servers (live from abuse.ch) as red markers.
+servers (abuse.ch) and the day's top attacking IPs (SANS ISC) as red markers.
 
 ### Responsible-use note
 
@@ -407,7 +407,7 @@ authorized-scan integration (Shodan/Censys) that is not enabled. All lookups hit
 
 - **Geo/ISP/ASN** — [ip-api.com](https://ip-api.com/) · **WHOIS** — [RDAP](https://rdap.org/)
 - **DNS** — Google DoH · **Certs** — [crt.sh](https://crt.sh/)
-- **Threat intel** — [abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/), Tor exit list
+- **Threat intel** — [abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/), [SANS ISC / DShield](https://isc.sans.edu/), Tor exit list
 
 See [`docs/MODULE-7.md`](docs/MODULE-7.md) for the test checklist & details.
 
@@ -475,7 +475,7 @@ panel (sun/cloud icon). All BRD Module 9 features are implemented:
 | **Wind** | Wind arrows — point downwind, sized by speed (Open-Meteo) |
 | **Clouds** | Cloud cover in the point read-out + grid popups |
 | **Lightning** | Convective / thunderstorm-risk cells from CAPE (Open-Meteo) |
-| **Storms / Cyclones** | Active tropical cyclones — category-coloured (**NOAA NHC**) |
+| **Storms / Cyclones** | Active tropical cyclones worldwide — category-coloured (**NOAA NHC** + **GDACS**) |
 | **Wildfires** | Active wildfires worldwide (**NASA EONET**) |
 | **Earthquakes** | Quakes in the last 24 h, sized by magnitude, coloured by depth (**USGS**) |
 
@@ -487,15 +487,15 @@ that fly you to each. Click any storm / fire / quake / temperature node for deta
 ### Live data + graceful fallback
 
 Temperature/wind/lightning come from one **batched** Open-Meteo call (a whole grid
-in a single request — free, keyless). Cyclones use NOAA NHC; when no storms are
-active (common off-season) a small **simulated** set keeps the layer demonstrable
-(labelled *sim* in the panel and popups). Wildfires (EONET) and earthquakes (USGS)
-are always live. Each feed caches server-side and polls only while its layer is on.
+in a single request — free, keyless). Cyclones come from NOAA NHC for the Atlantic and
+east/central Pacific and from GDACS for every other basin; when no storm is active the
+list is simply empty. Wildfires (EONET) and earthquakes (USGS) are always live. Each
+feed caches server-side and polls only while its layer is on.
 
 ### Free & open data sources (no keys)
 
 - **Conditions / temp / wind / cloud / CAPE** — [Open-Meteo](https://open-meteo.com/)
-- **Radar** — [RainViewer](https://www.rainviewer.com/api.html) · **Cyclones** — [NOAA NHC](https://www.nhc.noaa.gov/)
+- **Radar** — [RainViewer](https://www.rainviewer.com/api.html) (free tier tops out at zoom 7) · **Cyclones** — [NOAA NHC](https://www.nhc.noaa.gov/) + [GDACS](https://www.gdacs.org/)
 - **Wildfires** — [NASA EONET](https://eonet.gsfc.nasa.gov/) · **Earthquakes** — [USGS](https://earthquake.usgs.gov/)
 
 See [`docs/MODULE-9.md`](docs/MODULE-9.md) for the test checklist & details.
@@ -525,10 +525,11 @@ id; the ISS and notable satellites load automatically.
 ### How it works — client-side propagation
 
 The heavy lifting is orbital mechanics, done **in your browser**: the API proxies and
-caches **two-line element sets (TLEs)** from CelesTrak, and the frontend propagates
-them every second with **satellite.js** (SGP4) to compute real positions. This scales
-to ~1,000 tracked objects at 1 Hz with no server load and no keys. Each group is
-fetched only when its layer is enabled.
+caches orbital element sets from CelesTrak — as OMM JSON, since classic two-line (TLE)
+text can't hold the 6-digit catalog numbers new objects now get — and the frontend
+propagates them every second with **satellite.js** (SGP4) to compute real positions.
+This scales to ~1,000 tracked objects at 1 Hz with no server load and no keys. Each
+group is fetched only when its layer is enabled.
 
 > CelesTrak throttles re-downloads (its data updates every 2 h and it returns 403 if
 > you refetch sooner). WorldEye caches each group and serves the last-known-good set,
@@ -592,9 +593,9 @@ Trends and public posts from across the social web, in a dedicated **Social** pa
 
 | BRD source | How it works |
 |-------------|--------------|
-| **Reddit Trends** | r/popular hot posts via Reddit's public Atom feed |
+| **Reddit Trends** | **Bluesky** trending topics (keyless stand-in — Reddit blocks requests from cloud servers) |
 | **Twitter/X Trends** | **Google Trends** trending searches (keyless stand-in — X's API is paid) |
-| **YouTube Trends** | Trending videos via **Piped** (keyless YouTube proxy) |
+| **YouTube Trends** | **Mastodon** trending posts (keyless stand-in — no keyless YouTube source is left) |
 | **Telegram Channels (public)** | Public channel post previews via `t.me/s/…` |
 | **RSS** | **Hacker News** front page (Algolia) as a tech/RSS feed |
 
@@ -604,22 +605,23 @@ conversation is geographically focused (click a hotspot for the top post).
 
 ### How it works
 
-Each platform is read from a **free, keyless** endpoint — Reddit's Atom RSS (its
-`.json` now requires auth), Google Trends RSS, Hacker News' Algolia API, a public
-Piped instance for YouTube, and Telegram's public web previews. Posts are normalized
-to a common shape and **geoparsed** with the same gazetteer as Module 11, so social
-buzz gets a map presence. Every feed is cached server-side; a labelled sample is
-served if a source is unreachable.
+Each platform is read from a **free, keyless** endpoint — Bluesky's public AppView,
+Google Trends RSS, Hacker News' Algolia API, mastodon.social's trends API, and
+Telegram's public web previews. Posts are normalized to a common shape and
+**geoparsed** with the same gazetteer as Module 11, so social buzz gets a map
+presence. Every feed is cached server-side; a labelled sample is served if a source
+is unreachable.
 
 > **Twitter/X** no longer offers free API access, so **Google Trends** stands in for
-> search/X-style trend signals — clearly labelled in the panel. Telegram and YouTube
-> (Piped) depend on public endpoints that can rate-limit; those tabs fall back to a
-> sample when unavailable.
+> search/X-style trend signals — clearly labelled in the panel. **Reddit** blocks
+> requests from cloud servers and **YouTube**'s keyless proxies (Piped) shut down in
+> 2025, so Bluesky and Mastodon cover those slots. Telegram's public previews can
+> rate-limit; that tab falls back to a sample when unavailable.
 
 ### Free & open data sources (no keys)
 
-- **Reddit** — public Atom feed · **Trends** — [Google Trends RSS](https://trends.google.com/)
-- **YouTube** — [Piped](https://github.com/TeamPiped/Piped) · **Hacker News** — [Algolia HN API](https://hn.algolia.com/api)
+- **Bluesky** — [public AppView API](https://docs.bsky.app/) · **Trends** — [Google Trends RSS](https://trends.google.com/)
+- **Mastodon** — [trends API](https://docs.joinmastodon.org/methods/trends/) · **Hacker News** — [Algolia HN API](https://hn.algolia.com/api)
 - **Telegram** — public `t.me/s/` channel previews
 
 See [`docs/MODULE-12.md`](docs/MODULE-12.md) for the test checklist & details.

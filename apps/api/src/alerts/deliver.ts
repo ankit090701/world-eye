@@ -1,3 +1,5 @@
+import { lookup } from 'node:dns/promises'
+
 // Alert notification delivery (Module 14). The browser can't POST to Slack/Discord
 // webhooks (CORS), so the API relays. User-supplied webhook URLs are an SSRF risk,
 // so we require https and block private / loopback / link-local / metadata hosts.
@@ -60,6 +62,10 @@ export async function deliverWebhook(
 ): Promise<{ ok: boolean; status?: number; error?: string }> {
   const v = validateWebhook(rawUrl)
   if (!v.ok) return { ok: false, error: v.error }
+  // A public-looking name can still resolve to a private address (wildcard / rebinding DNS).
+  const addrs = await lookup(v.url.hostname, { all: true }).catch(() => [])
+  if (!addrs.length) return { ok: false, error: 'webhook host does not resolve' }
+  if (addrs.some((a) => isPrivateHost(a.address))) return { ok: false, error: 'private / internal hosts are not allowed' }
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), 8000)
   try {

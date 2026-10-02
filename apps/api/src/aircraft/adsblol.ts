@@ -40,20 +40,27 @@ export function normalizeAdsbLol(a: any): Aircraft | null {
   }
 }
 
-/** Fetch live aircraft within `radiusNm` nautical miles of a point. */
-export async function fetchAdsbLol(
-  lat: number,
-  lon: number,
-  radiusNm: number,
-): Promise<Aircraft[]> {
-  const r = Math.max(1, Math.min(250, Math.round(radiusNm)))
-  const url = `https://api.adsb.lol/v2/point/${lat.toFixed(4)}/${lon.toFixed(4)}/${r}`
+async function readsbPoint(url: string, listKey: 'ac' | 'aircraft'): Promise<Aircraft[]> {
   const data = await fetchJSON(url, 6500)
-  const ac: any[] = Array.isArray(data?.ac) ? data.ac : []
+  const list: any[] = Array.isArray(data?.[listKey]) ? data[listKey] : []
   const out: Aircraft[] = []
-  for (const a of ac) {
+  for (const a of list) {
     const n = normalizeAdsbLol(a)
     if (n && n.hex) out.push(n)
   }
   return out
+}
+
+/**
+ * Live aircraft within `radiusNm` nautical miles of a point: adsb.lol (open ODbL data),
+ * falling back to adsb.fi when it's unreachable. Both serve readsb's aircraft JSON.
+ */
+export async function fetchLiveAircraft(lat: number, lon: number, radiusNm: number): Promise<Aircraft[]> {
+  const r = Math.max(1, Math.min(250, Math.round(radiusNm)))
+  const [la, lo] = [lat.toFixed(4), lon.toFixed(4)]
+  try {
+    return await readsbPoint(`https://api.adsb.lol/v2/point/${la}/${lo}/${r}`, 'ac')
+  } catch {
+    return readsbPoint(`https://opendata.adsb.fi/api/v2/lat/${la}/lon/${lo}/dist/${r}`, 'aircraft')
+  }
 }

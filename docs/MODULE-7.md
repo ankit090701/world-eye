@@ -16,7 +16,7 @@ Open **http://localhost:5173**. The **API must be running** for lookups + threat
 
 With Docker, `docker compose up --build -d` serves the same app on **http://localhost:8080** (see the README).
 
-> No API keys. Sources: ip-api · RDAP · Google DoH · crt.sh · abuse.ch Feodo · Tor.
+> No API keys. Sources: ip-api · RDAP · Google DoH · crt.sh · abuse.ch Feodo · SANS ISC · Tor.
 
 ---
 
@@ -34,7 +34,8 @@ With Docker, `docker compose up --build -d` serves the same app on **http://loca
 - [ ] Threat **flags** render for known-bad hosts: C2 (malware family), Tor exit,
       proxy/VPN, hosting/DC.
 - [ ] **Cyber Threats** overlay: red markers of geolocated **botnet C2 servers**
-      (live from abuse.ch Feodo). Click one → popup (IP, malware, country, ASN).
+      (abuse.ch Feodo) and the day's **top attacking IPs** (SANS ISC). Click one →
+      popup (IP, malware or "Attacking host", country, ASN, source).
       Toggle it in the panel or Layers.
 - [ ] Modules 1–6 still work: activity/timeline/tools + all 5 tracking/traffic
       layers run alongside the threat overlay; basemap switches preserve everything.
@@ -49,17 +50,18 @@ Browser (apps/web)                       apps/api (Express, :8787)
 CyberPanel ── GET /api/cyber/lookup?q ──▶ /lookup → buildReport(q)
   (on-demand IP/domain/ASN report)                   ├─ ip-api (geo/ISP/ASN/flags)
 CyberThreatEngine ─ GET /api/cyber/threats           ├─ RDAP (whois: ip / autnum)
-  (polls 60s; plots C2 servers)                      ├─ Google DoH (DNS + reverse)
+  (polls 60s; plots C2 + attackers)                  ├─ Google DoH (DNS + reverse)
 CyberThreatSync/Interactions ▶ map                   ├─ crt.sh (certs)
                                                      └─ abuse.ch Feodo + Tor (threat)
-                            /threats → threatMapPoints (Feodo C2 + ip-api batch geo)
+                            /threats → threatMapPoints (Feodo C2 + ISC attackers + ip-api batch geo)
 ```
 
 - **Lookup orchestrator** (`report.ts`) classifies the query (IP / domain / ASN),
   then fans out to the relevant sources. Every source **catches its own errors**
   (returns null/[]), so a partial outage degrades the report instead of failing it.
-- **Threat map** geolocates the abuse.ch Feodo C2 list via ip-api's batch endpoint
-  (cached 30 min), with a small synthetic fallback so the overlay always renders.
+- **Threat map** merges the abuse.ch Feodo C2 list with SANS ISC's 100 most active
+  attacking IPs and geolocates them via ip-api's batch endpoint (100 per call, cached
+  30 min), with a small synthetic fallback so the overlay always renders.
 - **Same map plumbing as Modules 1–6** — the threat source/layers are added in
   `installOverlays()` and re-applied on every `styleEpoch` bump. Circles only (no
   icon image).
@@ -95,4 +97,6 @@ CyberThreatSync/Interactions ▶ map                   ├─ crt.sh (certs)
   for interactive use; the backend caches aggressively.
 - **crt.sh** can be slow/occasionally empty — certificates are best-effort.
 - abuse.ch **query** APIs (URLhaus/ThreatFox) now require a free key; WorldEye uses
-  only the **keyless Feodo blocklist**, so no key is needed.
+  only the **keyless Feodo blocklist**, so no key is needed. Feodo lists only a handful
+  of live C2 servers since the big botnet takedowns, so SANS ISC's keyless top-attacker
+  feed fills out the map.

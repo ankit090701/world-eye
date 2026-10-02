@@ -1,7 +1,8 @@
 import * as satellite from 'satellite.js'
+import type { SatRec } from 'satellite.js'
 import type { TleRecord } from '../types'
 
-export type SatRec = ReturnType<typeof satellite.twoline2satrec>
+export type { SatRec }
 
 export interface SatFix {
   lat: number
@@ -12,7 +13,7 @@ export interface SatFix {
 
 export function buildSatrec(rec: TleRecord): SatRec | null {
   try {
-    const sr = satellite.twoline2satrec(rec.line1, rec.line2)
+    const sr = satellite.json2satrec(rec.omm)
     // error flag set by sgp4init on a bad element set
     if ((sr as any).error) return null
     return sr

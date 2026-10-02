@@ -29,31 +29,36 @@ function hashId(s: string): string {
   return (h >>> 0).toString(36)
 }
 
-// Reddit via Atom RSS — the .json API is blocked without auth.
-export async function fetchReddit(sub = 'popular'): Promise<SocialPost[]> {
-  const xml = await fetchPage(`https://www.reddit.com/r/${encodeURIComponent(sub)}/.rss?limit=40`, 10000)
-  if (!xml.includes('<entry')) throw new Error('reddit blocked')
-  const entries = xml.match(/<entry>[\s\S]*?<\/entry>/g) ?? []
-  const posts: SocialPost[] = []
-  for (const e of entries) {
-    const title = decode(first(e, /<title>([\s\S]*?)<\/title>/) ?? '')
-    const url = first(e, /<link[^>]*href="([^"]+)"/) ?? ''
-    if (!title || !url) continue
-    const subreddit = first(e, /<category[^>]*label="([^"]+)"/) ?? first(e, /<category[^>]*term="([^"]+)"/)
-    const updated = first(e, /<updated>([^<]+)<\/updated>/)
-    posts.push({
-      id: hashId(url),
-      source: 'reddit',
-      title,
-      author: subreddit ? (subreddit.startsWith('r/') ? subreddit : `r/${subreddit}`) : null,
-      url,
-      score: null,
-      meta: null,
-      publishedAt: updated ? Date.parse(updated) || null : null,
-      ...geo(title),
-    })
+// Bluesky trending topics from the public AppView (keyless; the api.bsky.app host is the
+// fallback when public.api.bsky.app turns a cloud IP away).
+export async function fetchBluesky(): Promise<SocialPost[]> {
+  let d: any = null
+  for (const host of ['https://public.api.bsky.app', 'https://api.bsky.app']) {
+    try {
+      d = await fetchJSON(`${host}/xrpc/app.bsky.unspecced.getTrends`, 9000)
+      break
+    } catch {
+      /* try the next host */
+    }
   }
-  return posts.slice(0, 40)
+  const trends: any[] = Array.isArray(d?.trends) ? d.trends : []
+  if (trends.length === 0) throw new Error('bluesky unavailable')
+  return trends.map((t) => {
+    const title = String(t.displayName ?? t.topic ?? '')
+    const posts = typeof t.postCount === 'number' ? t.postCount : null
+    return {
+      id: String(t.topic ?? hashId(title)),
+      source: 'bluesky' as const,
+      title,
+      author: t.category ? String(t.category).replace(/^\w/, (c) => c.toUpperCase()) : 'Bluesky',
+      url: `https://bsky.app${t.link ?? ''}`,
+      score: posts,
+      meta: posts != null ? `${posts.toLocaleString('en-US')} posts` : null,
+      publishedAt: t.startedAt ? Date.parse(t.startedAt) || null : null,
+      // the one-line summary often names the place the headline leaves out
+      ...geo(`${title}. ${t.description ?? ''}`),
+    }
+  })
 }
 
 // Google Trends RSS — a keyless stand-in for search/X trends.
@@ -112,42 +117,39 @@ export async function fetchHN(): Promise<SocialPost[]> {
   })
 }
 
-// YouTube trending via Piped, a keyless YouTube API proxy (instances tried in order).
-const PIPED_HOSTS = ['https://pipedapi.kavin.rocks', 'https://pipedapi.adminforge.de']
-function fmtViews(v: number): string {
-  if (v >= 1e6) return `${(v / 1e6).toFixed(1)}M views`
-  if (v >= 1e3) return `${Math.round(v / 1e3)}K views`
-  return `${v} views`
-}
-export async function fetchYouTube(region = 'US'): Promise<SocialPost[]> {
-  let arr: any[] | null = null
-  for (const host of PIPED_HOSTS) {
-    try {
-      const d = await fetchJSON(`${host}/trending?region=${region}`, 9000)
-      if (Array.isArray(d) && d.length) {
-        arr = d
-        break
-      }
-    } catch {
-      /* try next instance */
-    }
+// Mastodon's trending posts (mastodon.social, the largest instance; keyless).
+// Its HTML hides link fragments in "invisible" spans and wraps hashtags in links.
+const tootText = (html: string) =>
+  decode(
+    html
+      .replace(/<span class="invisible">[^<]*<\/span>/g, '')
+      .replace(/<span class="ellipsis">([^<]*)<\/span>/g, '$1…')
+      .replace(/<br\s*\/?>|<\/p>/gi, ' ')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' '),
+  )
+export async function fetchMastodon(): Promise<SocialPost[]> {
+  const arr: any[] = await fetchJSON('https://mastodon.social/api/v1/trends/statuses?limit=30', 9000)
+  if (!Array.isArray(arr) || arr.length === 0) throw new Error('mastodon unavailable')
+  const posts: SocialPost[] = []
+  for (const s of arr) {
+    const text = (tootText(String(s.content ?? '')) || String(s.card?.title ?? '')).slice(0, 180)
+    if (text.length < 12 || !s.url) continue
+    const boosts = Number(s.reblogs_count) || 0
+    const favs = Number(s.favourites_count) || 0
+    posts.push({
+      id: String(s.id),
+      source: 'mastodon',
+      title: text,
+      author: s.account?.acct ? `@${s.account.acct}` : null,
+      url: String(s.url),
+      score: boosts + favs,
+      meta: `${boosts} boosts · ${favs} favourites`,
+      publishedAt: s.created_at ? Date.parse(s.created_at) || null : null,
+      ...geo(text),
+    })
   }
-  if (!arr) throw new Error('piped unavailable')
-  return arr.slice(0, 30).map((v) => {
-    const title = String(v.title ?? '')
-    const path = String(v.url ?? '')
-    return {
-      id: hashId(path || title),
-      source: 'youtube' as const,
-      title,
-      author: v.uploaderName ?? null,
-      url: path.startsWith('http') ? path : `https://www.youtube.com${path}`,
-      score: typeof v.views === 'number' ? v.views : null,
-      meta: typeof v.views === 'number' ? fmtViews(v.views) : null,
-      publishedAt: typeof v.uploaded === 'number' ? v.uploaded : null,
-      ...geo(title),
-    }
-  })
+  return posts
 }
 
 const TG_CHANNELS = ['telegram', 'durov']
@@ -182,22 +184,22 @@ export async function fetchTelegram(): Promise<SocialPost[]> {
 
 export function fetchSource(source: SocialSource): Promise<SocialPost[]> {
   switch (source) {
-    case 'reddit':
-      return fetchReddit()
+    case 'bluesky':
+      return fetchBluesky()
     case 'trends':
       return fetchTrends()
     case 'hn':
       return fetchHN()
-    case 'youtube':
-      return fetchYouTube()
+    case 'mastodon':
+      return fetchMastodon()
     case 'telegram':
       return fetchTelegram()
   }
 }
 
 // All sources feed the buzz map — social content is less geographic than news, so
-// casting a wide net (incl. YouTube/Telegram headlines) yields more hotspots.
-const MAP_SOURCES: SocialSource[] = ['reddit', 'trends', 'hn', 'youtube', 'telegram']
+// casting a wide net (incl. Mastodon/Telegram posts) yields more hotspots.
+const MAP_SOURCES: SocialSource[] = ['bluesky', 'trends', 'hn', 'mastodon', 'telegram']
 
 export async function socialMap(): Promise<SocialMapPoint[]> {
   const results = await Promise.all(

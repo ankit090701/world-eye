@@ -1,17 +1,17 @@
 // Social Intelligence (Module 12) — trends & public posts from keyless sources:
-// Reddit (Atom RSS), Google Trends (RSS, a keyless proxy for search/X-style
-// trends), Hacker News (Algolia), YouTube (Piped), and public Telegram channels.
+// Bluesky trending topics, Google Trends (RSS, a keyless proxy for search trends),
+// Hacker News (Algolia), Mastodon trending posts, and public Telegram channels.
 // Titles are geoparsed (shared gazetteer) so social buzz can be mapped.
 
-export type SocialSource = 'reddit' | 'trends' | 'youtube' | 'hn' | 'telegram'
+export type SocialSource = 'bluesky' | 'trends' | 'mastodon' | 'hn' | 'telegram'
 
 export interface SocialPost {
   id: string
   source: SocialSource
   title: string
-  author: string | null // subreddit / channel / uploader
+  author: string | null // account / channel / topic category
   url: string
-  score: number | null // upvotes / points / views / search volume
+  score: number | null // posts / points / boosts + favourites / search volume
   meta: string | null // human label (e.g. "372 comments", "20K+ searches")
   publishedAt: number | null
   place: string | null

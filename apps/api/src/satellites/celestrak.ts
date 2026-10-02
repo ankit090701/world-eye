@@ -1,5 +1,5 @@
-import { fetchText } from '../lib/cache.js'
-import type { SatGroup, TleRecord } from './types.js'
+import { fetchJSON } from '../lib/cache.js'
+import type { Omm, SatGroup, TleRecord } from './types.js'
 
 // group → CelesTrak GROUP name + a sample cap (some groups have thousands of
 // objects; we sample evenly so client-side propagation stays smooth).
@@ -15,17 +15,32 @@ export function isSatGroup(g: string): g is SatGroup {
   return g === 'iss' || g === 'active' || g === 'starlink' || g === 'debris' || g === 'launches'
 }
 
-function parseTle(text: string): TleRecord[] {
-  const lines = text.split(/\r?\n/).map((l) => l.replace(/\s+$/, ''))
+const OMM_FIELDS = [
+  'OBJECT_NAME',
+  'OBJECT_ID',
+  'EPOCH',
+  'MEAN_MOTION',
+  'ECCENTRICITY',
+  'INCLINATION',
+  'RA_OF_ASC_NODE',
+  'ARG_OF_PERICENTER',
+  'MEAN_ANOMALY',
+  'NORAD_CAT_ID',
+  'ELEMENT_SET_NO',
+  'BSTAR',
+  'MEAN_MOTION_DOT',
+  'MEAN_MOTION_DDOT',
+] as const
+
+/** Keeps just the fields propagation needs from CelesTrak's OMM rows, dropping malformed ones. */
+function toRecords(rows: unknown): TleRecord[] {
+  if (!Array.isArray(rows)) return []
   const out: TleRecord[] = []
-  for (let i = 0; i + 2 < lines.length || (i + 2 === lines.length && lines[i]); i += 3) {
-    const name = (lines[i] ?? '').trim()
-    const l1 = lines[i + 1] ?? ''
-    const l2 = lines[i + 2] ?? ''
-    if (!name || !l1.startsWith('1 ') || !l2.startsWith('2 ')) continue
-    const noradId = parseInt(l1.substring(2, 7), 10)
-    if (!Number.isFinite(noradId)) continue
-    out.push({ name, noradId, line1: l1, line2: l2 })
+  for (const row of rows) {
+    const r = row as Record<string, unknown> | null
+    if (!r || OMM_FIELDS.some((k) => r[k] == null)) continue
+    const omm = Object.fromEntries(OMM_FIELDS.map((k) => [k, r[k]])) as unknown as Omm
+    out.push({ name: String(omm.OBJECT_NAME).trim(), noradId: Number(omm.NORAD_CAT_ID), omm })
   }
   return out
 }
@@ -38,20 +53,48 @@ function sampleEvenly<T>(arr: T[], cap: number): T[] {
   return out
 }
 
-// Hardcoded ISS element set so the module is demonstrable even if CelesTrak is
+// Hardcoded station element sets so the module is demonstrable even if CelesTrak is
 // unreachable (epoch drifts, but propagation still yields a plausible orbit).
 const ISS_FALLBACK: TleRecord[] = [
   {
     name: 'ISS (ZARYA)',
     noradId: 25544,
-    line1: '1 25544U 98067A   26185.08885440  .00007564  00000+0  14587-3 0  9998',
-    line2: '2 25544  51.6303 216.4301 0006763 253.0749 106.9498 15.48879284574378',
+    omm: {
+      OBJECT_NAME: 'ISS (ZARYA)',
+      OBJECT_ID: '1998-067A',
+      EPOCH: '2026-07-04T02:07:57.020160',
+      MEAN_MOTION: 15.48879284,
+      ECCENTRICITY: 0.0006763,
+      INCLINATION: 51.6303,
+      RA_OF_ASC_NODE: 216.4301,
+      ARG_OF_PERICENTER: 253.0749,
+      MEAN_ANOMALY: 106.9498,
+      NORAD_CAT_ID: 25544,
+      ELEMENT_SET_NO: 999,
+      BSTAR: 0.00014587,
+      MEAN_MOTION_DOT: 0.00007564,
+      MEAN_MOTION_DDOT: 0,
+    },
   },
   {
     name: 'CSS (TIANHE)',
     noradId: 48274,
-    line1: '1 48274U 21035A   26184.22810215  .00007882  00000+0  10678-3 0  9997',
-    line2: '2 48274  41.4672 224.3616 0002880 262.1202  97.9309 15.57904594296214',
+    omm: {
+      OBJECT_NAME: 'CSS (TIANHE)',
+      OBJECT_ID: '2021-035A',
+      EPOCH: '2026-07-03T05:28:28.025760',
+      MEAN_MOTION: 15.57904594,
+      ECCENTRICITY: 0.000288,
+      INCLINATION: 41.4672,
+      RA_OF_ASC_NODE: 224.3616,
+      ARG_OF_PERICENTER: 262.1202,
+      MEAN_ANOMALY: 97.9309,
+      NORAD_CAT_ID: 48274,
+      ELEMENT_SET_NO: 999,
+      BSTAR: 0.00010678,
+      MEAN_MOTION_DOT: 0.00007882,
+      MEAN_MOTION_DDOT: 0,
+    },
   },
 ]
 
@@ -64,12 +107,12 @@ const lastGood = new Map<SatGroup, TleRecord[]>()
 export async function fetchGroup(group: SatGroup): Promise<{ sats: TleRecord[]; source: 'live' | 'sim' }> {
   const { celestrak, cap } = GROUP_MAP[group]
   try {
-    const text = await fetchText(
-      `https://celestrak.org/NORAD/elements/gp.php?GROUP=${celestrak}&FORMAT=tle`,
-      // starlink is a large (~700 KB) payload; give the big groups more headroom.
-      group === 'starlink' ? 20000 : 12000,
+    const rows = await fetchJSON(
+      `https://celestrak.org/NORAD/elements/gp.php?GROUP=${celestrak}&FORMAT=json`,
+      // starlink is a large (several MB) payload; give the big groups more headroom.
+      group === 'starlink' ? 25000 : 12000,
     )
-    let sats = parseTle(text)
+    let sats = toRecords(rows)
     // The "stations" group is broad; keep the crewed/large stations for the ISS layer.
     if (group === 'iss') {
       const wanted = sats.filter((s) => /ISS|ZARYA|TIANHE|CSS|NAUKA|TIANGONG/i.test(s.name))
@@ -80,7 +123,7 @@ export async function fetchGroup(group: SatGroup): Promise<{ sats: TleRecord[]; 
       lastGood.set(group, sats)
       return { sats, source: 'live' }
     }
-    // empty parse (e.g. a 403 throttle body) — fall through to stale/sim
+    // nothing usable — fall through to stale/sim
     throw new Error('empty')
   } catch {
     const stale = lastGood.get(group)

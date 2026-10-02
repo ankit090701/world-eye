@@ -54,7 +54,6 @@ export interface Cyclone {
   movementDir: number | null
   movementSpeedKt: number | null
   lastUpdate: string | null
-  source: 'live' | 'sim'
 }
 
 export interface Wildfire {
@@ -84,5 +83,4 @@ export interface WeatherEventsResponse {
   cyclones: Cyclone[]
   wildfires: Wildfire[]
   earthquakes: Earthquake[]
-  cycloneSource: 'live' | 'sim'
 }

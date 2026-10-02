@@ -1,4 +1,4 @@
-import { EMERGENCY_SQUAWKS, type Aircraft } from './types.js'
+import type { Aircraft } from './types.js'
 import { hashStr, mulberry32 } from '../lib/random.js'
 
 // Deterministic fallback feed: stable identities per area, positions animate with
@@ -71,13 +71,8 @@ export function simulateAircraft(
     const gs = onGround ? Math.round(rng() * 20) : Math.round(380 + rng() * 160)
     const vr = onGround ? 0 : Math.round((rng() - 0.5) * 2000)
 
-    // rare emergency for demonstration
-    let squawk = String(1000 + Math.floor(rng() * 6000)).padStart(4, '0')
-    let emKind: 'hijack' | 'radio' | 'general' | null = null
-    if (rng() < 0.03) {
-      squawk = ['7500', '7600', '7700'][Math.floor(rng() * 3)]
-      emKind = EMERGENCY_SQUAWKS[squawk]
-    }
+    // ordinary codes only: a simulated plane must never look like a real emergency
+    const squawk = String(1000 + Math.floor(rng() * 6000)).padStart(4, '0')
 
     const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
     const regTail = Array.from({ length: 4 }, () => letters[Math.floor(rng() * letters.length)]).join('')
@@ -94,8 +89,8 @@ export function simulateAircraft(
       track: Math.round(track),
       verticalRate: vr,
       squawk,
-      emergency: Boolean(emKind),
-      emergencyKind: emKind,
+      emergency: false,
+      emergencyKind: null,
       onGround,
       source: 'sim',
       seen: 0,

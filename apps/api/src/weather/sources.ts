@@ -163,7 +163,7 @@ function parseCoord(v: any, numeric: any): number | null {
   return null
 }
 
-export async function cyclones(): Promise<Cyclone[]> {
+async function nhcCyclones(): Promise<Cyclone[]> {
   try {
     const d = await fetchJSON('https://www.nhc.noaa.gov/CurrentStorms.json', 8000)
     const arr: any[] = Array.isArray(d?.activeStorms) ? d.activeStorms : []
@@ -186,13 +186,92 @@ export async function cyclones(): Promise<Cyclone[]> {
         movementDir: toNum(s.movementDir),
         movementSpeedKt: toNum(s.movementSpeed),
         lastUpdate: s.lastUpdate ?? null,
-        source: 'live',
       })
     }
     return out
   } catch {
     return []
   }
+}
+
+/** "Tropical Cyclone CHOI-WAN-26" → "Choi-Wan" */
+function stormName(raw: unknown): string {
+  const s = String(raw ?? '')
+    .replace(/^Tropical Cyclone\s+/i, '')
+    .replace(/-\d{2}$/, '')
+    .trim()
+  return s ? s.toLowerCase().replace(/(^|[\s-])\w/g, (m) => m.toUpperCase()) : 'Unnamed'
+}
+
+// Basins outside NHC's watch; null for the Atlantic and east/central Pacific, where NHC is
+// the authority.
+function basinOf(lat: number, lon: number): string | null {
+  if (lat >= 0) {
+    if (lon >= 100) return 'W. Pacific'
+    return lon >= 30 ? 'N. Indian' : null
+  }
+  if (lon >= 20 && lon < 90) return 'S. Indian'
+  if (lon >= 90 && lon < 160) return 'Australian'
+  return lon >= 160 || lon < -70 ? 'S. Pacific' : 'S. Atlantic'
+}
+
+// GDACS gives the storm's current class but only its peak wind so far, so the class sets the
+// category (a hurricane/typhoon falls back to its peak) and the current wind stays unknown.
+function gdacsCategory(classText: string, peakKt: number | null): CycloneCategory {
+  if (/depression/i.test(classText)) return 'td'
+  if (/storm/i.test(classText)) return 'ts'
+  return cycloneCategory(peakKt)
+}
+
+// GDACS (UN / EC disaster alerting) lists tropical cyclones in every basin. Events stay
+// "current" for days after a storm fades, so only ones updated in the last 36h count.
+async function gdacsCyclones(): Promise<Cyclone[]> {
+  try {
+    const day = (ms: number) => new Date(ms).toISOString().slice(0, 10)
+    const now = Date.now()
+    const d = await fetchJSON(
+      `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC&fromdate=${day(now - 10 * 86400000)}&todate=${day(now)}&alertlevel=green;orange;red`,
+      9000,
+    )
+    const features: any[] = Array.isArray(d?.features) ? d.features : []
+    const out: Cyclone[] = []
+    for (const f of features) {
+      const p = f?.properties
+      const [lon, lat] = Array.isArray(f?.geometry?.coordinates) ? f.geometry.coordinates : []
+      if (!p || typeof lat !== 'number' || typeof lon !== 'number') continue
+      const updated = Date.parse(`${p.todate}Z`)
+      if (!(now - updated < 36 * 3600000)) continue
+      const basin = basinOf(lat, lon)
+      if (!basin) continue
+      const kmh = toNum(p.severitydata?.severity)
+      const classText = String(p.severitydata?.severitytext ?? '').split(' (')[0].replace(/\s*>.*$/, '')
+      out.push({
+        id: `gdacs-${p.eventid}`,
+        name: stormName(p.eventname || p.name),
+        basin,
+        classification: classText,
+        category: gdacsCategory(classText, kmh == null ? null : Math.round(kmh / 1.852)),
+        lat,
+        lon,
+        windKt: null,
+        pressureMb: null,
+        movementDir: null,
+        movementSpeedKt: null,
+        lastUpdate: new Date(updated).toISOString(),
+      })
+    }
+    return out
+  } catch {
+    return []
+  }
+}
+
+/** Active tropical cyclones worldwide: NHC for its basins, GDACS for the rest (names de-duplicated across the seam). */
+export async function cyclones(): Promise<Cyclone[]> {
+  const [nhc, gdacs] = await Promise.all([nhcCyclones(), gdacsCyclones()])
+  const key = (name: string) => name.toUpperCase().replace(/[^A-Z]/g, '')
+  const seen = new Set(nhc.map((c) => key(c.name)))
+  return [...nhc, ...gdacs.filter((c) => !seen.has(key(c.name)))]
 }
 
 export async function wildfires(): Promise<Wildfire[]> {
