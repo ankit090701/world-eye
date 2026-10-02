@@ -1174,14 +1174,13 @@ export function applyLayerStates(map: MlMap, layers: LayerState[]) {
           setLayoutVis(map, id, l.visible)
         }
         setPaint(map, LYR.geofenceLine, 'line-opacity', l.opacity)
-        // scale the per-type fill opacities by the slider (0.7 is the design default)
-        const k = l.opacity / 0.7
+        // scale the per-type fill opacities by the slider (100% is the designed look)
         setPaint(map, LYR.geofenceFill, 'fill-opacity', [
           'match',
           ['get', 'gtype'],
-          'restricted', 0.16 * k,
-          'zone', 0.05 * k,
-          0.1 * k,
+          'restricted', 0.16 * l.opacity,
+          'zone', 0.05 * l.opacity,
+          0.1 * l.opacity,
         ])
         break
       }

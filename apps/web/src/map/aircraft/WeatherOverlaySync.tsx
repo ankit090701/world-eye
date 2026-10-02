@@ -52,7 +52,7 @@ export function WeatherOverlaySync() {
   const epoch = useAppSelector((s) => s.map.styleEpoch)
   const layer = useAppSelector((s) => s.layers.items.find((l) => l.id === 'weather-radar'))
   const visible = layer?.visible ?? false
-  const opacity = layer?.opacity ?? 0.7
+  const opacity = layer?.opacity ?? 1
 
   const frameRef = useRef<Frame | null>(null)
   const opacityRef = useRef(opacity)
