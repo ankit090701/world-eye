@@ -109,6 +109,9 @@ environment variables are needed.
 2. Keep **Root Directory** `./` and **Application Preset** **Services**. The root
    `Dockerfile` (detected as a container) isn't used on Vercel.
 3. Click **Deploy**. Every push to `main` then redeploys automatically.
+4. Optional: open the project's **Analytics** tab and click **Enable** to count visitors
+   with Vercel Web Analytics (cookieless). The tracking script is only built into
+   Vercel deployments; Docker and local builds leave it out.
 
 The API runs as a single Vercel Function on Fluid compute, so its in-memory caches and
 per-IP rate limits apply per running instance.

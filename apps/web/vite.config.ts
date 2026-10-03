@@ -6,6 +6,9 @@ const apiProxy = { '/api': 'http://localhost:8787' }
 
 export default defineConfig({
   plugins: [react()],
+  // Vercel Web Analytics loads from /_vercel/insights, which only Vercel serves, so it is
+  // compiled in for Vercel builds only (elsewhere nginx would answer that path with the SPA).
+  define: { __VERCEL__: JSON.stringify(Boolean(process.env.VERCEL)) },
   server: {
     port: 5173,
     host: true,

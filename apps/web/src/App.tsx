@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { MapProvider } from './map/MapContext'
 import MapView from './map/MapView'
 import TopBar from './components/TopBar'
@@ -23,6 +24,7 @@ export default function App() {
         <StatusBar />
         <PanelLauncher />
         <Toast />
+        {__VERCEL__ && <Analytics />}
       </div>
     </MapProvider>
   )
